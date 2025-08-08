@@ -14,8 +14,11 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as attorneys from "../attorneys.js";
+import type * as clients from "../clients.js";
 import type * as consultations from "../consultations.js";
 import type * as example from "../example.js";
+import type * as files from "../files.js";
+import type * as messages from "../messages.js";
 import type * as reviews from "../reviews.js";
 import type * as seed from "../seed.js";
 
@@ -29,8 +32,11 @@ import type * as seed from "../seed.js";
  */
 declare const fullApi: ApiFromModules<{
   attorneys: typeof attorneys;
+  clients: typeof clients;
   consultations: typeof consultations;
   example: typeof example;
+  files: typeof files;
+  messages: typeof messages;
   reviews: typeof reviews;
   seed: typeof seed;
 }>;

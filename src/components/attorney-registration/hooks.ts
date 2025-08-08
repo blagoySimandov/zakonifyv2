@@ -55,18 +55,21 @@ export function useAttorneyRegistration({
       if (!result.success) {
         const stepErrors: Record<string, string[]> = {};
 
-        // Safely handle the error structure
-        if (
-          result.error &&
-          result.error.errors &&
-          Array.isArray(result.error.errors)
-        ) {
-          result.error.errors.forEach((error) => {
-            const field = error.path ? error.path.join(".") : "unknown";
+        // Safely handle the error structure (ZodError.issues)
+        const issues = (
+          result as typeof result & {
+            error: {
+              issues?: Array<{ path?: (string | number)[]; message?: string }>;
+            };
+          }
+        ).error.issues;
+        if (Array.isArray(issues)) {
+          issues.forEach((issue) => {
+            const field = issue.path ? issue.path.join(".") : "unknown";
             if (!stepErrors[field]) {
               stepErrors[field] = [];
             }
-            stepErrors[field].push(error.message || "Validation error");
+            stepErrors[field].push(issue.message || "Validation error");
           });
         } else {
           console.warn("Unexpected validation error structure:", result.error);
@@ -124,9 +127,13 @@ export function useAttorneyRegistration({
     });
   };
 
+  type FixedFeePackage = NonNullable<
+    AttorneyRegistrationFormData["fixedFeePackages"]
+  >[number];
+
   const updateFixedFeePackage = (
     index: number,
-    updates: Partial<AttorneyRegistrationFormData["fixedFeePackages"][0]>,
+    updates: Partial<FixedFeePackage>
   ) => {
     const currentPackages = formData.fixedFeePackages || [];
     const updatedPackages = [...currentPackages];
@@ -152,23 +159,26 @@ export function useAttorneyRegistration({
       if (!result.success) {
         const allErrors: Record<string, string[]> = {};
 
-        // Safely handle the error structure
-        if (
-          result.error &&
-          result.error.errors &&
-          Array.isArray(result.error.errors)
-        ) {
-          result.error.errors.forEach((error) => {
-            const field = error.path ? error.path.join(".") : "unknown";
+        // Safely handle the error structure (ZodError.issues)
+        const issues = (
+          result as typeof result & {
+            error: {
+              issues?: Array<{ path?: (string | number)[]; message?: string }>;
+            };
+          }
+        ).error.issues;
+        if (Array.isArray(issues)) {
+          issues.forEach((issue) => {
+            const field = issue.path ? issue.path.join(".") : "unknown";
             if (!allErrors[field]) {
               allErrors[field] = [];
             }
-            allErrors[field].push(error.message || "Validation error");
+            allErrors[field].push(issue.message || "Validation error");
           });
         } else {
           console.warn(
             "Unexpected final validation error structure:",
-            result.error,
+            result.error
           );
           // Fallback error handling
           allErrors._general = ["Validation failed. Please check your input."];
@@ -180,12 +190,14 @@ export function useAttorneyRegistration({
 
       await createAttorneyMutation.mutateAsync(result.data);
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Registration failed:", error);
 
-      // Handle specific error types
+      // Handle specific error types with safe narrowing
       const errorMessage =
-        error?.message || "Registration failed. Please try again.";
+        error instanceof Error
+          ? error.message
+          : "Registration failed. Please try again.";
 
       // Set appropriate field errors based on the error message
       if (errorMessage.includes("email already exists")) {
@@ -240,4 +252,3 @@ export function useAttorneyRegistration({
     updateFixedFeePackage,
   };
 }
-

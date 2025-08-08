@@ -3,7 +3,7 @@ import { publicProcedure, router } from "../trpc";
 import { PRACTICE_AREAS } from "@/constants";
 import { convex } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 const AttorneySearchSchema = z.object({
   limit: z.number().optional(),
@@ -21,7 +21,7 @@ const AttorneyRegistrationSchema = z.object({
   education: z.string().min(10).max(500).optional(),
   yearsOfExperience: z.number().min(0).max(70),
   practiceAreas: z
-    .array(z.enum(PRACTICE_AREAS as [string, ...string[]]))
+    .array(z.enum(PRACTICE_AREAS as unknown as [string, ...string[]]))
     .min(1)
     .max(5),
   hourlyRate: z.number().min(50).max(2000),
@@ -31,7 +31,7 @@ const AttorneyRegistrationSchema = z.object({
         name: z.string().min(5).max(100),
         description: z.string().min(20).max(500),
         price: z.number().min(100).max(50000),
-      }),
+      })
     )
     .optional(),
   location: z.object({
@@ -58,7 +58,7 @@ const ConsultationCreateSchema = z.object({
   clientPhone: z.string().optional(),
   scheduledAt: z.number(),
   duration: z.number().min(30).max(480),
-  consultationType: z.enum(['hourly', 'fixed']),
+  consultationType: z.enum(["hourly", "fixed"]),
   packageId: z.string().optional(),
   notes: z.string().max(500).optional(),
 });
@@ -148,6 +148,131 @@ export const appRouter = router({
           throw new Error("Registration failed. Please try again.");
         }
       }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          fullName: z.string().optional(),
+          bio: z.string().optional(),
+          education: z.string().optional(),
+          yearsOfExperience: z.number().optional(),
+          practiceAreas: z.array(z.string()).optional(),
+          hourlyRate: z.number().optional(),
+          location: z
+            .object({
+              city: z.string(),
+              state: z.string(),
+              country: z.string(),
+            })
+            .optional(),
+          languages: z.array(z.string()).optional(),
+          profileImage: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return await convex.mutation(api.attorneys.update, {
+          id: input.id as Id<"attorneys">,
+          fullName: input.fullName,
+          bio: input.bio,
+          education: input.education,
+          yearsOfExperience: input.yearsOfExperience,
+          practiceAreas: input.practiceAreas,
+          hourlyRate: input.hourlyRate,
+          location: input.location,
+          languages: input.languages,
+          profileImage: input.profileImage,
+        });
+      }),
+  }),
+
+  matters: router({
+    // Placeholder: list matters by attorney would query a Convex function for matters
+    listByAttorney: publicProcedure
+      .input(z.object({ attorneyId: z.string() }))
+      .query(async () => {
+        return [] as const;
+      }),
+  }),
+
+  clients: router({
+    getByAttorneyId: publicProcedure
+      .input(z.object({ attorneyId: z.string() }))
+      .query(async ({ input }) => {
+        try {
+          const clients = await convex.query(api.clients.getByAttorneyId, {
+            attorneyId: input.attorneyId as Id<"attorneys">,
+          });
+          return clients;
+        } catch (error) {
+          console.error("Failed to fetch clients:", error);
+          return [];
+        }
+      }),
+  }),
+
+  messages: router({
+    listByMatter: publicProcedure
+      .input(z.object({ matterId: z.string() }))
+      .query(async ({ input }) => {
+        return await convex.query(api.messages.listByMatter, {
+          matterId: input.matterId as Id<"matters">,
+        });
+      }),
+    send: publicProcedure
+      .input(
+        z.object({
+          matterId: z.string(),
+          senderRole: z.enum(["attorney", "client"]),
+          senderId: z.string(),
+          content: z.string(),
+          attachmentIds: z.array(z.string()).optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return await convex.mutation(api.messages.send, {
+          matterId: input.matterId as Id<"matters">,
+          senderRole: input.senderRole,
+          senderId: input.senderId as Id<"attorneys">, // sending from attorney in dashboard
+          content: input.content,
+          attachmentIds: input.attachmentIds as string[] | undefined as
+            | Id<"files">[]
+            | undefined,
+        });
+      }),
+  }),
+
+  files: router({
+    listByMatter: publicProcedure
+      .input(z.object({ matterId: z.string() }))
+      .query(async ({ input }) => {
+        return await convex.query(api.files.listByMatter, {
+          matterId: input.matterId as Id<"matters">,
+        });
+      }),
+    upload: publicProcedure
+      .input(
+        z.object({
+          matterId: z.string(),
+          uploadedByRole: z.enum(["attorney", "client"]),
+          uploadedById: z.string(),
+          fileUrl: z.string(),
+          fileName: z.string(),
+          fileSize: z.number(),
+          mimeType: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return await convex.mutation(api.files.upload, {
+          matterId: input.matterId as Id<"matters">,
+          uploadedByRole: input.uploadedByRole,
+          uploadedById: input.uploadedById as Id<"attorneys">,
+          fileUrl: input.fileUrl,
+          fileName: input.fileName,
+          fileSize: input.fileSize,
+          mimeType: input.mimeType,
+        });
+      }),
   }),
 
   reviews: router({
@@ -203,16 +328,21 @@ export const appRouter = router({
 
   consultations: router({
     getAvailableSlots: publicProcedure
-      .input(z.object({ 
-        attorneyId: z.string(), 
-        date: z.string() 
-      }))
+      .input(
+        z.object({
+          attorneyId: z.string(),
+          date: z.string(),
+        })
+      )
       .query(async ({ input }) => {
         try {
-          const slots = await convex.query(api.consultations.getAvailableSlots, {
-            attorneyId: input.attorneyId as Id<"attorneys">,
-            date: input.date,
-          });
+          const slots = await convex.query(
+            api.consultations.getAvailableSlots,
+            {
+              attorneyId: input.attorneyId as Id<"attorneys">,
+              date: input.date,
+            }
+          );
           return slots;
         } catch (error) {
           console.error("Failed to fetch available slots:", error);
@@ -245,17 +375,47 @@ export const appRouter = router({
         }
       }),
 
+    updateNotes: publicProcedure
+      .input(z.object({ id: z.string(), notes: z.string().optional() }))
+      .mutation(async ({ input }) => {
+        return await convex.mutation(api.consultations.updateNotes, {
+          id: input.id as Id<"consultations">,
+          notes: input.notes,
+        });
+      }),
+
+    updateStatus: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          status: z.enum(["pending", "confirmed", "completed", "cancelled"]),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return await convex.mutation(api.consultations.updateStatus, {
+          id: input.id as Id<"consultations">,
+          status: input.status,
+        });
+      }),
+
     getByAttorneyId: publicProcedure
-      .input(z.object({ 
-        attorneyId: z.string(),
-        status: z.enum(['pending', 'confirmed', 'completed', 'cancelled']).optional()
-      }))
+      .input(
+        z.object({
+          attorneyId: z.string(),
+          status: z
+            .enum(["pending", "confirmed", "completed", "cancelled"])
+            .optional(),
+        })
+      )
       .query(async ({ input }) => {
         try {
-          const consultations = await convex.query(api.consultations.getByAttorneyId, {
-            attorneyId: input.attorneyId as Id<"attorneys">,
-            status: input.status,
-          });
+          const consultations = await convex.query(
+            api.consultations.getByAttorneyId,
+            {
+              attorneyId: input.attorneyId as Id<"attorneys">,
+              status: input.status,
+            }
+          );
           return consultations;
         } catch (error) {
           console.error("Failed to fetch consultations:", error);

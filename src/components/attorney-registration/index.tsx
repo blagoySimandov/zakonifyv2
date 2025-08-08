@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useAttorneyRegistration } from './hooks'
-import { REGISTRATION_CONSTANTS } from './constants'
-import { REGISTRATION_MESSAGES } from './messages'
-import { PersonalInfoStep } from './personal-info-step'
-import { ProfessionalInfoStep } from './professional-info-step'
-import { PracticeLocationStep } from './practice-location-step'
-import { PricingStep } from './pricing-step'
-import { CheckCircle, AlertCircle } from 'lucide-react'
+import { useState } from "react";
+import { useAttorneyRegistration } from "./hooks";
+import { REGISTRATION_CONSTANTS } from "./constants";
+import { REGISTRATION_MESSAGES } from "./messages";
+import { PersonalInfoStep } from "./personal-info-step";
+import { ProfessionalInfoStep } from "./professional-info-step";
+import { PracticeLocationStep } from "./practice-location-step";
+import { PricingStep } from "./pricing-step";
+import { CheckCircle, AlertCircle } from "lucide-react";
 
 export function AttorneyRegistration() {
   const {
@@ -28,17 +28,17 @@ export function AttorneyRegistration() {
     addFixedFeePackage,
     removeFixedFeePackage,
     updateFixedFeePackage,
-  } = useAttorneyRegistration()
+  } = useAttorneyRegistration();
 
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const progress = getStepProgress()
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const progress = getStepProgress();
 
   const handleSubmit = async () => {
-    const success = await submitRegistration()
+    const success = await submitRegistration();
     if (success) {
-      setIsSubmitted(true)
+      setIsSubmitted(true);
     }
-  }
+  };
 
   if (isSubmitted) {
     return (
@@ -54,18 +54,21 @@ export function AttorneyRegistration() {
             {REGISTRATION_MESSAGES.INFO.VERIFICATION_PENDING}
           </p>
           <p className="text-green-600 text-sm">
-            We'll send you an email confirmation and updates about your verification status.
+            We’ll send you an email confirmation and updates about your
+            verification status.
           </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-700 mb-2">Join as an Attorney</h1>
+        <h1 className="text-3xl font-bold text-gray-700 mb-2">
+          Join as an Attorney
+        </h1>
         <p className="text-gray-500">
           Complete your registration to start connecting with clients
         </p>
@@ -75,14 +78,17 @@ export function AttorneyRegistration() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-500">
-            {REGISTRATION_MESSAGES.INFO.STEP_PROGRESS
-              .replace('{current}', progress.current.toString())
-              .replace('{total}', progress.total.toString())}
+            {REGISTRATION_MESSAGES.INFO.STEP_PROGRESS.replace(
+              "{current}",
+              progress.current.toString()
+            ).replace("{total}", progress.total.toString())}
           </span>
-          <span className="text-sm text-gray-500">{Math.round(progress.percentage)}% Complete</span>
+          <span className="text-sm text-gray-500">
+            {Math.round(progress.percentage)}% Complete
+          </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
+          <div
             className="bg-blue-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${progress.percentage}%` }}
           />
@@ -98,12 +104,11 @@ export function AttorneyRegistration() {
               onClick={() => goToStep(step)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 step === currentStep
-                  ? 'bg-blue-500 text-white'
+                  ? "bg-blue-500 text-white"
                   : index < steps.indexOf(currentStep)
-                  ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
+                    ? "bg-green-100 text-green-800 hover:bg-green-200"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}>
               {index + 1}. {REGISTRATION_CONSTANTS.STEP_TITLES[step]}
             </button>
           ))}
@@ -122,32 +127,32 @@ export function AttorneyRegistration() {
 
       {/* Form Content */}
       <div className="bg-white border rounded-lg p-6 mb-6">
-        {currentStep === 'personal' && (
-          <PersonalInfoStep 
+        {currentStep === "personal" && (
+          <PersonalInfoStep
             formData={formData}
             errors={errors}
             updateFormData={updateFormData}
           />
         )}
-        
-        {currentStep === 'professional' && (
-          <ProfessionalInfoStep 
+
+        {currentStep === "professional" && (
+          <ProfessionalInfoStep
             formData={formData}
             errors={errors}
             updateFormData={updateFormData}
           />
         )}
-        
-        {currentStep === 'practiceAndLocation' && (
-          <PracticeLocationStep 
+
+        {currentStep === "practiceAndLocation" && (
+          <PracticeLocationStep
             formData={formData}
             errors={errors}
             updateFormData={updateFormData}
           />
         )}
-        
-        {currentStep === 'pricing' && (
-          <PricingStep 
+
+        {currentStep === "pricing" && (
+          <PricingStep
             formData={formData}
             errors={errors}
             updateFormData={updateFormData}
@@ -165,10 +170,9 @@ export function AttorneyRegistration() {
           disabled={isFirstStep}
           className={`px-6 py-3 rounded-lg font-medium transition-colors ${
             isFirstStep
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
-        >
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}>
           {REGISTRATION_CONSTANTS.BUTTONS.PREVIOUS}
         </button>
 
@@ -178,17 +182,17 @@ export function AttorneyRegistration() {
             disabled={isSubmitting}
             className={`px-8 py-3 rounded-lg font-medium text-white transition-colors ${
               isSubmitting
-                ? 'bg-blue-400 cursor-not-allowed'
-                : 'bg-blue-500 hover:bg-blue-600'
-            }`}
-          >
-            {isSubmitting ? 'Submitting...' : REGISTRATION_CONSTANTS.BUTTONS.SUBMIT}
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}>
+            {isSubmitting
+              ? "Submitting..."
+              : REGISTRATION_CONSTANTS.BUTTONS.SUBMIT}
           </button>
         ) : (
           <button
             onClick={goToNextStep}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors"
-          >
+            className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">
             {REGISTRATION_CONSTANTS.BUTTONS.NEXT}
           </button>
         )}
@@ -199,5 +203,5 @@ export function AttorneyRegistration() {
         {REGISTRATION_MESSAGES.INFO.REQUIRED_FIELDS}
       </p>
     </div>
-  )
+  );
 }

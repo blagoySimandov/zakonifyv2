@@ -1,17 +1,16 @@
-import { Navbar } from '@/components/navbar'
-import { AttorneyProfile } from '@/components/attorney-profile'
+import { Navbar } from "@/components/navbar";
+import { AttorneyProfile } from "@/components/attorney-profile";
 
-interface AttorneyProfilePageProps {
-  params: {
-    id: string
-  }
-}
-
-export default function AttorneyProfilePage({ params }: AttorneyProfilePageProps) {
+export default async function AttorneyProfilePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   return (
     <div>
       <Navbar />
-      <AttorneyProfile attorneyId={params.id} />
+      <AttorneyProfile attorneyId={id} />
     </div>
-  )
+  );
 }

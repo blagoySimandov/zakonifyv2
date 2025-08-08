@@ -1,27 +1,34 @@
-'use client'
+"use client";
 
-import { AttorneyRegistrationFormData } from './validation'
-import { REGISTRATION_CONSTANTS } from './constants'
-import { REGISTRATION_MESSAGES } from './messages'
+import { AttorneyRegistrationFormData } from "./validation";
+import { REGISTRATION_CONSTANTS } from "./constants";
+import { REGISTRATION_MESSAGES } from "./messages";
+
+type FixedFeePackage = NonNullable<
+  AttorneyRegistrationFormData["fixedFeePackages"]
+>[number];
 
 interface PricingStepProps {
-  formData: Partial<AttorneyRegistrationFormData>
-  errors: Record<string, string[]>
-  updateFormData: (updates: Partial<AttorneyRegistrationFormData>) => void
-  addFixedFeePackage: () => void
-  removeFixedFeePackage: (index: number) => void
-  updateFixedFeePackage: (index: number, updates: Partial<AttorneyRegistrationFormData['fixedFeePackages'][0]>) => void
+  formData: Partial<AttorneyRegistrationFormData>;
+  errors: Record<string, string[]>;
+  updateFormData: (updates: Partial<AttorneyRegistrationFormData>) => void;
+  addFixedFeePackage: () => void;
+  removeFixedFeePackage: (index: number) => void;
+  updateFixedFeePackage: (
+    index: number,
+    updates: Partial<FixedFeePackage>
+  ) => void;
 }
 
-export function PricingStep({ 
-  formData, 
-  errors, 
-  updateFormData, 
+export function PricingStep({
+  formData,
+  errors,
+  updateFormData,
   addFixedFeePackage,
   removeFixedFeePackage,
-  updateFixedFeePackage
+  updateFixedFeePackage,
 }: PricingStepProps) {
-  const packages = formData.fixedFeePackages || []
+  const packages = formData.fixedFeePackages || [];
 
   return (
     <div className="space-y-6">
@@ -41,16 +48,22 @@ export function PricingStep({
             {REGISTRATION_CONSTANTS.LABELS.HOURLY_RATE} *
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              $
+            </span>
             <input
               type="number"
               min="50"
               max="2000"
-              value={formData.hourlyRate || ''}
-              onChange={(e) => updateFormData({ hourlyRate: Number(e.target.value) })}
+              value={formData.hourlyRate || ""}
+              onChange={(e) =>
+                updateFormData({ hourlyRate: Number(e.target.value) })
+              }
               placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.HOURLY_RATE}
               className={`w-full pl-8 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.hourlyRate ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                errors.hourlyRate
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-200"
               }`}
             />
           </div>
@@ -71,8 +84,7 @@ export function PricingStep({
             <button
               type="button"
               onClick={addFixedFeePackage}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
+              className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
               {REGISTRATION_CONSTANTS.BUTTONS.ADD_PACKAGE}
             </button>
           </div>
@@ -89,46 +101,66 @@ export function PricingStep({
               {packages.map((pkg, index) => (
                 <div key={index} className="border rounded-lg p-4 bg-gray-50">
                   <div className="flex items-start justify-between mb-4">
-                    <h4 className="text-lg font-medium text-gray-700">Package #{index + 1}</h4>
+                    <h4 className="text-lg font-medium text-gray-700">
+                      Package #{index + 1}
+                    </h4>
                     <button
                       type="button"
                       onClick={() => removeFixedFeePackage(index)}
-                      className="text-red-500 hover:text-red-700 text-sm"
-                    >
+                      className="text-red-500 hover:text-red-700 text-sm">
                       {REGISTRATION_CONSTANTS.BUTTONS.REMOVE_PACKAGE}
                     </button>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div>
                       <input
                         type="text"
-                        value={pkg.name || ''}
-                        onChange={(e) => updateFixedFeePackage(index, { name: e.target.value })}
-                        placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.PACKAGE_NAME}
+                        value={pkg.name || ""}
+                        onChange={(e) =>
+                          updateFixedFeePackage(index, { name: e.target.value })
+                        }
+                        placeholder={
+                          REGISTRATION_CONSTANTS.PLACEHOLDERS.PACKAGE_NAME
+                        }
                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
-                    
+
                     <div>
                       <textarea
                         rows={2}
-                        value={pkg.description || ''}
-                        onChange={(e) => updateFixedFeePackage(index, { description: e.target.value })}
-                        placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.PACKAGE_DESCRIPTION}
+                        value={pkg.description || ""}
+                        onChange={(e) =>
+                          updateFixedFeePackage(index, {
+                            description: e.target.value,
+                          })
+                        }
+                        placeholder={
+                          REGISTRATION_CONSTANTS.PLACEHOLDERS
+                            .PACKAGE_DESCRIPTION
+                        }
                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                       />
                     </div>
-                    
+
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                        $
+                      </span>
                       <input
                         type="number"
                         min="100"
                         max="50000"
-                        value={pkg.price || ''}
-                        onChange={(e) => updateFixedFeePackage(index, { price: Number(e.target.value) })}
-                        placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.PACKAGE_PRICE}
+                        value={pkg.price || ""}
+                        onChange={(e) =>
+                          updateFixedFeePackage(index, {
+                            price: Number(e.target.value),
+                          })
+                        }
+                        placeholder={
+                          REGISTRATION_CONSTANTS.PLACEHOLDERS.PACKAGE_PRICE
+                        }
                         className="w-full pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
@@ -139,10 +171,12 @@ export function PricingStep({
           )}
 
           {errors.fixedFeePackages && (
-            <p className="text-red-500 text-sm mt-1">{errors.fixedFeePackages[0]}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.fixedFeePackages[0]}
+            </p>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }

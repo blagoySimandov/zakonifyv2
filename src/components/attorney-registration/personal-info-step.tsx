@@ -1,57 +1,61 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { AttorneyRegistrationFormData } from './validation'
-import { REGISTRATION_CONSTANTS } from './constants'
-import { trpc } from '@/utils'
+import { useState } from "react";
+import { AttorneyRegistrationFormData } from "./validation";
+import { REGISTRATION_CONSTANTS } from "./constants";
+import { trpc } from "@/utils";
 
 interface PersonalInfoStepProps {
-  formData: Partial<AttorneyRegistrationFormData>
-  errors: Record<string, string[]>
-  updateFormData: (updates: Partial<AttorneyRegistrationFormData>) => void
+  formData: Partial<AttorneyRegistrationFormData>;
+  errors: Record<string, string[]>;
+  updateFormData: (updates: Partial<AttorneyRegistrationFormData>) => void;
 }
 
-export function PersonalInfoStep({ formData, errors, updateFormData }: PersonalInfoStepProps) {
-  const [emailCheckTimeout, setEmailCheckTimeout] = useState<NodeJS.Timeout | null>(null)
-  const [isCheckingEmail, setIsCheckingEmail] = useState(false)
-  const [emailTaken, setEmailTaken] = useState(false)
+export function PersonalInfoStep({
+  formData,
+  errors,
+  updateFormData,
+}: PersonalInfoStepProps) {
+  const [emailCheckTimeout, setEmailCheckTimeout] =
+    useState<NodeJS.Timeout | null>(null);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [emailTaken, setEmailTaken] = useState(false);
 
-  const checkEmailMutation = trpc.attorneys.checkEmailExists.useQuery(
-    { email: formData.email || '' },
-    { 
-      enabled: false, // We'll trigger this manually
-      onSuccess: (exists) => {
-        setEmailTaken(exists)
-        setIsCheckingEmail(false)
-      },
-      onError: (error) => {
-        console.error('Email check failed:', error)
-        setIsCheckingEmail(false)
-        setEmailTaken(false)
-      }
-    }
-  )
+  const checkEmailQuery = trpc.attorneys.checkEmailExists.useQuery(
+    { email: formData.email || "" },
+    { enabled: false }
+  );
 
   const handleEmailChange = (email: string) => {
-    updateFormData({ email })
-    setEmailTaken(false)
-    setIsCheckingEmail(false)
-    
+    updateFormData({ email });
+    setEmailTaken(false);
+    setIsCheckingEmail(false);
+
     // Clear existing timeout
     if (emailCheckTimeout) {
-      clearTimeout(emailCheckTimeout)
+      clearTimeout(emailCheckTimeout);
     }
-    
+
     // Set new timeout to check email after user stops typing
-    if (email.length > 0 && email.includes('@')) {
-      setIsCheckingEmail(true)
+    if (email.length > 0 && email.includes("@")) {
+      setIsCheckingEmail(true);
       const timeout = setTimeout(() => {
-        checkEmailMutation.refetch()
-      }, 500) // Check after 500ms of no typing
-      
-      setEmailCheckTimeout(timeout)
+        checkEmailQuery
+          .refetch()
+          .then((res) => {
+            if (!res.error) {
+              setEmailTaken(Boolean(res.data));
+            } else {
+              console.error("Email check failed:", res.error);
+              setEmailTaken(false);
+            }
+          })
+          .finally(() => setIsCheckingEmail(false));
+      }, 500); // Check after 500ms of no typing
+
+      setEmailCheckTimeout(timeout);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -71,11 +75,11 @@ export function PersonalInfoStep({ formData, errors, updateFormData }: PersonalI
           </label>
           <input
             type="text"
-            value={formData.fullName || ''}
+            value={formData.fullName || ""}
             onChange={(e) => updateFormData({ fullName: e.target.value })}
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.FULL_NAME}
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.fullName ? 'border-red-300 bg-red-50' : 'border-gray-200'
+              errors.fullName ? "border-red-300 bg-red-50" : "border-gray-200"
             }`}
           />
           {errors.fullName && (
@@ -90,11 +94,13 @@ export function PersonalInfoStep({ formData, errors, updateFormData }: PersonalI
           <div className="relative">
             <input
               type="email"
-              value={formData.email || ''}
+              value={formData.email || ""}
               onChange={(e) => handleEmailChange(e.target.value)}
               placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.EMAIL}
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email || emailTaken ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                errors.email || emailTaken
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-200"
               }`}
             />
             {isCheckingEmail && (
@@ -107,16 +113,22 @@ export function PersonalInfoStep({ formData, errors, updateFormData }: PersonalI
             <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>
           )}
           {emailTaken && !errors.email && (
-            <p className="text-red-500 text-sm mt-1">This email is already registered</p>
+            <p className="text-red-500 text-sm mt-1">
+              This email is already registered
+            </p>
           )}
-          {!emailTaken && formData.email && formData.email.includes('@') && !isCheckingEmail && !errors.email && (
-            <p className="text-green-500 text-sm mt-1">✓ Email available</p>
-          )}
+          {!emailTaken &&
+            formData.email &&
+            formData.email.includes("@") &&
+            !isCheckingEmail &&
+            !errors.email && (
+              <p className="text-green-500 text-sm mt-1">✓ Email available</p>
+            )}
           <p className="text-gray-400 text-sm mt-1">
             This will be your login email and how clients contact you
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
