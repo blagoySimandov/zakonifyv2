@@ -208,6 +208,9 @@ export const update = mutation({
   args: {
     id: v.id("attorneys"),
     fullName: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phoneNumber: v.optional(v.string()),
+    barAssociationId: v.optional(v.string()),
     bio: v.optional(v.string()),
     education: v.optional(v.string()),
     yearsOfExperience: v.optional(v.number()),
@@ -224,16 +227,32 @@ export const update = mutation({
     ),
     location: v.optional(
       v.object({
-        city: v.string(),
-        state: v.string(),
-        country: v.string(),
+        city: v.optional(v.string()),
+        state: v.optional(v.string()),
+        country: v.optional(v.string()),
+        zipCode: v.optional(v.string()),
       })
     ),
     languages: v.optional(v.array(v.string())),
     profileImage: v.optional(v.string()),
+    profileImageStorageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const { id, ...updates } = args;
+
+    // Handle nested location updates
+    if (updates.location) {
+      const attorney = await ctx.db.get(id);
+      if (!attorney) {
+        throw new ConvexError("Attorney not found");
+      }
+      
+      // Merge with existing location data
+      updates.location = {
+        ...attorney.location,
+        ...updates.location,
+      };
+    }
 
     return await ctx.db.patch(id, {
       ...updates,

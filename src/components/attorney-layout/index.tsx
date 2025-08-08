@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { trpc } from "@/utils";
 import { VerticalNavbar, ChatFab } from "@/components";
 import type { Doc } from "../../../convex/_generated/dataModel";
@@ -20,6 +21,16 @@ export function AttorneyLayout({
   showChat = true 
 }: AttorneyLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const pathname = usePathname();
+
+  // Determine current page from pathname
+  const getCurrentPage = () => {
+    if (pathname?.includes('/dashboard')) return 'dashboard';
+    if (pathname?.includes('/calendar')) return 'calendar';
+    if (pathname?.includes('/clients')) return 'clients';
+    if (pathname?.includes('/settings')) return 'settings';
+    return 'dashboard';
+  };
 
   // Fetch attorney data
   const attorneyQuery = trpc.attorneys.getById.useQuery({ id: attorneyId });
@@ -33,6 +44,7 @@ export function AttorneyLayout({
         attorney={attorney} 
         isLoading={!isAttorneyLoaded}
         onCollapseChange={setIsSidebarCollapsed}
+        currentPage={getCurrentPage()}
       />
 
       {/* Header - Full width with dynamic left margin */}

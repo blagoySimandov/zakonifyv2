@@ -41,6 +41,7 @@ export default defineSchema({
   attorneys: defineTable({
     fullName: v.string(),
     email: v.string(),
+    phoneNumber: v.optional(v.string()),
     barAssociationId: v.string(),
     bio: v.optional(v.string()),
     education: v.optional(v.string()),
@@ -60,10 +61,12 @@ export default defineSchema({
       city: v.string(),
       state: v.string(),
       country: v.string(),
+      zipCode: v.optional(v.string()),
     }),
     languages: v.optional(v.array(v.string())),
     isVerified: v.boolean(),
     profileImage: v.optional(v.string()),
+    profileImageStorageId: v.optional(v.id("_storage")),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

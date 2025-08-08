@@ -1,40 +1,62 @@
 "use client";
 
 import { useState } from "react";
-import { Settings, User, Calendar, Users, LogOut, ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { trpc } from "@/utils";
+import { Settings, User, Calendar, Users, LogOut, ChevronLeft, ChevronRight, Menu, BarChart3 } from "lucide-react";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 interface VerticalNavbarProps {
   attorney: Doc<"attorneys"> | null;
   isLoading?: boolean;
   onCollapseChange?: (collapsed: boolean) => void;
+  currentPage?: string;
 }
 
-export function VerticalNavbar({ attorney, isLoading, onCollapseChange }: VerticalNavbarProps) {
-  const [activeSection, setActiveSection] = useState("calendar");
+export function VerticalNavbar({ attorney, isLoading, onCollapseChange, currentPage = "dashboard" }: VerticalNavbarProps) {
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState(currentPage);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  // Get profile image URL from storage if it exists
+  const profileImageUrl = trpc.getStorageUrl.useQuery(
+    { storageId: attorney?.profileImageStorageId! },
+    { enabled: !!attorney?.profileImageStorageId }
+  );
+
   const navigationItems = [
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: BarChart3,
+      href: "/attorneys/dashboard",
+    },
     {
       id: "calendar",
       label: "Calendar",
       icon: Calendar,
+      href: "/attorneys/calendar",
     },
     {
       id: "clients",
       label: "Clients", 
       icon: Users,
+      href: "/attorneys/clients",
     },
   ];
 
   const handleSettingsClick = () => {
-    // Handle settings click - could open a modal or navigate to settings page
-    console.log("Settings clicked");
+    router.push("/attorneys/settings");
   };
 
   const handleLogout = () => {
     // Handle logout logic
     console.log("Logout clicked");
+  };
+
+  const handleNavigation = (item: typeof navigationItems[0]) => {
+    setActiveSection(item.id);
+    router.push(item.href);
   };
 
   if (isLoading) {
@@ -78,9 +100,9 @@ export function VerticalNavbar({ attorney, isLoading, onCollapseChange }: Vertic
       {/* Profile Section */}
       <div className={`${isCollapsed ? 'p-3' : 'p-6'} border-b border-gray-100`}>
         <div className="text-center">
-          {attorney?.profileImage ? (
+          {profileImageUrl.data ? (
             <img
-              src={attorney.profileImage}
+              src={profileImageUrl.data}
               alt={attorney.fullName}
               className={`${isCollapsed ? 'w-10 h-10' : 'w-16 h-16'} rounded-full mx-auto mb-4 object-cover border-2 border-blue-100 transition-all duration-300`}
             />
@@ -121,7 +143,7 @@ export function VerticalNavbar({ attorney, isLoading, onCollapseChange }: Vertic
               return (
                 <li key={item.id}>
                   <button
-                    onClick={() => setActiveSection(item.id)}
+                    onClick={() => handleNavigation(item)}
                     className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                       isActive
                         ? "bg-blue-50 text-blue-700 border border-blue-200"

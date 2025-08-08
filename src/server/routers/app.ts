@@ -154,6 +154,9 @@ export const appRouter = router({
         z.object({
           id: z.string(),
           fullName: z.string().optional(),
+          email: z.string().optional(),
+          phoneNumber: z.string().optional(),
+          barAssociationId: z.string().optional(),
           bio: z.string().optional(),
           education: z.string().optional(),
           yearsOfExperience: z.number().optional(),
@@ -161,19 +164,24 @@ export const appRouter = router({
           hourlyRate: z.number().optional(),
           location: z
             .object({
-              city: z.string(),
-              state: z.string(),
-              country: z.string(),
+              city: z.string().optional(),
+              state: z.string().optional(),
+              country: z.string().optional(),
+              zipCode: z.string().optional(),
             })
             .optional(),
           languages: z.array(z.string()).optional(),
           profileImage: z.string().optional(),
+          profileImageStorageId: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {
         return await convex.mutation(api.attorneys.update, {
           id: input.id as Id<"attorneys">,
           fullName: input.fullName,
+          email: input.email,
+          phoneNumber: input.phoneNumber,
+          barAssociationId: input.barAssociationId,
           bio: input.bio,
           education: input.education,
           yearsOfExperience: input.yearsOfExperience,
@@ -182,6 +190,7 @@ export const appRouter = router({
           location: input.location,
           languages: input.languages,
           profileImage: input.profileImage,
+          profileImageStorageId: input.profileImageStorageId as Id<"_storage"> | undefined,
         });
       }),
   }),
@@ -423,6 +432,19 @@ export const appRouter = router({
         }
       }),
   }),
+
+  // Storage procedures for file uploads
+  generateUploadUrl: publicProcedure.mutation(async () => {
+    return await convex.mutation(api.storage.generateUploadUrl, {});
+  }),
+
+  getStorageUrl: publicProcedure
+    .input(z.object({ storageId: z.string() }))
+    .query(async ({ input }) => {
+      return await convex.query(api.storage.getUrl, {
+        storageId: input.storageId as Id<"_storage">,
+      });
+    }),
 });
 
 export type AppRouter = typeof appRouter;

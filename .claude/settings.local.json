@@ -4,7 +4,8 @@
       "Bash(npm install:*)",
       "Bash(mkdir:*)",
       "Bash(npx convex dev:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npx shadcn@latest add:*)"
     ],
     "deny": []
   }

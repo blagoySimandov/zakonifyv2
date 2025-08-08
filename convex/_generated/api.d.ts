@@ -21,6 +21,7 @@ import type * as files from "../files.js";
 import type * as messages from "../messages.js";
 import type * as reviews from "../reviews.js";
 import type * as seed from "../seed.js";
+import type * as storage from "../storage.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   reviews: typeof reviews;
   seed: typeof seed;
+  storage: typeof storage;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
