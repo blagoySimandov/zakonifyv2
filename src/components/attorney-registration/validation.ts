@@ -54,7 +54,14 @@ export const AttorneyRegistrationSchema = z.object({
       .min(2, "State must be at least 2 characters")
       .max(50, "State must be less than 50 characters"),
 
+    address: z
+      .string()
+      .min(5, "Address must be at least 5 characters")
+      .max(100, "Address must be less than 100 characters"),
+
     country: z.string().default("Bulgaria"),
+    
+    zipCode: z.string().optional(),
   }),
 
   // Pricing
@@ -84,8 +91,12 @@ export const AttorneyRegistrationSchema = z.object({
     )
     .optional(),
 
+  // Optional fields
+  languages: z.array(z.string()).optional(),
+
   // Media
   profileImage: z.string().optional(),
+  profileImageStorageId: z.string().optional(),
 });
 
 export type AttorneyRegistrationFormData = z.infer<
@@ -108,6 +119,9 @@ export const STEP_SCHEMAS = {
   practiceAndLocation: AttorneyRegistrationSchema.pick({
     practiceAreas: true,
     location: true,
+    languages: true,
+    profileImage: true,
+    profileImageStorageId: true,
   }),
 
   pricing: AttorneyRegistrationSchema.pick({

@@ -191,8 +191,8 @@ export const createOrUpdateAvailabilityProfile = mutation({
   },
 });
 
-// Get attorney availability profile
-export const getAvailabilityProfile = query({
+// Get basic attorney availability profile
+export const getBasicAvailabilityProfile = query({
   args: { attorneyId: v.id("attorneys") },
   handler: async (ctx, args) => {
     return await ctx.db

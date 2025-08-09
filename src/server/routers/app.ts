@@ -38,9 +38,12 @@ const AttorneyRegistrationSchema = z.object({
     city: z.string().min(2).max(50),
     state: z.string().min(2).max(50),
     country: z.string().min(2).max(50),
+    address: z.string().min(5).max(100),
+    zipCode: z.string().optional(),
   }),
   languages: z.array(z.string()).optional(),
   profileImage: z.string().optional(),
+  profileImageStorageId: z.string().optional(),
 });
 
 const ReviewCreateSchema = z.object({
@@ -135,7 +138,10 @@ export const appRouter = router({
       .input(AttorneyRegistrationSchema)
       .mutation(async ({ input }) => {
         try {
-          const result = await convex.mutation(api.attorneys.register, input);
+          const result = await convex.mutation(api.attorneys.register, {
+            ...input,
+            profileImageStorageId: input.profileImageStorageId as Id<"_storage"> | undefined,
+          });
           return result;
         } catch (error) {
           console.error("Registration failed:", error);
@@ -167,6 +173,7 @@ export const appRouter = router({
               city: z.string().optional(),
               state: z.string().optional(),
               country: z.string().optional(),
+              address: z.string().optional(),
               zipCode: z.string().optional(),
             })
             .optional(),
@@ -176,22 +183,30 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        return await convex.mutation(api.attorneys.update, {
-          id: input.id as Id<"attorneys">,
-          fullName: input.fullName,
-          email: input.email,
-          phoneNumber: input.phoneNumber,
-          barAssociationId: input.barAssociationId,
-          bio: input.bio,
-          education: input.education,
-          yearsOfExperience: input.yearsOfExperience,
-          practiceAreas: input.practiceAreas,
-          hourlyRate: input.hourlyRate,
-          location: input.location,
-          languages: input.languages,
-          profileImage: input.profileImage,
-          profileImageStorageId: input.profileImageStorageId as Id<"_storage"> | undefined,
-        });
+        try {
+          return await convex.mutation(api.attorneys.update, {
+            id: input.id as Id<"attorneys">,
+            fullName: input.fullName,
+            email: input.email,
+            phoneNumber: input.phoneNumber,
+            barAssociationId: input.barAssociationId,
+            bio: input.bio,
+            education: input.education,
+            yearsOfExperience: input.yearsOfExperience,
+            practiceAreas: input.practiceAreas,
+            hourlyRate: input.hourlyRate,
+            location: input.location,
+            languages: input.languages,
+            profileImage: input.profileImage,
+            profileImageStorageId: input.profileImageStorageId as Id<"_storage"> | undefined,
+          });
+        } catch (error) {
+          console.error("Update failed:", error);
+          if (error instanceof Error) {
+            throw new Error(error.message);
+          }
+          throw new Error("Update failed. Please try again.");
+        }
       }),
   }),
 

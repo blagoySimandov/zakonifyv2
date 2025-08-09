@@ -14,7 +14,7 @@ export function useAttorneyRegistration({
   const [formData, setFormData] = useState<
     Partial<AttorneyRegistrationFormData>
   >({
-    location: { city: "", state: "", country: "Bulgaria" },
+    location: { city: "", state: "", country: "Bulgaria", address: "", zipCode: "" },
     practiceAreas: [],
     fixedFeePackages: [],
     ...initialData,
@@ -193,21 +193,42 @@ export function useAttorneyRegistration({
     } catch (error: unknown) {
       console.error("Registration failed:", error);
 
-      // Handle specific error types with safe narrowing
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Registration failed. Please try again.";
+      // Handle tRPC/Convex error format
+      let errorMessage = "Registration failed. Please try again.";
+      
+      if (error && typeof error === "object" && "message" in error) {
+        errorMessage = (error as { message: string }).message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
 
       // Set appropriate field errors based on the error message
-      if (errorMessage.includes("email already exists")) {
+      if (errorMessage.includes("email already exists") || errorMessage.includes("email")) {
         setErrors({ email: [errorMessage] });
         // Go back to the personal step where email is edited
         setCurrentStep("personal");
-      } else if (errorMessage.includes("bar association ID")) {
+      } else if (errorMessage.includes("bar association ID") || errorMessage.includes("bar association") || errorMessage.includes("barAssociationId")) {
         setErrors({ barAssociationId: [errorMessage] });
         // Go back to the professional step where bar ID is edited
         setCurrentStep("professional");
+      } else if (errorMessage.includes("City") || errorMessage.includes("city")) {
+        setErrors({ "location.city": [errorMessage] });
+        setCurrentStep("practiceAndLocation");
+      } else if (errorMessage.includes("State") || errorMessage.includes("state")) {
+        setErrors({ "location.state": [errorMessage] });
+        setCurrentStep("practiceAndLocation");
+      } else if (errorMessage.includes("Address") || errorMessage.includes("address")) {
+        setErrors({ "location.address": [errorMessage] });
+        setCurrentStep("practiceAndLocation");
+      } else if (errorMessage.includes("practice area") || errorMessage.includes("practiceAreas")) {
+        setErrors({ practiceAreas: [errorMessage] });
+        setCurrentStep("practiceAndLocation");
+      } else if (errorMessage.includes("hourly") || errorMessage.includes("rate") || errorMessage.includes("hourlyRate")) {
+        setErrors({ hourlyRate: [errorMessage] });
+        setCurrentStep("pricing");
+      } else if (errorMessage.includes("package") || errorMessage.includes("fixedFeePackages")) {
+        setErrors({ fixedFeePackages: [errorMessage] });
+        setCurrentStep("pricing");
       } else {
         // Generic error - show at top level
         setErrors({ _general: [errorMessage] });

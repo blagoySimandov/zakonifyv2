@@ -60,8 +60,8 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
 
   function getFieldInputClasses(field: string) {
     const hasError = touched[field] && errors[field];
-    return `w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-      hasError ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white hover:border-gray-400'
+    return `w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+      hasError ? 'border-red-300 bg-red-50 focus:ring-red-500' : 'border-gray-200 hover:border-gray-300 focus:bg-white'
     }`;
   }
 
@@ -86,7 +86,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.FULL_NAME} *
               </label>
               <input
@@ -103,7 +103,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.COMPANY}
               </label>
               <input
@@ -126,7 +126,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.EMAIL} *
               </label>
               <input
@@ -143,7 +143,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.PHONE}
               </label>
               <input
@@ -170,7 +170,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
           
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.CONSULTATION_TOPIC} *
               </label>
               <div className="relative">
@@ -192,7 +192,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.ADDITIONAL_NOTES}
               </label>
               <textarea

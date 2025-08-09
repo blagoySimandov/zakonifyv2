@@ -1,30 +1,35 @@
 export const REGISTRATION_MESSAGES = {
   SUCCESS: {
-    SUBMITTED: 'Registration submitted successfully!',
-    STEP_COMPLETED: 'Step completed successfully',
-    PACKAGE_ADDED: 'Package added successfully',
+    SUBMITTED: "Регистрацията беше изпратена успешно!",
+    STEP_COMPLETED: "Стъпката беше завършена успешно",
+    PACKAGE_ADDED: "Пакетът беше добавен успешно",
   },
-  
+
   ERROR: {
-    GENERIC: 'Something went wrong. Please try again.',
-    VALIDATION: 'Please fix the errors below and try again.',
-    SUBMISSION: 'Failed to submit registration. Please try again.',
-    EMAIL_EXISTS: 'An account with this email already exists.',
-    BAR_ID_EXISTS: 'This bar association ID is already registered.',
+    GENERIC: "Възникна грешка. Моля опитайте отново.",
+    VALIDATION: "Моля поправете грешките по-долу и опитайте отново.",
+    SUBMISSION: "Неуспешно изпращане на регистрацията. Моля опитайте отново.",
+    EMAIL_EXISTS: "Профил с този имейл вече съществува.",
+    BAR_ID_EXISTS: "Този номер на адвокатската колегия вече е регистриран.",
   },
-  
+
   INFO: {
-    VERIFICATION_PENDING: 'Your registration will be reviewed and verified within 24-48 hours.',
-    REQUIRED_FIELDS: '* indicates required fields',
-    STEP_PROGRESS: 'Step {current} of {total}',
-    UNSAVED_CHANGES: 'You have unsaved changes. Are you sure you want to leave?',
+    VERIFICATION_PENDING:
+      "Вашата регистрация ще бъде прегледана и верифицирана в рамките на 24-48 часа.",
+    REQUIRED_FIELDS: "* означава задължително поле",
+    STEP_PROGRESS: "Стъпка {current} от {total}",
+    UNSAVED_CHANGES:
+      "Имате незапазени промени. Сигурни ли сте, че искате да напуснете?",
   },
-  
+
   HELP: {
-    BAR_ID: 'Enter your state bar association membership number',
-    BIO_TIPS: 'Include your specializations, approach to legal practice, and what makes you unique',
-    PRACTICE_AREAS: 'Select up to 5 areas where you have expertise',
-    HOURLY_RATE: 'Set a competitive rate based on your experience and market',
-    PACKAGES: 'Offer fixed-price services to attract more clients',
+    BAR_ID: "Въведете вашия номер в адвокатската колегия",
+    BIO_TIPS:
+      "Включете вашите специализации, подход към правната практика и това, което ви прави уникални",
+    PRACTICE_AREAS: "Изберете до 5 области в които имате опит",
+    HOURLY_RATE: "Определете конкурентна ставка според опита и пазара",
+    PACKAGES:
+      "Предложете услуги с фиксирана цена, за да привлечете повече клиенти",
   },
-} as const
+} as const;
+

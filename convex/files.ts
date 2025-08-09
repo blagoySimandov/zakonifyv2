@@ -32,4 +32,3 @@ export const upload = mutation({
     return { success: true, id };
   },
 });
-
