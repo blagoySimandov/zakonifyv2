@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { X, Send, MessageSquare, Users, User } from "lucide-react";
 import { trpc } from "@/utils";
-import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 type ClientWithDetails = Doc<"clients"> & {
   totalConsultations: number;
@@ -115,7 +115,7 @@ export function ChatDialog({ isOpen, onClose, attorneyId, clients }: ChatDialogP
                   No active matter
                 </h3>
                 <p className="text-gray-500 text-sm px-4">
-                  This client doesn't have an active matter to chat about yet.
+                  This client doesn&apos;t have an active matter to chat about yet.
                 </p>
                 <button
                   onClick={() => setSelectedClient(null)}

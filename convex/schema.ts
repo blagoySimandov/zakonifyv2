@@ -115,4 +115,149 @@ export default defineSchema({
   })
     .index("by_attorney", ["attorneyId"])
     .index("by_client_email", ["clientEmail"]),
+
+  attorneyAvailability: defineTable({
+    attorneyId: v.id("attorneys"),
+    timeZone: v.string(),
+    workingHours: v.object({
+      monday: v.optional(v.object({
+        start: v.string(),
+        end: v.string(),
+        breaks: v.optional(v.array(v.object({
+          start: v.string(),
+          end: v.string(),
+        }))),
+      })),
+      tuesday: v.optional(v.object({
+        start: v.string(),
+        end: v.string(),
+        breaks: v.optional(v.array(v.object({
+          start: v.string(),
+          end: v.string(),
+        }))),
+      })),
+      wednesday: v.optional(v.object({
+        start: v.string(),
+        end: v.string(),
+        breaks: v.optional(v.array(v.object({
+          start: v.string(),
+          end: v.string(),
+        }))),
+      })),
+      thursday: v.optional(v.object({
+        start: v.string(),
+        end: v.string(),
+        breaks: v.optional(v.array(v.object({
+          start: v.string(),
+          end: v.string(),
+        }))),
+      })),
+      friday: v.optional(v.object({
+        start: v.string(),
+        end: v.string(),
+        breaks: v.optional(v.array(v.object({
+          start: v.string(),
+          end: v.string(),
+        }))),
+      })),
+      saturday: v.optional(v.object({
+        start: v.string(),
+        end: v.string(),
+        breaks: v.optional(v.array(v.object({
+          start: v.string(),
+          end: v.string(),
+        }))),
+      })),
+      sunday: v.optional(v.object({
+        start: v.string(),
+        end: v.string(),
+        breaks: v.optional(v.array(v.object({
+          start: v.string(),
+          end: v.string(),
+        }))),
+      })),
+    }),
+    consultationSettings: v.object({
+      defaultDuration: v.number(),
+      bufferTime: v.number(),
+      maxConsultationsPerDay: v.number(),
+      allowBackToBack: v.boolean(),
+      minAdvanceBooking: v.number(),
+      maxAdvanceBooking: v.number(),
+      consultationTypes: v.array(v.object({
+        type: v.union(v.literal("phone"), v.literal("video"), v.literal("in-person")),
+        duration: v.number(),
+        price: v.number(),
+        isEnabled: v.boolean(),
+      })),
+    }),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_attorney", ["attorneyId"]),
+
+  attorneyTimeOff: defineTable({
+    attorneyId: v.id("attorneys"),
+    startTime: v.number(),
+    endTime: v.number(),
+    type: v.union(
+      v.literal("vacation"),
+      v.literal("holiday"), 
+      v.literal("sick"),
+      v.literal("unavailable"),
+      v.literal("court"),
+      v.literal("continuing-education")
+    ),
+    isRecurring: v.boolean(),
+    recurringPattern: v.optional(v.object({
+      frequency: v.union(
+        v.literal("weekly"),
+        v.literal("monthly"),
+        v.literal("yearly")
+      ),
+      interval: v.number(),
+      endDate: v.optional(v.number()),
+      daysOfWeek: v.optional(v.array(v.number())),
+    })),
+    title: v.optional(v.string()),
+    reason: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_attorney", ["attorneyId"])
+    .index("by_attorney_date_range", ["attorneyId", "startTime", "endTime"])
+    .index("by_type", ["type"]),
+
+  availabilitySlots: defineTable({
+    attorneyId: v.id("attorneys"),
+    date: v.string(),
+    slots: v.array(v.object({
+      startTime: v.number(),
+      endTime: v.number(),
+      consultationType: v.union(v.literal("phone"), v.literal("video"), v.literal("in-person")),
+      price: v.number(),
+      isEmergencySlot: v.boolean(),
+    })),
+    lastCalculated: v.number(),
+    expiresAt: v.number(),
+  })
+    .index("by_attorney", ["attorneyId"])
+    .index("by_attorney_date", ["attorneyId", "date"])
+    .index("by_expires", ["expiresAt"]),
+
+  slotReservations: defineTable({
+    attorneyId: v.id("attorneys"),
+    clientId: v.optional(v.id("clients")),
+    startTime: v.number(),
+    endTime: v.number(),
+    consultationType: v.union(v.literal("phone"), v.literal("video"), v.literal("in-person")),
+    reservedBy: v.string(),
+    expiresAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_attorney", ["attorneyId"])
+    .index("by_attorney_time", ["attorneyId", "startTime"])
+    .index("by_expires", ["expiresAt"])
+    .index("by_reserved_by", ["reservedBy"]),
 });

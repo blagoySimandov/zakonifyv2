@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { AttorneyRegistrationFormData } from './validation'
 import { REGISTRATION_CONSTANTS } from './constants'
 import { REGISTRATION_MESSAGES } from './messages'
@@ -124,9 +125,11 @@ export function PracticeLocationStep({ formData, errors, updateFormData }: Pract
           <div className="flex items-center gap-6">
             <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
               {formData.profileImage ? (
-                <img 
+                <Image 
                   src={formData.profileImage} 
                   alt="Profile preview"
+                  width={96}
+                  height={96}
                   className="w-full h-full object-cover rounded-lg"
                 />
               ) : (

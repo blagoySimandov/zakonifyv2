@@ -34,6 +34,54 @@ export const getByAttorneyId = query({
   },
 });
 
+export const getUpcomingConsultations = query({
+  args: {
+    attorneyId: v.id("attorneys"),
+    days: v.optional(v.number()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const days = args.days || 30;
+    const limit = args.limit || 10;
+    const endTime = now + (days * 24 * 60 * 60 * 1000); // days in milliseconds
+    
+    const consultations = await ctx.db
+      .query("consultations")
+      .withIndex("by_attorney", (q) => q.eq("attorneyId", args.attorneyId))
+      .filter((q) =>
+        q.and(
+          q.gte(q.field("scheduledAt"), now),
+          q.lte(q.field("scheduledAt"), endTime),
+          q.or(
+            q.eq(q.field("status"), "pending"),
+            q.eq(q.field("status"), "confirmed")
+          )
+        )
+      )
+      .order("asc")
+      .take(limit);
+
+    // Enrich with client information
+    return Promise.all(
+      consultations.map(async (consultation) => {
+        const client = consultation.clientId ? await ctx.db.get(consultation.clientId) : null;
+        return {
+          id: consultation._id,
+          startTime: consultation.scheduledAt,
+          endTime: consultation.scheduledAt + (consultation.duration * 60 * 1000),
+          type: consultation.status === "confirmed" ? "video" : "pending", // Default type
+          clientName: client ? client.fullName : "Unknown Client",
+          topic: consultation.notes || "General Consultation",
+          status: consultation.status,
+          price: consultation.price,
+          duration: consultation.duration,
+        };
+      })
+    );
+  },
+});
+
 export const getByClientId = query({
   args: {
     clientId: v.id("clients"),

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { trpc } from "@/utils";
 import { Camera, Upload, X, Loader2 } from "lucide-react";
 import type { Doc } from "../../../convex/_generated/dataModel";
@@ -87,7 +88,6 @@ export function ProfilePictureUpload({ attorney, onUploadSuccess }: ProfilePictu
       const { storageId } = await result.json();
       
       // We'll store the storageId and let Convex generate the URL when needed
-      const imageUrl = storageId;
       
       // Update attorney profile
       await updateAttorney.mutateAsync({
@@ -117,9 +117,11 @@ export function ProfilePictureUpload({ attorney, onUploadSuccess }: ProfilePictu
     <>
       <div className="relative">
         {profileImageUrl.data ? (
-          <img
+          <Image
             src={profileImageUrl.data}
             alt={attorney.fullName}
+            width={80}
+            height={80}
             className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
           />
         ) : (
@@ -162,9 +164,11 @@ export function ProfilePictureUpload({ attorney, onUploadSuccess }: ProfilePictu
             <div className="p-6 space-y-4">
               {previewUrl && (
                 <div className="flex justify-center">
-                  <img
+                  <Image
                     src={previewUrl}
                     alt="Preview"
+                    width={128}
+                    height={128}
                     className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
                   />
                 </div>

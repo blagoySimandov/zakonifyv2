@@ -1,5 +1,12 @@
 export const SEARCH_CONSTANTS = {
   SEARCH_PLACEHOLDER: 'Search attorneys by name, specialization, or law firm...',
+  TITLE: 'Find Legal Counsel',
+  VERIFIED_ONLY_LABEL: 'Verified attorneys only',
+  LOADING_TEXT: 'Finding attorneys...',
+  ERROR_TITLE: 'Error loading attorneys',
+  ERROR_SUBTITLE: 'Please try again later',
+  ALL_PRACTICE_AREAS: 'All Practice Areas',
+  ALL_LANGUAGES: 'All Languages',
   
   FILTER_LABELS: {
     PRACTICE_AREAS: 'Practice Areas',
@@ -84,6 +91,16 @@ export const SEARCH_CONSTANTS = {
     APPLY_FILTERS: 'Apply Filters',
     SHOW_FILTERS: 'Show Filters',
     HIDE_FILTERS: 'Hide Filters',
+    BOOK_CONSULTATION: 'Book Consultation',
+    VIEW_PROFILE: 'View Profile',
+  },
+
+  AVAILABILITY: {
+    EARLIEST_SLOT: 'Earliest available:',
+    TODAY: 'today',
+    TOMORROW: 'tomorrow',
+    THIS_WEEK: 'this week',
+    NEXT_WEEK: 'next week',
   },
 
   RESULTS: {

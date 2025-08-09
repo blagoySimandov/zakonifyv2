@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useAttorneyProfile } from "./hooks";
 import { ReviewForm } from "../review-form";
 import { ConsultationBooking } from "../consultation-booking";
@@ -57,9 +58,11 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
           <div className="flex-shrink-0">
             <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
               {attorney?.profileImage ? (
-                <img
+                <Image
                   src={attorney.profileImage}
                   alt={attorney.fullName}
+                  width={128}
+                  height={128}
                   className="w-full h-full object-cover"
                 />
               ) : (

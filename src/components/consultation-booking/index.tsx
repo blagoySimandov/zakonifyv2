@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { useConsultationBooking } from './hooks'
 import { BOOKING_CONSTANTS } from './constants'
 import { BOOKING_MESSAGES } from './messages'
-import { Attorney, FixedFeePackage } from '@/types'
-import { Calendar, Clock, X, CheckCircle, DollarSign, User, Mail, Phone, MessageSquare, Loader } from 'lucide-react'
+import { Attorney } from '@/types'
+import { Calendar, X, CheckCircle, Loader } from 'lucide-react'
 
 interface ConsultationBookingProps {
   attorney: Attorney

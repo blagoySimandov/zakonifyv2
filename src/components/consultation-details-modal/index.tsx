@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Clock, User, MapPin, FileText, Calendar as CalendarIcon, Video, Phone, Mail, DollarSign, AlertCircle } from "lucide-react";
+import { X, Clock, User, FileText, Calendar as CalendarIcon, Video, DollarSign, AlertCircle } from "lucide-react";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 type ConsultationWithMatter = Doc<"consultations"> & {

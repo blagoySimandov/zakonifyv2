@@ -1,17 +1,28 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { trpc } from "@/utils";
-import { AttorneyLayout, ProfilePictureUpload } from "@/components";
+import { 
+  AttorneyLayout, 
+  ProfilePictureUpload, 
+  AvailabilityDashboard, 
+  ScheduleManager, 
+  TimeOffManager 
+} from "@/components";
 import { MOCK_ATTORNEY_ID } from "@/constants";
+import { SETTINGS_CONSTANTS } from "./constants";
+import { SETTINGS_MESSAGES } from "./messages";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, Phone, MapPin, Briefcase, DollarSign, Calendar, Save, Shield } from "lucide-react";
+import { User, Mail, Phone, MapPin, Briefcase, DollarSign, Save, Shield, Calendar, Plane } from "lucide-react";
 import type { Doc } from "../../../../convex/_generated/dataModel";
+
+type SettingsTab = typeof SETTINGS_CONSTANTS.TABS.PROFILE | typeof SETTINGS_CONSTANTS.TABS.AVAILABILITY | typeof SETTINGS_CONSTANTS.TABS.TIME_OFF;
 
 export default function AttorneySettings() {
   const [attorneyId] = useState<string>(MOCK_ATTORNEY_ID);
+  const [activeTab, setActiveTab] = useState<SettingsTab>(SETTINGS_CONSTANTS.TABS.PROFILE);
   const [isEditing, setIsEditing] = useState<Record<string, boolean>>({});
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<Partial<Doc<"attorneys">>>();
 
   // Fetch attorney data
   const attorneyQuery = trpc.attorneys.getById.useQuery({ id: attorneyId });
@@ -82,8 +93,8 @@ export default function AttorneySettings() {
   }: {
     label: string;
     field: string;
-    value: any;
-    icon: any;
+    value: string | number | undefined;
+    icon: React.ElementType;
     type?: string;
     placeholder?: string;
   }) => {
@@ -155,44 +166,83 @@ export default function AttorneySettings() {
 
   if (!attorney) {
     return (
-      <AttorneyLayout title="Settings" attorneyId={attorneyId}>
+      <AttorneyLayout title={SETTINGS_MESSAGES.PAGE_TITLE} attorneyId={attorneyId}>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-slate-500">Loading your settings...</p>
+            <p className="text-slate-500">{SETTINGS_MESSAGES.LOADING.FETCHING_DATA}</p>
           </div>
         </div>
       </AttorneyLayout>
     );
   }
 
-  return (
-    <AttorneyLayout title="Settings" attorneyId={attorneyId}>
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-        {/* Profile Section */}
-        <Card className="border-0 shadow-md">
-          <CardHeader>
-            <div className="flex items-center gap-4">
-              <ProfilePictureUpload 
-                attorney={attorney}
-                onUploadSuccess={() => {
-                  // Refetch attorney data to get the new profile picture
-                  attorneyQuery.refetch();
-                }}
-              />
-              <div>
-                <CardTitle className="text-slate-900">{attorney.fullName}</CardTitle>
-                <CardDescription className="text-slate-600">{attorney.email}</CardDescription>
-                {attorney.isVerified && (
-                  <div className="flex items-center gap-1 mt-2">
-                    <Shield className="h-4 w-4 text-green-600" />
-                    <span className="text-xs font-medium text-green-600">Verified Attorney</span>
-                  </div>
-                )}
-              </div>
+  const tabs = [
+    { id: SETTINGS_CONSTANTS.TABS.PROFILE as SettingsTab, label: SETTINGS_MESSAGES.TABS.PROFILE, icon: User },
+    { id: SETTINGS_CONSTANTS.TABS.AVAILABILITY as SettingsTab, label: SETTINGS_MESSAGES.TABS.AVAILABILITY, icon: Calendar },
+    { id: SETTINGS_CONSTANTS.TABS.TIME_OFF as SettingsTab, label: SETTINGS_MESSAGES.TABS.TIME_OFF, icon: Plane },
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case SETTINGS_CONSTANTS.TABS.PROFILE:
+        return renderProfileTab();
+      case SETTINGS_CONSTANTS.TABS.AVAILABILITY:
+        return renderCombinedAvailabilityTab();
+      case SETTINGS_CONSTANTS.TABS.TIME_OFF:
+        return <TimeOffManager attorneyId={attorneyId} />;
+      default:
+        return renderProfileTab();
+    }
+  };
+
+  // Combined availability and schedule management
+  const renderCombinedAvailabilityTab = () => (
+    <div className="space-y-8">
+      {/* Availability Overview & Stats */}
+      <AvailabilityDashboard attorneyId={attorneyId} />
+      
+      {/* Schedule Management */}
+      <div className="border-t pt-8">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            {SETTINGS_MESSAGES.AVAILABILITY.SCHEDULE_MANAGEMENT_TITLE}
+          </h2>
+          <p className="text-gray-600">
+            {SETTINGS_MESSAGES.AVAILABILITY.SCHEDULE_MANAGEMENT_SUBTITLE}
+          </p>
+        </div>
+        <ScheduleManager attorneyId={attorneyId} />
+      </div>
+    </div>
+  );
+
+  const renderProfileTab = () => (
+    <>
+      {/* Profile Section */}
+      <Card className="border-0 shadow-md">
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <ProfilePictureUpload 
+              attorney={attorney}
+              onUploadSuccess={() => {
+                // Refetch attorney data to get the new profile picture
+                attorneyQuery.refetch();
+              }}
+            />
+            <div>
+              <CardTitle className="text-slate-900">{attorney.fullName}</CardTitle>
+              <CardDescription className="text-slate-600">{attorney.email}</CardDescription>
+              {attorney.isVerified && (
+                <div className="flex items-center gap-1 mt-2">
+                  <Shield className="h-4 w-4 text-green-600" />
+                  <span className="text-xs font-medium text-green-600">Verified Attorney</span>
+                </div>
+              )}
             </div>
-          </CardHeader>
-        </Card>
+          </div>
+        </CardHeader>
+      </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Personal Information */}
@@ -329,6 +379,42 @@ export default function AttorneySettings() {
             </div>
           </CardContent>
         </Card>
+    </>
+  );
+
+  return (
+    <AttorneyLayout title={SETTINGS_MESSAGES.PAGE_TITLE} attorneyId={attorneyId}>
+      <div className="flex-1 p-6 overflow-y-auto">
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              {tabs.map((tab) => {
+                const IconComponent = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      isActive
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="space-y-6">
+          {renderTabContent()}
+        </div>
       </div>
     </AttorneyLayout>
   );

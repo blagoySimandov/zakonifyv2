@@ -10,7 +10,6 @@ interface ChatFabProps {
 }
 
 export function ChatFab({ attorneyId }: ChatFabProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Fetch clients for chat
@@ -58,7 +57,7 @@ export function ChatFab({ attorneyId }: ChatFabProps) {
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         attorneyId={attorneyId}
-        clients={clients as any}
+        clients={clients}
       />
     </>
   );

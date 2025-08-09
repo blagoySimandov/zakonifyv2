@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Calendar as CalendarIcon, ChevronDown, ChevronUp, Clock, User, MapPin, FileText, Phone, Video, ExternalLink } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronDown, ChevronUp, Clock, User, FileText, Video, ExternalLink } from "lucide-react";
 import { ConsultationDetailsModal } from "../consultation-details-modal";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
