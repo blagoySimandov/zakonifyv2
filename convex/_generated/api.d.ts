@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as attorneys from "../attorneys.js";
+import type * as availability from "../availability.js";
 import type * as clients from "../clients.js";
 import type * as consultations from "../consultations.js";
 import type * as example from "../example.js";
@@ -33,6 +34,7 @@ import type * as storage from "../storage.js";
  */
 declare const fullApi: ApiFromModules<{
   attorneys: typeof attorneys;
+  availability: typeof availability;
   clients: typeof clients;
   consultations: typeof consultations;
   example: typeof example;
