@@ -5,21 +5,22 @@ import { useSearchResults } from "./hooks";
 import { SEARCH_RESULTS_CONSTANTS } from "./constants";
 import { SEARCH_RESULTS_MESSAGES } from "./messages";
 import { AttorneyCard } from "../../attorney-card";
+import { Attorney } from "../../../types/attorney";
 
 interface SearchResultsProps {
-  attorneys: any[];
+  attorneys: Attorney[];
   isLoading: boolean;
-  error: any;
+  error: boolean;
   hasActiveFilters: boolean;
   clearAllFilters: () => void;
 }
 
-export function SearchResults({ 
-  attorneys, 
-  isLoading, 
-  error, 
-  hasActiveFilters, 
-  clearAllFilters 
+export function SearchResults({
+  attorneys,
+  isLoading,
+  error,
+  hasActiveFilters,
+  clearAllFilters,
 }: SearchResultsProps) {
   const {
     showLoadingState,
@@ -52,7 +53,9 @@ export function SearchResults({
     return (
       <div className={SEARCH_RESULTS_CONSTANTS.ERROR_WRAPPER_CLASSES}>
         <div className={SEARCH_RESULTS_CONSTANTS.ERROR_CONTAINER_CLASSES}>
-          <AlertCircle className={SEARCH_RESULTS_CONSTANTS.ERROR_ICON_CLASSES} />
+          <AlertCircle
+            className={SEARCH_RESULTS_CONSTANTS.ERROR_ICON_CLASSES}
+          />
           <p className={SEARCH_RESULTS_CONSTANTS.ERROR_TITLE_CLASSES}>
             {SEARCH_RESULTS_MESSAGES.ERROR.TITLE}
           </p>
@@ -68,11 +71,15 @@ export function SearchResults({
     return (
       <div className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_WRAPPER_CLASSES}>
         <div className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_CONTAINER_CLASSES}>
-          <Search className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_ICON_CLASSES} />
+          <Search
+            className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_ICON_CLASSES}
+          />
           <h3 className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_TITLE_CLASSES}>
             {SEARCH_RESULTS_MESSAGES.NO_RESULTS.TITLE}
           </h3>
-          <p className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_DESCRIPTION_CLASSES}>
+          <p
+            className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_DESCRIPTION_CLASSES}
+          >
             {SEARCH_RESULTS_MESSAGES.NO_RESULTS.DESCRIPTION}
           </p>
           {hasActiveFilters && (
@@ -100,3 +107,4 @@ export function SearchResults({
 
   return null;
 }
+

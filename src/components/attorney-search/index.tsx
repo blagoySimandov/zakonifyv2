@@ -26,7 +26,7 @@ export function AttorneySearch() {
             <SearchResults
               attorneys={attorneys}
               isLoading={isLoading}
-              error={error}
+              error={!!error}
               hasActiveFilters={hasActiveFilters}
               clearAllFilters={clearAllFilters}
             />

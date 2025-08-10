@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ACTION_BUTTONS_CONSTANTS } from "./constants";
-import { ACTION_BUTTONS_MESSAGES } from "./messages";
 
 interface ActionButton {
   text: string;
@@ -18,11 +17,11 @@ interface ActionButtonsProps {
 export function ActionButtons({ buttons }: ActionButtonsProps) {
   const getButtonClasses = (variant: ActionButton["variant"]) => {
     const baseClasses = ACTION_BUTTONS_CONSTANTS.BASE_CLASSES;
-    
+
     if (variant === "primary") {
       return `${baseClasses} ${ACTION_BUTTONS_CONSTANTS.PRIMARY_CLASSES}`;
     }
-    
+
     return `${baseClasses} ${ACTION_BUTTONS_CONSTANTS.SECONDARY_CLASSES}`;
   };
 
@@ -54,3 +53,4 @@ export function ActionButtons({ buttons }: ActionButtonsProps) {
     </div>
   );
 }
+

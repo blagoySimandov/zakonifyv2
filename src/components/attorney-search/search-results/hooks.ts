@@ -1,17 +1,18 @@
+import { type Attorney } from "../../../types/attorney";
 interface UseSearchResultsProps {
-  attorneys: any[];
+  attorneys: Attorney[];
   isLoading: boolean;
-  error: any;
+  error: boolean;
   hasActiveFilters: boolean;
   clearAllFilters: () => void;
 }
 
-export function useSearchResults({ 
+export function useSearchResults({
   attorneys,
   isLoading,
   error,
   hasActiveFilters,
-  clearAllFilters 
+  clearAllFilters,
 }: UseSearchResultsProps) {
   const hasResults = attorneys.length > 0;
   const showLoadingState = isLoading;
@@ -26,10 +27,11 @@ export function useSearchResults({
   return {
     hasResults,
     showLoadingState,
-    showErrorState, 
+    showErrorState,
     showNoResultsState,
     showResultsList,
     hasActiveFilters,
     handleClearFilters,
   };
 }
+
