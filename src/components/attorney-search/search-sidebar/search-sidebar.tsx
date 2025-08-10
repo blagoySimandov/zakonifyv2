@@ -15,45 +15,34 @@ interface SearchSidebarProps {
   selectedPracticeArea?: PracticeArea | "";
 }
 
-export function SearchSidebar({ 
-  onPracticeAreaSelect, 
-  selectedPracticeArea 
+export function SearchSidebar({
+  onPracticeAreaSelect,
+  selectedPracticeArea,
 }: SearchSidebarProps = {}) {
   const { handlePracticeAreaClick, isAreaSelected } = useSearchSidebar({
     onPracticeAreaSelect,
-    selectedPracticeArea
+    selectedPracticeArea,
   });
 
   return (
-    <div className={SEARCH_SIDEBAR_CONSTANTS.CONTAINER_CLASSES}>
-      <div className={SEARCH_SIDEBAR_CONSTANTS.MAP_HELP_CONTAINER_CLASSES}>
-        <div className={SEARCH_SIDEBAR_CONSTANTS.MAP_HELP_CONTENT_CLASSES}>
-          <AlertCircle
-            className={SEARCH_SIDEBAR_CONSTANTS.MAP_HELP_ICON_CLASSES}
-          />
-          <span>{SEARCH_SIDEBAR_MESSAGES.MAP_HELP_TEXT}</span>
-        </div>
-      </div>
-
-      <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_CONTAINER_CLASSES}>
-        <h3 className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_TITLE_CLASSES}>
-          {SEARCH_SIDEBAR_MESSAGES.POPULAR_PRACTICE_AREAS_TITLE}
-        </h3>
-        <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_LIST_CLASSES}>
-          {POPULAR_PRACTICE_AREAS.map((area: PracticeArea) => (
-            <button
-              key={area}
-              onClick={() => handlePracticeAreaClick(area)}
-              className={
-                isAreaSelected(area)
-                  ? SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_SELECTED_CLASSES
-                  : SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_CLASSES
-              }
-            >
-              {PRACTICE_AREA_LABELS[area]}
-            </button>
-          ))}
-        </div>
+    <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_CONTAINER_CLASSES}>
+      <h3 className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_TITLE_CLASSES}>
+        {SEARCH_SIDEBAR_MESSAGES.POPULAR_PRACTICE_AREAS_TITLE}
+      </h3>
+      <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_LIST_CLASSES}>
+        {POPULAR_PRACTICE_AREAS.map((area: PracticeArea) => (
+          <button
+            key={area}
+            onClick={() => handlePracticeAreaClick(area)}
+            className={
+              isAreaSelected(area)
+                ? SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_SELECTED_CLASSES
+                : SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_CLASSES
+            }
+          >
+            {PRACTICE_AREA_LABELS[area]}
+          </button>
+        ))}
       </div>
     </div>
   );
