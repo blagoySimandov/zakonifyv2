@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { DayOfWeek, DaySchedule } from "@/types/availability";
 import { SCHEDULE_CONSTANTS } from "./constants";
 import { Copy, Trash2 } from "lucide-react";
-import { formatTime, generateTimeOptions, calculateHours } from "./utils";
+import { generateTimeOptions, calculateHours } from "./utils";
 
 interface DayRowProps {
   day: DayOfWeek;

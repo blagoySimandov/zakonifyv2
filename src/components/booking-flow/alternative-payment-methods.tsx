@@ -3,9 +3,8 @@
 import { Building2 } from "lucide-react";
 import { BOOKING_MESSAGES } from "./messages";
 
-interface PayPalPaymentProps {
-  // Add any PayPal-specific props if needed
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface PayPalPaymentProps {}
 
 export function PayPalPayment({}: PayPalPaymentProps) {
   return (
@@ -27,9 +26,8 @@ export function PayPalPayment({}: PayPalPaymentProps) {
   );
 }
 
-interface BankTransferPaymentProps {
-  // Add any bank transfer-specific props if needed
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface BankTransferPaymentProps {}
 
 export function BankTransferPayment({}: BankTransferPaymentProps) {
   return (

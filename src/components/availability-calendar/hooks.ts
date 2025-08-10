@@ -23,9 +23,8 @@ export function useAvailabilityCalendar(
   duration: number,
 ): UseAvailabilityCalendarReturn {
   const [error, setError] = useState<string | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [, setRefreshTrigger] = useState(0);
 
-  // Calculate date range (current week)
   const startOfWeek = new Date(selectedDate);
   startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay());
   startOfWeek.setHours(0, 0, 0, 0);
@@ -34,7 +33,6 @@ export function useAvailabilityCalendar(
   endOfWeek.setDate(startOfWeek.getDate() + 6);
   endOfWeek.setHours(23, 59, 59, 999);
 
-  // Query availability for the week
   const availabilityData = useQuery(api.availability.calculateAvailability, {
     attorneyId,
     startDate: startOfWeek.getTime(),
@@ -43,14 +41,12 @@ export function useAvailabilityCalendar(
     duration,
   });
 
-  // Query next available slot (for quick booking)
   const nextAvailable = useQuery(api.availability.getNextAvailableSlot, {
     attorneyId,
     consultationType,
     duration,
   });
 
-  // Mutations
   const reserveSlotMutation = useMutation(api.availability.reserveSlot);
 
   const isLoading =
@@ -120,7 +116,6 @@ export function useAvailabilityCalendar(
     }
   }, [availabilityData]);
 
-  // Auto-refresh every 30 seconds to keep availability current
   useEffect(() => {
     const interval = setInterval(() => {
       refreshAvailability();
