@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useAttorneyProfile } from "./hooks";
 import { ReviewForm } from "../review-form";
 import { ConsultationBooking } from "../consultation-booking";
-import { PRACTICE_AREA_LABELS } from "@/constants";
+import { PRACTICE_AREA_LABELS, PracticeArea } from "@/constants";
 import {
   Star,
   MapPin,
@@ -169,7 +169,7 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
             key={area}
             className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
           >
-            {PRACTICE_AREA_LABELS[area]}
+            {PRACTICE_AREA_LABELS[area as PracticeArea]}
           </span>
         ))}
       </div>

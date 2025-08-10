@@ -262,7 +262,6 @@ export function useAttorneyRegistration({
         setErrors({ fixedFeePackages: [errorMessage] });
         setCurrentStep("pricing");
       } else {
-        // Generic error - show at top level
         setErrors({ _general: [errorMessage] });
       }
 

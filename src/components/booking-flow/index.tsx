@@ -171,6 +171,8 @@ export function BookingFlow({
         return selectedSlot ? (
           <PaymentStep
             selectedSlot={selectedSlot}
+            consultationType="video" //TODO: Don't hardcode video when we have more types
+            duration={60} //TODO: Don't hardcode duration when we have more types
             paymentInfo={
               paymentInfo || {
                 paymentMethod: "credit-card" as const,

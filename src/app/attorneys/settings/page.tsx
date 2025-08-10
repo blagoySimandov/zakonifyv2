@@ -9,7 +9,7 @@ import {
   ScheduleManager,
   TimeOffManager,
 } from "@/components";
-import { MOCK_ATTORNEY_ID, PRACTICE_AREA_LABELS } from "@/constants";
+import { MOCK_ATTORNEY_ID, PRACTICE_AREA_LABELS, PracticeArea } from "@/constants";
 import { SETTINGS_CONSTANTS } from "./constants";
 import { SETTINGS_MESSAGES } from "./messages";
 import {
@@ -439,7 +439,7 @@ export default function AttorneySettings() {
                     key={index}
                     className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
                   >
-                    {PRACTICE_AREA_LABELS[area]}
+                    {PRACTICE_AREA_LABELS[area as PracticeArea]}
                   </span>
                 ))}
               </div>

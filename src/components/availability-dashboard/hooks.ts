@@ -8,6 +8,7 @@ import {
   AttorneyAvailabilityProfile,
   AvailabilityStats,
   DayOfWeek,
+  ConsultationType,
 } from "@/types/availability";
 import { daysOfWeek } from "@/constants/time";
 
@@ -206,7 +207,14 @@ export function useAvailabilityDashboard(
     availabilityProfile: availabilityProfile
       ? {
           ...availabilityProfile,
-          id: availabilityProfile._id,
+          id: ('_id' in availabilityProfile ? availabilityProfile._id : null) as Id<"attorneyAvailability">,
+          consultationSettings: {
+            ...availabilityProfile.consultationSettings,
+            consultationTypes: availabilityProfile.consultationSettings.consultationTypes.map(ct => ({
+              ...ct,
+              type: ct.type as ConsultationType
+            }))
+          }
         }
       : null,
     upcomingConsultations: upcomingConsultations || [],
