@@ -5,6 +5,7 @@ import { Attorney } from "@/types";
 import { ATTORNEY_CARD_CONSTANTS } from "./constants";
 import { DollarSign, User, Star, Video } from "lucide-react";
 import { SEARCH_CONSTANTS } from "../attorney-search/constants";
+import { ActionButtons } from "../action-buttons";
 
 interface AttorneyCardProps {
   attorney: Attorney;
@@ -102,10 +103,20 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
             </div>
           </div>
 
-          {/* Action Button */}
-          <button className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-            {SEARCH_CONSTANTS.ACTIONS.BOOK_CONSULTATION}
-          </button>
+          <ActionButtons
+            buttons={[
+              {
+                text: ATTORNEY_CARD_CONSTANTS.VIEW_PROFILE_TEXT,
+                href: `/attorneys/${attorney._id}`,
+                variant: "secondary",
+              },
+              {
+                text: SEARCH_CONSTANTS.ACTIONS.BOOK_CONSULTATION,
+                onClick: () => console.log("Book consultation clicked"),
+                variant: "primary",
+              },
+            ]}
+          />
         </div>
       </div>
     </div>
