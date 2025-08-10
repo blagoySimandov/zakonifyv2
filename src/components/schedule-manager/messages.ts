@@ -193,10 +193,10 @@ export const SCHEDULE_MESSAGES = {
         if (!daySchedule) continue;
 
         const startTime = SCHEDULE_MESSAGES.UTILS.TIME_STRING_TO_MINUTES(
-          daySchedule.start
+          daySchedule.start,
         );
         const endTime = SCHEDULE_MESSAGES.UTILS.TIME_STRING_TO_MINUTES(
-          daySchedule.end
+          daySchedule.end,
         );
 
         if (endTime <= startTime) {
@@ -206,10 +206,10 @@ export const SCHEDULE_MESSAGES = {
         if (daySchedule.breaks) {
           for (const breakPeriod of daySchedule.breaks) {
             const breakStart = SCHEDULE_MESSAGES.UTILS.TIME_STRING_TO_MINUTES(
-              breakPeriod.start
+              breakPeriod.start,
             );
             const breakEnd = SCHEDULE_MESSAGES.UTILS.TIME_STRING_TO_MINUTES(
-              breakPeriod.end
+              breakPeriod.end,
             );
 
             if (breakStart < startTime || breakEnd > endTime) {

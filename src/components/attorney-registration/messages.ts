@@ -32,4 +32,3 @@ export const REGISTRATION_MESSAGES = {
       "Предложете услуги с фиксирана цена, за да привлечете повече клиенти",
   },
 } as const;
-

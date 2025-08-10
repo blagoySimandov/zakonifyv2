@@ -1,20 +1,20 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import { Attorney } from '@/types'
-import { ATTORNEY_CARD_CONSTANTS } from './constants'
-import { DollarSign, User, Star, Video } from 'lucide-react'
-import { SEARCH_CONSTANTS } from '../attorney-search/constants'
+import Image from "next/image";
+import { Attorney } from "@/types";
+import { ATTORNEY_CARD_CONSTANTS } from "./constants";
+import { DollarSign, User, Star, Video } from "lucide-react";
+import { SEARCH_CONSTANTS } from "../attorney-search/constants";
 
 interface AttorneyCardProps {
-  attorney: Attorney
+  attorney: Attorney;
 }
 
 export function AttorneyCard({ attorney }: AttorneyCardProps) {
   const getNextAvailableSlot = () => {
     // Mock logic - in real app this would come from API
-    const slots = ['11:00', '14:30', '16:00'];
-    const days = ['today', 'tomorrow', 'Monday'];
+    const slots = ["11:00", "14:30", "16:00"];
+    const days = ["today", "tomorrow", "Monday"];
     const randomSlot = slots[Math.floor(Math.random() * slots.length)];
     const randomDay = days[Math.floor(Math.random() * days.length)];
     return { time: randomSlot, day: randomDay };
@@ -29,8 +29,8 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
         <div className="relative flex-shrink-0">
           <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100">
             {attorney.profileImage ? (
-              <Image 
-                src={attorney.profileImage} 
+              <Image
+                src={attorney.profileImage}
                 alt={attorney.fullName}
                 width={96}
                 height={96}
@@ -43,28 +43,34 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
             )}
           </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{attorney.fullName}</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-1">
+                {attorney.fullName}
+              </h3>
               <div className="flex items-center gap-2 mb-2">
                 {/* Star Rating */}
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <Star
+                      key={star}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
                   ))}
                   <Star className="w-4 h-4 text-gray-300" />
                 </div>
                 <span className="text-sm text-gray-600">2 reviews</span>
               </div>
-              
+
               <div className="text-sm text-gray-600 mb-1">
-                {attorney.practiceAreas.slice(0, 2).join(' • ')} • {attorney.location.city}
+                {attorney.practiceAreas.slice(0, 2).join(" • ")} •{" "}
+                {attorney.location.city}
               </div>
             </div>
-            
+
             {attorney.isVerified && (
               <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
                 {ATTORNEY_CARD_CONSTANTS.VERIFIED_TEXT}
@@ -87,8 +93,12 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
           {/* Availability */}
           <div className="mb-4">
             <div className="text-sm text-gray-600">
-              <span className="text-blue-600">{SEARCH_CONSTANTS.AVAILABILITY.EARLIEST_SLOT}</span>{' '}
-              <span className="font-medium">{nextSlot.day} at {nextSlot.time}</span>
+              <span className="text-blue-600">
+                {SEARCH_CONSTANTS.AVAILABILITY.EARLIEST_SLOT}
+              </span>{" "}
+              <span className="font-medium">
+                {nextSlot.day} at {nextSlot.time}
+              </span>
             </div>
           </div>
 
@@ -99,5 +109,5 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

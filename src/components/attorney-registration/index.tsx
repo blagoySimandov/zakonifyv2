@@ -55,7 +55,8 @@ export function AttorneyRegistration() {
             </p>
             <div className="bg-blue-50 rounded-2xl p-6">
               <p className="text-blue-700 font-medium">
-                Ще ви изпратим имейл потвърждение и актуализации относно статуса на верификацията.
+                Ще ви изпратим имейл потвърждение и актуализации относно статуса
+                на верификацията.
               </p>
             </div>
           </div>
@@ -86,10 +87,12 @@ export function AttorneyRegistration() {
             <span>
               {REGISTRATION_MESSAGES.INFO.STEP_PROGRESS.replace(
                 "{current}",
-                progress.current.toString()
+                progress.current.toString(),
               ).replace("{total}", progress.total.toString())}
             </span>
-            <span className="font-medium">{Math.round(progress.percentage)}%</span>
+            <span className="font-medium">
+              {Math.round(progress.percentage)}%
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
             <div
@@ -97,7 +100,7 @@ export function AttorneyRegistration() {
               style={{ width: `${progress.percentage}%` }}
             />
           </div>
-          
+
           {/* Step indicators */}
           <div className="flex justify-between mt-4">
             {steps.map((step, index) => (
@@ -107,15 +110,19 @@ export function AttorneyRegistration() {
                     index < progress.current - 1
                       ? "bg-green-500 text-white"
                       : index === progress.current - 1
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-400"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-400"
                   }`}
                 >
                   {index + 1}
                 </div>
-                <span className={`text-xs mt-1 text-center max-w-20 ${
-                  index === progress.current - 1 ? "text-blue-600 font-medium" : "text-gray-400"
-                }`}>
+                <span
+                  className={`text-xs mt-1 text-center max-w-20 ${
+                    index === progress.current - 1
+                      ? "text-blue-600 font-medium"
+                      : "text-gray-400"
+                  }`}
+                >
                   {REGISTRATION_CONSTANTS.STEP_TITLES[step]}
                 </span>
               </div>
@@ -194,7 +201,9 @@ export function AttorneyRegistration() {
                   : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg"
               }`}
             >
-              {isSubmitting ? "Изпраща се..." : REGISTRATION_CONSTANTS.BUTTONS.SUBMIT}
+              {isSubmitting
+                ? "Изпраща се..."
+                : REGISTRATION_CONSTANTS.BUTTONS.SUBMIT}
             </button>
           ) : (
             <button

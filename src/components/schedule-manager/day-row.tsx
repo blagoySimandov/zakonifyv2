@@ -35,7 +35,7 @@ export function DayRow({
         onUpdateDay(day, { ...schedule, start: e.target.value });
       }
     },
-    [day, schedule, onUpdateDay]
+    [day, schedule, onUpdateDay],
   );
 
   const handleEndTimeChange = useCallback(
@@ -44,7 +44,7 @@ export function DayRow({
         onUpdateDay(day, { ...schedule, end: e.target.value });
       }
     },
-    [day, schedule, onUpdateDay]
+    [day, schedule, onUpdateDay],
   );
 
   const handleToggleWorkingDay = useCallback(() => {
@@ -80,7 +80,8 @@ export function DayRow({
           value={schedule?.start || "09:00"}
           onChange={handleStartTimeChange}
           disabled={!isWorking}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500">
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+        >
           {timeOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -95,7 +96,8 @@ export function DayRow({
           value={schedule?.end || "17:00"}
           onChange={handleEndTimeChange}
           disabled={!isWorking}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500">
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+        >
           {timeOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -122,13 +124,15 @@ export function DayRow({
             <button
               onClick={handleCopyToAllDays}
               className="p-1.5 text-gray-400 hover:text-blue-600 rounded transition-colors"
-              title="Copy to all days">
+              title="Copy to all days"
+            >
               <Copy className="w-4 h-4" />
             </button>
             <button
               onClick={handleClearDay}
               className="p-1.5 text-gray-400 hover:text-red-600 rounded transition-colors"
-              title="Clear day">
+              title="Clear day"
+            >
               <Trash2 className="w-4 h-4" />
             </button>
           </>

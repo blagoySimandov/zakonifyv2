@@ -20,30 +20,38 @@ interface ChatDialogProps {
   clients: ClientWithDetails[];
 }
 
-export function ChatDialog({ isOpen, onClose, attorneyId, clients }: ChatDialogProps) {
-  const [selectedClient, setSelectedClient] = useState<ClientWithDetails | null>(null);
+export function ChatDialog({
+  isOpen,
+  onClose,
+  attorneyId,
+  clients,
+}: ChatDialogProps) {
+  const [selectedClient, setSelectedClient] =
+    useState<ClientWithDetails | null>(null);
   const [messageText, setMessageText] = useState("");
 
   // Get messages for the selected client's matter
   const activeMatterId = selectedClient?.activeMatter?._id;
-  
+
   const messagesQuery = trpc.messages.listByMatter.useQuery(
-    activeMatterId ? { matterId: String(activeMatterId) } : (undefined as never),
-    { enabled: Boolean(activeMatterId) }
+    activeMatterId
+      ? { matterId: String(activeMatterId) }
+      : (undefined as never),
+    { enabled: Boolean(activeMatterId) },
   );
 
   const sendMessage = trpc.messages.send.useMutation();
 
   const handleSend = async () => {
     if (!activeMatterId || !messageText.trim()) return;
-    
+
     await sendMessage.mutateAsync({
       matterId: String(activeMatterId),
       senderRole: "attorney",
       senderId: attorneyId,
       content: messageText.trim(),
     });
-    
+
     setMessageText("");
     messagesQuery.refetch();
   };
@@ -92,11 +100,10 @@ export function ChatDialog({ isOpen, onClose, attorneyId, clients }: ChatDialogP
                     <div className="font-medium text-gray-900 text-sm">
                       {client.fullName}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {client.email}
-                    </div>
+                    <div className="text-xs text-gray-500">{client.email}</div>
                     <div className="text-xs text-gray-400 mt-1">
-                      {client.totalConsultations} consultation{client.totalConsultations !== 1 ? 's' : ''}
+                      {client.totalConsultations} consultation
+                      {client.totalConsultations !== 1 ? "s" : ""}
                     </div>
                   </button>
                 ))}
@@ -115,7 +122,8 @@ export function ChatDialog({ isOpen, onClose, attorneyId, clients }: ChatDialogP
                   No active matter
                 </h3>
                 <p className="text-gray-500 text-sm px-4">
-                  This client doesn&apos;t have an active matter to chat about yet.
+                  This client doesn&apos;t have an active matter to chat about
+                  yet.
                 </p>
                 <button
                   onClick={() => setSelectedClient(null)}
@@ -162,7 +170,9 @@ export function ChatDialog({ isOpen, onClose, attorneyId, clients }: ChatDialogP
                   <div
                     key={String(message._id)}
                     className={`flex ${
-                      message.senderRole === "attorney" ? "justify-end" : "justify-start"
+                      message.senderRole === "attorney"
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
                     <div
@@ -188,10 +198,12 @@ export function ChatDialog({ isOpen, onClose, attorneyId, clients }: ChatDialogP
                     </div>
                   </div>
                 ))}
-                
+
                 {messagesQuery.data?.length === 0 && (
                   <div className="text-center py-8">
-                    <p className="text-gray-500 text-sm">No messages yet. Start the conversation!</p>
+                    <p className="text-gray-500 text-sm">
+                      No messages yet. Start the conversation!
+                    </p>
                   </div>
                 )}
               </div>

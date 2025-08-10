@@ -14,7 +14,10 @@ interface ClientsSectionProps {
   onClientClick?: (client: ClientWithDetails) => void;
 }
 
-export function ClientsSection({ clients, onClientClick }: ClientsSectionProps) {
+export function ClientsSection({
+  clients,
+  onClientClick,
+}: ClientsSectionProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "confirmed":
@@ -41,7 +44,8 @@ export function ClientsSection({ clients, onClientClick }: ClientsSectionProps) 
 
       {clients.length === 0 ? (
         <p className="text-slate-500 text-sm">
-          No clients yet. Start accepting consultations to see your clients here.
+          No clients yet. Start accepting consultations to see your clients
+          here.
         </p>
       ) : (
         <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -57,33 +61,41 @@ export function ClientsSection({ clients, onClientClick }: ClientsSectionProps) 
                     {client.fullName}
                   </div>
                   {client.lastConsultation && (
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(client.lastConsultation.status)}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(client.lastConsultation.status)}`}
+                    >
                       {client.lastConsultation.status}
                     </span>
                   )}
                 </div>
-                
+
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <Mail className="h-3 w-3" />
                     <span>{client.email}</span>
                   </div>
-                  
+
                   {client.phone && (
                     <div className="flex items-center gap-2 text-sm text-slate-600">
                       <Phone className="h-3 w-3" />
                       <span>{client.phone}</span>
                     </div>
                   )}
-                  
+
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <Calendar className="h-3 w-3" />
-                    <span>{client.totalConsultations} consultation{client.totalConsultations !== 1 ? 's' : ''}</span>
+                    <span>
+                      {client.totalConsultations} consultation
+                      {client.totalConsultations !== 1 ? "s" : ""}
+                    </span>
                   </div>
 
                   {client.lastConsultation && (
                     <div className="text-sm text-slate-500">
-                      Last consultation: {new Date(client.lastConsultation.scheduledAt).toLocaleDateString()}
+                      Last consultation:{" "}
+                      {new Date(
+                        client.lastConsultation.scheduledAt,
+                      ).toLocaleDateString()}
                     </div>
                   )}
                 </div>
@@ -96,7 +108,7 @@ export function ClientsSection({ clients, onClientClick }: ClientsSectionProps) 
                     <span>Active</span>
                   </div>
                 )}
-                
+
                 <div className="text-xs text-slate-400">
                   Client since {new Date(client.createdAt).toLocaleDateString()}
                 </div>

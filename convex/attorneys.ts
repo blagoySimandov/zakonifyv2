@@ -412,12 +412,26 @@ export const update = mutation({
         );
       }
 
-      processedUpdates.location = mergedLocation;
+      processedUpdates.location = {
+        city: mergedLocation.city,
+        state: mergedLocation.state,
+        country: mergedLocation.country,
+        address: mergedLocation.address,
+        zipCode: mergedLocation.zipCode,
+      };
     }
 
-    return await ctx.db.patch(id, {
-      ...processedUpdates,
+    const { location, ...otherUpdates } = processedUpdates;
+
+    const updateData: any = {
+      ...otherUpdates,
       updatedAt: Date.now(),
-    });
+    };
+
+    if (location) {
+      updateData.location = location;
+    }
+
+    return await ctx.db.patch(id, updateData);
   },
 });

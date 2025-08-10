@@ -6,11 +6,12 @@ import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { AvailableSlot, ConsultationType } from "@/types/availability";
 import { BookingStep } from "./index";
+import { isValidEmail } from "@/lib/utils";
 
 interface ClientInfo {
   fullName: string;
   email: string;
-  phone?: string;
+  phone: string;
   company?: string;
   consultationTopic: string;
   additionalNotes?: string;
@@ -19,12 +20,13 @@ interface ClientInfo {
 }
 
 interface PaymentInfo {
+  paymentMethod: "credit-card" | "paypal" | "bank-transfer";
   paymentMethodId?: string;
   cardNumber?: string;
   expiryDate?: string;
   cvc?: string;
   cardholderName?: string;
-  billingAddress?: {
+  billingAddress: {
     street: string;
     city: string;
     state: string;
@@ -43,7 +45,7 @@ interface UseBookingFlowReturn {
   isSubmitting: boolean;
   error: string | null;
   createdConsultationId: string | null;
-  
+
   // Actions
   updateConsultationType: (type: ConsultationType) => void;
   updateDuration: (duration: number) => void;
@@ -55,35 +57,40 @@ interface UseBookingFlowReturn {
   resetBooking: () => void;
 }
 
-export function useBookingFlow(attorneyId: Id<"attorneys">): UseBookingFlowReturn {
-  // State
-  const [consultationType, setConsultationType] = useState<ConsultationType | null>(null);
+export function useBookingFlow(
+  attorneyId: Id<"attorneys">,
+): UseBookingFlowReturn {
+  const [consultationType, setConsultationType] =
+    useState<ConsultationType | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
   const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [createdConsultationId, setCreatedConsultationId] = useState<string | null>(null);
+  const [createdConsultationId, setCreatedConsultationId] = useState<
+    string | null
+  >(null);
 
-  // Mutations
-  const createConsultation = useMutation(api.consultations.createConsultation);
+  const createConsultation = useMutation(api.consultations.create);
   const reserveSlot = useMutation(api.availability.reserveSlot);
 
-  // Actions
   const updateConsultationType = useCallback((type: ConsultationType) => {
     setConsultationType(type);
     setError(null);
   }, []);
 
-  const updateDuration = useCallback((newDuration: number) => {
-    setDuration(newDuration);
-    setError(null);
-    // Reset selected slot if duration changes
-    if (selectedSlot) {
-      setSelectedSlot(null);
-    }
-  }, [selectedSlot]);
+  const updateDuration = useCallback(
+    (newDuration: number) => {
+      setDuration(newDuration);
+      setError(null);
+      // Reset selected slot if duration changes
+      if (selectedSlot) {
+        setSelectedSlot(null);
+      }
+    },
+    [selectedSlot],
+  );
 
   const updateSelectedSlot = useCallback((slot: AvailableSlot) => {
     setSelectedSlot(slot);
@@ -100,74 +107,83 @@ export function useBookingFlow(attorneyId: Id<"attorneys">): UseBookingFlowRetur
     setError(null);
   }, []);
 
-  const validateStep = useCallback(async (step: BookingStep): Promise<boolean> => {
-    setError(null);
+  const validateStep = useCallback(
+    async (step: BookingStep): Promise<boolean> => {
+      setError(null);
 
-    switch (step) {
-      case 'consultation-type':
-        if (!consultationType || !duration) {
-          setError('Please select consultation type and duration');
-          return false;
-        }
-        break;
+      switch (step) {
+        case "consultation-type":
+          if (!consultationType || !duration) {
+            setError("Please select consultation type and duration");
+            return false;
+          }
+          break;
 
-      case 'availability':
-        if (!selectedSlot) {
-          setError('Please select an available time slot');
-          return false;
-        }
-        break;
+        case "availability":
+          if (!selectedSlot) {
+            setError("Please select an available time slot");
+            return false;
+          }
+          break;
 
-      case 'client-info':
-        if (!clientInfo) {
-          setError('Please provide your information');
-          return false;
-        }
-        
-        if (!clientInfo.fullName.trim()) {
-          setError('Full name is required');
-          return false;
-        }
-        
-        if (!clientInfo.email.trim()) {
-          setError('Email address is required');
-          return false;
-        }
-        
-        if (!isValidEmail(clientInfo.email)) {
-          setError('Please enter a valid email address');
-          return false;
-        }
-        
-        if (!clientInfo.consultationTopic.trim()) {
-          setError('Please describe what you\'d like to discuss');
-          return false;
-        }
-        
-        if (!clientInfo.privacyConsent) {
-          setError('Privacy consent is required to proceed');
-          return false;
-        }
-        break;
+        case "client-info":
+          if (!clientInfo) {
+            setError("Please provide your information");
+            return false;
+          }
 
-      case 'payment':
-        if (!paymentInfo || !paymentInfo.paymentMethodId) {
-          setError('Please provide payment information');
-          return false;
-        }
-        break;
+          if (!clientInfo.fullName.trim()) {
+            setError("Full name is required");
+            return false;
+          }
 
-      case 'confirmation':
-        // All validation should be done in previous steps
-        break;
-    }
+          if (!clientInfo.email.trim()) {
+            setError("Email address is required");
+            return false;
+          }
 
-    return true;
-  }, [consultationType, duration, selectedSlot, clientInfo, paymentInfo]);
+          if (!isValidEmail(clientInfo.email)) {
+            setError("Please enter a valid email address");
+            return false;
+          }
+
+          if (!clientInfo.consultationTopic.trim()) {
+            setError("Please describe what you'd like to discuss");
+            return false;
+          }
+
+          if (!clientInfo.privacyConsent) {
+            setError("Privacy consent is required to proceed");
+            return false;
+          }
+          break;
+
+        case "payment":
+          if (!paymentInfo || !paymentInfo.paymentMethod) {
+            setError("Please provide payment information");
+            return false;
+          }
+          break;
+
+        case "confirmation":
+          // All validation should be done in previous steps
+          break;
+      }
+
+      return true;
+    },
+    [consultationType, duration, selectedSlot, clientInfo, paymentInfo],
+  );
 
   const submitBooking = useCallback(async () => {
-    if (!consultationType || !duration || !selectedSlot || !clientInfo || !paymentInfo) {
-      setError('Missing required information');
+    if (
+      !consultationType ||
+      !duration ||
+      !selectedSlot ||
+      !clientInfo ||
+      !paymentInfo
+    ) {
+      setError("Missing required information");
       return;
     }
 
@@ -175,7 +191,6 @@ export function useBookingFlow(attorneyId: Id<"attorneys">): UseBookingFlowRetur
     setError(null);
 
     try {
-      // First, reserve the slot
       await reserveSlot({
         attorneyId,
         startTime: selectedSlot.startTime,
@@ -185,28 +200,26 @@ export function useBookingFlow(attorneyId: Id<"attorneys">): UseBookingFlowRetur
         durationMinutes: 10, // Extended reservation during booking
       });
 
-      // Process payment (simulate)
       await simulatePayment(paymentInfo);
 
-      // Create the consultation
       const consultationData = {
         attorneyId,
-        clientId: 'temp_client_id' as Id<"clients">, // This would come from auth or be created
+        clientName: clientInfo.fullName,
+        clientEmail: clientInfo.email,
+        clientPhone: clientInfo.phone,
         scheduledAt: selectedSlot.startTime,
         duration,
-        price: selectedSlot.price,
-        notes: `${clientInfo.consultationTopic}\n\nAdditional notes: ${clientInfo.additionalNotes || 'None'}`,
+        consultationType: "hourly" as const,
+        notes: `${clientInfo.consultationTopic}\n\nAdditional notes: ${clientInfo.additionalNotes || "None"}`,
       };
 
-      const newConsultationId = await createConsultation(consultationData);
-      setCreatedConsultationId(newConsultationId);
+      const createResult = await createConsultation(consultationData);
+      setCreatedConsultationId(createResult.id);
 
-      // Send confirmation email (would be handled by backend)
-      await sendConfirmationEmail(clientInfo, selectedSlot, newConsultationId);
-
+      await sendConfirmationEmail(clientInfo, selectedSlot, createResult.id);
     } catch (err) {
-      console.error('Booking failed:', err);
-      setError('Failed to create booking. Please try again.');
+      console.error("Booking failed:", err);
+      setError("Failed to create booking. Please try again.");
       throw err;
     } finally {
       setIsSubmitting(false);
@@ -243,7 +256,7 @@ export function useBookingFlow(attorneyId: Id<"attorneys">): UseBookingFlowRetur
     isSubmitting,
     error,
     createdConsultationId,
-    
+
     // Actions
     updateConsultationType,
     updateDuration,
@@ -256,31 +269,24 @@ export function useBookingFlow(attorneyId: Id<"attorneys">): UseBookingFlowRetur
   };
 }
 
-// Helper functions
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
 async function simulatePayment(paymentInfo: PaymentInfo): Promise<void> {
-  // Simulate payment processing
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // In a real app, this would integrate with Stripe, PayPal, etc.
-  if (!paymentInfo.paymentMethodId) {
-    throw new Error('Payment failed: Invalid payment method');
+  //TODO: Do payment
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  if (!paymentInfo.paymentMethod) {
+    throw new Error("Payment failed: Invalid payment method");
   }
 }
 
 async function sendConfirmationEmail(
-  clientInfo: ClientInfo, 
-  selectedSlot: AvailableSlot, 
-  consultationId: string
+  clientInfo: ClientInfo,
+  selectedSlot: AvailableSlot,
+  consultationId: string,
 ): Promise<void> {
-  // Simulate sending confirmation email
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  console.log('Confirmation email sent to:', clientInfo.email);
-  console.log('Consultation ID:', consultationId);
-  console.log('Scheduled for:', new Date(selectedSlot.startTime));
+  //TODO: Actually send email
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  console.log("Confirmation email sent to:", clientInfo.email);
+  console.log("Consultation ID:", consultationId);
+  console.log("Scheduled for:", new Date(selectedSlot.startTime));
 }

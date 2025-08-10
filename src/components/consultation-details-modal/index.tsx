@@ -1,6 +1,15 @@
 "use client";
 
-import { X, Clock, User, FileText, Calendar as CalendarIcon, Video, DollarSign, AlertCircle } from "lucide-react";
+import {
+  X,
+  Clock,
+  User,
+  FileText,
+  Calendar as CalendarIcon,
+  Video,
+  DollarSign,
+  AlertCircle,
+} from "lucide-react";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 type ConsultationWithMatter = Doc<"consultations"> & {
@@ -13,15 +22,17 @@ interface ConsultationDetailsModalProps {
   consultation: ConsultationWithMatter | null;
 }
 
-export function ConsultationDetailsModal({ 
-  isOpen, 
-  onClose, 
-  consultation 
+export function ConsultationDetailsModal({
+  isOpen,
+  onClose,
+  consultation,
 }: ConsultationDetailsModalProps) {
   if (!isOpen || !consultation) return null;
 
   const consultationDate = new Date(consultation.scheduledAt);
-  const endTime = new Date(consultation.scheduledAt + (consultation.duration * 60 * 1000));
+  const endTime = new Date(
+    consultation.scheduledAt + consultation.duration * 60 * 1000,
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -40,7 +51,7 @@ export function ConsultationDetailsModal({
 
   const handleJoinVideoCall = () => {
     const videoCallUrl = `https://meet.google.com/consultation-${String(consultation._id).slice(-8)}`;
-    window.open(videoCallUrl, '_blank');
+    window.open(videoCallUrl, "_blank");
   };
 
   return (
@@ -53,11 +64,11 @@ export function ConsultationDetailsModal({
               Consultation Details
             </h2>
             <p className="text-sm text-gray-500 mt-1">
-              {consultationDate.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric',
-                month: 'long', 
-                day: 'numeric' 
+              {consultationDate.toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
               })}
             </p>
           </div>
@@ -77,8 +88,12 @@ export function ConsultationDetailsModal({
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-gray-400" />
                 <div>
-                  <div className="text-sm font-medium text-gray-900">Status</div>
-                  <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(consultation.status)}`}>
+                  <div className="text-sm font-medium text-gray-900">
+                    Status
+                  </div>
+                  <span
+                    className={`inline-flex px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(consultation.status)}`}
+                  >
                     {consultation.status}
                   </span>
                 </div>
@@ -91,10 +106,12 @@ export function ConsultationDetailsModal({
                   <div className="text-sm text-gray-600">
                     {consultationDate.toLocaleTimeString([], {
                       hour: "2-digit",
-                      minute: "2-digit"
-                    })} - {endTime.toLocaleTimeString([], {
-                      hour: "2-digit", 
-                      minute: "2-digit"
+                      minute: "2-digit",
+                    })}{" "}
+                    -{" "}
+                    {endTime.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </div>
                   <div className="text-xs text-gray-500">
@@ -118,7 +135,9 @@ export function ConsultationDetailsModal({
               <div className="flex items-center gap-3">
                 <Video className="h-5 w-5 text-gray-400" />
                 <div>
-                  <div className="text-sm font-medium text-gray-900">Location</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    Location
+                  </div>
                   <div className="text-sm text-gray-600 flex items-center gap-1">
                     Video Call
                     <button
@@ -143,7 +162,9 @@ export function ConsultationDetailsModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm font-medium text-gray-900">Name</div>
-                  <div className="text-sm text-gray-600">Client name will appear here</div>
+                  <div className="text-sm text-gray-600">
+                    Client name will appear here
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm font-medium text-gray-900">Email</div>
@@ -154,9 +175,13 @@ export function ConsultationDetailsModal({
                   <div className="text-sm text-gray-600">+1 (555) 000-0000</div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-gray-900">Matter ID</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    Matter ID
+                  </div>
                   <div className="text-sm text-gray-600">
-                    {consultation.matterId ? String(consultation.matterId).slice(-8) : "N/A"}
+                    {consultation.matterId
+                      ? String(consultation.matterId).slice(-8)
+                      : "N/A"}
                   </div>
                 </div>
               </div>
@@ -199,7 +224,9 @@ export function ConsultationDetailsModal({
                   </div>
                 </div>
                 <div>
-                  <div className="font-medium text-gray-900">Consultation ID</div>
+                  <div className="font-medium text-gray-900">
+                    Consultation ID
+                  </div>
                   <div className="text-gray-600 font-mono text-xs">
                     {String(consultation._id).slice(-12)}
                   </div>

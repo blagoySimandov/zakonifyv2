@@ -2,25 +2,27 @@
 
 import { Id } from "../../../convex/_generated/dataModel";
 import { useAvailabilityDashboard } from "./hooks";
-import { DASHBOARD_CONSTANTS } from "./constants";
 import { UpcomingConsultations } from "./upcoming-consultations";
 import { AvailabilityStats } from "./availability-stats";
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  Settings, 
-  AlertCircle, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  Settings,
+  AlertCircle,
   CheckCircle,
   TrendingUp,
-  Loader
+  Loader,
 } from "lucide-react";
+import { DASHBOARD_LABELS } from "./messages";
 
 interface AvailabilityDashboardProps {
   attorneyId: Id<"attorneys">;
 }
 
-export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps) {
+export function AvailabilityDashboard({
+  attorneyId,
+}: AvailabilityDashboardProps) {
   const {
     availabilityProfile,
     upcomingConsultations,
@@ -36,31 +38,35 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {DASHBOARD_CONSTANTS.TITLE}
+            {DASHBOARD_LABELS.TITLE}
           </h1>
-          <p className="text-gray-600">
-            {DASHBOARD_CONSTANTS.SUBTITLE}
-          </p>
+          <p className="text-gray-600">{DASHBOARD_LABELS.SUBTITLE}</p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`} />
+            <div
+              className={`w-3 h-3 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`}
+            />
             <span className="text-sm font-medium text-gray-700">
-              {isOnline ? DASHBOARD_CONSTANTS.STATUS.ONLINE : DASHBOARD_CONSTANTS.STATUS.OFFLINE}
+              {isOnline
+                ? DASHBOARD_LABELS.STATUS.ONLINE
+                : DASHBOARD_LABELS.STATUS.OFFLINE}
             </span>
             <button
               onClick={toggleOnlineStatus}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                isOnline 
-                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                  : 'bg-green-100 text-green-700 hover:bg-green-200'
+                isOnline
+                  ? "bg-red-100 text-red-700 hover:bg-red-200"
+                  : "bg-green-100 text-green-700 hover:bg-green-200"
               }`}
             >
-              {isOnline ? DASHBOARD_CONSTANTS.ACTIONS.GO_OFFLINE : DASHBOARD_CONSTANTS.ACTIONS.GO_ONLINE}
+              {isOnline
+                ? DASHBOARD_LABELS.ACTIONS.GO_OFFLINE
+                : DASHBOARD_LABELS.ACTIONS.GO_ONLINE}
             </button>
           </div>
-          
+
           <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
             <Settings className="w-5 h-5" />
           </button>
@@ -75,7 +81,7 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">
-              {DASHBOARD_CONSTANTS.STATS.TODAYS_CONSULTATIONS}
+              {DASHBOARD_LABELS.STATS.TODAYS_CONSULTATIONS}
             </p>
             <p className="text-2xl font-bold text-gray-900">
               {availabilityStats?.consultationsToday || 0}
@@ -91,7 +97,7 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">
-              {DASHBOARD_CONSTANTS.STATS.AVAILABLE_HOURS_TODAY}
+              {DASHBOARD_LABELS.STATS.AVAILABLE_HOURS_TODAY}
             </p>
             <p className="text-2xl font-bold text-gray-900">
               {availabilityStats?.availableHoursToday || 0}h
@@ -107,7 +113,7 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">
-              {DASHBOARD_CONSTANTS.STATS.THIS_WEEK_BOOKINGS}
+              {DASHBOARD_LABELS.STATS.THIS_WEEK_BOOKINGS}
             </p>
             <p className="text-2xl font-bold text-gray-900">
               {availabilityStats?.bookingsThisWeek || 0}
@@ -123,7 +129,7 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">
-              {DASHBOARD_CONSTANTS.STATS.UTILIZATION_RATE}
+              {DASHBOARD_LABELS.STATS.UTILIZATION_RATE}
             </p>
             <p className="text-2xl font-bold text-gray-900">
               {availabilityStats?.utilizationRate || 0}%
@@ -143,16 +149,18 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
       <div>
         <UpcomingConsultations
           consultations={upcomingConsultations}
-          onReschedule={() => {/* TODO: Handle reschedule */}}
-          onCancel={() => {/* TODO: Handle cancel */}}
+          onReschedule={() => {
+            /* TODO: Handle reschedule */
+          }}
+          onCancel={() => {
+            /* TODO: Handle cancel */
+          }}
         />
       </div>
 
       {/* Right Column - Availability Stats */}
       <div>
-        <AvailabilityStats
-          stats={availabilityStats}
-        />
+        <AvailabilityStats stats={availabilityStats} />
       </div>
     </div>
   );
@@ -163,10 +171,10 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
         <AlertCircle className="w-6 h-6 text-red-500" />
         <div>
           <h3 className="font-semibold text-red-900">
-            {DASHBOARD_CONSTANTS.ERROR.TITLE}
+            {DASHBOARD_LABELS.ERROR.TITLE}
           </h3>
           <p className="text-red-700 text-sm mt-1">
-            {error || DASHBOARD_CONSTANTS.ERROR.GENERIC_MESSAGE}
+            {error || DASHBOARD_LABELS.ERROR.GENERIC_MESSAGE}
           </p>
         </div>
       </div>
@@ -177,7 +185,9 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
     <div className="flex items-center justify-center py-12">
       <div className="flex items-center gap-3">
         <Loader className="w-6 h-6 text-blue-500 animate-spin" />
-        <span className="text-gray-600">{DASHBOARD_CONSTANTS.LOADING_MESSAGE}</span>
+        <span className="text-gray-600">
+          {DASHBOARD_LABELS.LOADING_MESSAGE}
+        </span>
       </div>
     </div>
   );
@@ -191,13 +201,13 @@ export function AvailabilityDashboard({ attorneyId }: AvailabilityDashboardProps
           <CheckCircle className="w-6 h-6 text-blue-600 mt-0.5" />
           <div>
             <h3 className="font-semibold text-blue-900 mb-2">
-              {DASHBOARD_CONSTANTS.WELCOME.TITLE}
+              {DASHBOARD_LABELS.WELCOME.TITLE}
             </h3>
             <p className="text-blue-800 text-sm mb-4">
-              {DASHBOARD_CONSTANTS.WELCOME.MESSAGE}
+              {DASHBOARD_LABELS.WELCOME.MESSAGE}
             </p>
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-              {DASHBOARD_CONSTANTS.WELCOME.CTA_BUTTON}
+              {DASHBOARD_LABELS.WELCOME.CTA_BUTTON}
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { AttorneySearch, Navbar } from '@/components'
+import { AttorneySearch, Navbar } from "@/components";
 
 export default function AttorneysPage() {
   return (
@@ -6,5 +6,5 @@ export default function AttorneysPage() {
       <Navbar />
       <AttorneySearch />
     </div>
-  )
+  );
 }

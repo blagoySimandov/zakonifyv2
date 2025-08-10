@@ -7,16 +7,16 @@ export function useValidation() {
     (schedule: WeeklySchedule): string | null => {
       return SCHEDULE_MESSAGES.VALIDATION_RESOLVERS.WORKING_HOURS(schedule);
     },
-    []
+    [],
   );
 
   const validateConsultationSettings = useCallback(
     (settings: ConsultationSettings): string | null => {
       return SCHEDULE_MESSAGES.VALIDATION_RESOLVERS.CONSULTATION_SETTINGS(
-        settings
+        settings,
       );
     },
-    []
+    [],
   );
 
   return {

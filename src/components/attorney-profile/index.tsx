@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useAttorneyProfile } from "./hooks";
 import { ReviewForm } from "../review-form";
 import { ConsultationBooking } from "../consultation-booking";
+import { PRACTICE_AREA_LABELS } from "@/constants";
 import {
   Star,
   MapPin,
@@ -123,7 +124,8 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => setIsBookingOpen(true)}
-                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
+                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                >
                   <Calendar className="w-4 h-4" />
                   Book Consultation
                 </button>
@@ -165,8 +167,9 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
         {attorney?.practiceAreas.map((area) => (
           <span
             key={area}
-            className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            {area}
+            className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+          >
+            {PRACTICE_AREA_LABELS[area]}
           </span>
         ))}
       </div>
@@ -201,7 +204,8 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
             {attorney.fixedFeePackages.map((pkg, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-4 border rounded-lg">
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
                 <div>
                   <h4 className="font-medium text-gray-900">{pkg.name}</h4>
                   <p className="text-gray-600 text-sm">{pkg.description}</p>
@@ -252,7 +256,8 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsReviewFormOpen(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm">
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm"
+          >
             <Plus className="w-4 h-4" />
             Write Review
           </button>
@@ -290,7 +295,8 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
           </p>
           <button
             onClick={() => setIsReviewFormOpen(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
             Write the first review
           </button>
         </div>
@@ -299,7 +305,8 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
           {reviews.map((review) => (
             <div
               key={review._id}
-              className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+              className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0"
+            >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">

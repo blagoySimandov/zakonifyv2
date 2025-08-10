@@ -31,7 +31,7 @@ export const AttorneyRegistrationSchema = z.object({
     .string()
     .min(
       50,
-      "Bio must be at least 50 characters to help clients understand your expertise"
+      "Bio must be at least 50 characters to help clients understand your expertise",
     )
     .max(1000, "Bio must be less than 1000 characters")
     .optional(),
@@ -60,7 +60,7 @@ export const AttorneyRegistrationSchema = z.object({
       .max(100, "Address must be less than 100 characters"),
 
     country: z.string().default("Bulgaria"),
-    
+
     zipCode: z.string().optional(),
   }),
 
@@ -87,7 +87,7 @@ export const AttorneyRegistrationSchema = z.object({
           .number()
           .min(100, "Package price must be at least $100")
           .max(50000, "Package price must be less than $50,000"),
-      })
+      }),
     )
     .optional(),
 

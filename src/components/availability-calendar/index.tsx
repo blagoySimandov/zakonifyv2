@@ -8,14 +8,14 @@ import { CALENDAR_CONSTANTS } from "./constants";
 import { CalendarGrid } from "./calendar-grid";
 import { TimeSlotList } from "./time-slot-list";
 import { BookingModal } from "./booking-modal";
-import { 
-  Calendar, 
-  Clock, 
-  ChevronLeft, 
+import {
+  Calendar,
+  Clock,
+  ChevronLeft,
   ChevronRight,
   Filter,
   Loader,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 
 interface AvailabilityCalendarProps {
@@ -30,14 +30,14 @@ interface AvailabilityCalendarProps {
 export function AvailabilityCalendar({
   attorneyId,
   onSlotSelected,
-  consultationType = 'video',
+  consultationType = "video",
   duration = 60,
   showBookingModal = true,
   clientId,
 }: AvailabilityCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
-  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+  const [viewMode, setViewMode] = useState<"calendar" | "list">("calendar");
 
   const {
     availableSlots,
@@ -47,18 +47,23 @@ export function AvailabilityCalendar({
     reserveSlot,
     releaseSlot,
     refreshAvailability,
-  } = useAvailabilityCalendar(attorneyId, selectedDate, consultationType, duration);
+  } = useAvailabilityCalendar(
+    attorneyId,
+    selectedDate,
+    consultationType,
+    duration,
+  );
 
   const handleSlotClick = async (slot: AvailableSlot) => {
     setSelectedSlot(slot);
     onSlotSelected?.(slot);
-    
+
     // Reserve the slot if booking modal is enabled
     if (showBookingModal && clientId) {
       try {
         await reserveSlot(slot, clientId);
       } catch (err) {
-        console.error('Failed to reserve slot:', err);
+        console.error("Failed to reserve slot:", err);
       }
     }
   };
@@ -68,15 +73,15 @@ export function AvailabilityCalendar({
       try {
         await releaseSlot(selectedSlot);
       } catch (err) {
-        console.error('Failed to release slot:', err);
+        console.error("Failed to release slot:", err);
       }
     }
     setSelectedSlot(null);
   };
 
-  const handleDateNavigation = (direction: 'prev' | 'next') => {
+  const handleDateNavigation = (direction: "prev" | "next") => {
     const newDate = new Date(selectedDate);
-    if (direction === 'prev') {
+    if (direction === "prev") {
       newDate.setDate(newDate.getDate() - 7);
     } else {
       newDate.setDate(newDate.getDate() + 7);
@@ -91,27 +96,30 @@ export function AvailabilityCalendar({
           <Calendar className="w-6 h-6 text-blue-600" />
           {CALENDAR_CONSTANTS.TITLE}
         </h2>
-        <p className="text-gray-600 mt-1">
-          {CALENDAR_CONSTANTS.SUBTITLE}
-        </p>
+        <p className="text-gray-600 mt-1">{CALENDAR_CONSTANTS.SUBTITLE}</p>
       </div>
-      
+
       <div className="flex items-center gap-3">
         {nextAvailableSlot && (
           <div className="text-right">
-            <p className="text-sm text-gray-600">{CALENDAR_CONSTANTS.NEXT_AVAILABLE}</p>
+            <p className="text-sm text-gray-600">
+              {CALENDAR_CONSTANTS.NEXT_AVAILABLE}
+            </p>
             <p className="font-medium text-blue-600">
-              {new Date(nextAvailableSlot.startTime).toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short', 
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
+              {new Date(nextAvailableSlot.startTime).toLocaleDateString(
+                "en-US",
+                {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                },
+              )}
             </p>
           </div>
         )}
-        
+
         <button
           onClick={() => handleSlotClick(nextAvailableSlot!)}
           disabled={!nextAvailableSlot}
@@ -130,20 +138,24 @@ export function AvailabilityCalendar({
           <Filter className="w-4 h-4 text-gray-500" />
           <span className="text-sm font-medium text-gray-700">Filters:</span>
         </div>
-        
+
         <select
           value={consultationType}
-          onChange={() => {/* TODO: Update consultation type */}}
+          onChange={() => {
+            /* TODO: Update consultation type */
+          }}
           className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
         >
           <option value="video">Video Call</option>
           <option value="phone">Phone Call</option>
           <option value="in-person">In-Person</option>
         </select>
-        
+
         <select
           value={duration}
-          onChange={() => {/* TODO: Update duration */}}
+          onChange={() => {
+            /* TODO: Update duration */
+          }}
           className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
         >
           <option value={30}>30 minutes</option>
@@ -152,24 +164,24 @@ export function AvailabilityCalendar({
           <option value={120}>2 hours</option>
         </select>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <button
-          onClick={() => setViewMode('calendar')}
+          onClick={() => setViewMode("calendar")}
           className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-            viewMode === 'calendar'
-              ? 'bg-blue-600 text-white'
-              : 'text-gray-600 hover:bg-white'
+            viewMode === "calendar"
+              ? "bg-blue-600 text-white"
+              : "text-gray-600 hover:bg-white"
           }`}
         >
           Calendar
         </button>
         <button
-          onClick={() => setViewMode('list')}
+          onClick={() => setViewMode("list")}
           className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-            viewMode === 'list'
-              ? 'bg-blue-600 text-white'
-              : 'text-gray-600 hover:bg-white'
+            viewMode === "list"
+              ? "bg-blue-600 text-white"
+              : "text-gray-600 hover:bg-white"
           }`}
         >
           List
@@ -181,30 +193,31 @@ export function AvailabilityCalendar({
   const renderDateNavigation = () => (
     <div className="flex items-center justify-between mb-6">
       <button
-        onClick={() => handleDateNavigation('prev')}
+        onClick={() => handleDateNavigation("prev")}
         className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
       >
         <ChevronLeft className="w-4 h-4" />
         Previous Week
       </button>
-      
+
       <div className="text-center">
         <h3 className="text-lg font-semibold text-gray-900">
-          {selectedDate.toLocaleDateString('en-US', { 
-            month: 'long', 
-            year: 'numeric' 
+          {selectedDate.toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
           })}
         </h3>
         <p className="text-sm text-gray-600">
-          Week of {selectedDate.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
+          Week of{" "}
+          {selectedDate.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
           })}
         </p>
       </div>
-      
+
       <button
-        onClick={() => handleDateNavigation('next')}
+        onClick={() => handleDateNavigation("next")}
         className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
       >
         Next Week
@@ -217,7 +230,9 @@ export function AvailabilityCalendar({
     <div className="text-center py-12">
       <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <p className="text-red-700 font-medium">{CALENDAR_CONSTANTS.ERROR_LOADING}</p>
+        <p className="text-red-700 font-medium">
+          {CALENDAR_CONSTANTS.ERROR_LOADING}
+        </p>
         <p className="text-red-600 text-sm mt-1">{error}</p>
         <button
           onClick={refreshAvailability}
@@ -233,7 +248,9 @@ export function AvailabilityCalendar({
     <div className="flex items-center justify-center py-12">
       <div className="flex items-center gap-3">
         <Loader className="w-6 h-6 text-blue-500 animate-spin" />
-        <span className="text-gray-600">{CALENDAR_CONSTANTS.LOADING_MESSAGE}</span>
+        <span className="text-gray-600">
+          {CALENDAR_CONSTANTS.LOADING_MESSAGE}
+        </span>
       </div>
     </div>
   );
@@ -248,7 +265,7 @@ export function AvailabilityCalendar({
         {CALENDAR_CONSTANTS.TRY_DIFFERENT_DATES}
       </p>
       <button
-        onClick={() => handleDateNavigation('next')}
+        onClick={() => handleDateNavigation("next")}
         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
       >
         View Next Week
@@ -259,9 +276,10 @@ export function AvailabilityCalendar({
   const renderContent = () => {
     if (isLoading) return renderLoading();
     if (error) return renderError();
-    if (!availableSlots || availableSlots.length === 0) return renderNoAvailability();
+    if (!availableSlots || availableSlots.length === 0)
+      return renderNoAvailability();
 
-    if (viewMode === 'calendar') {
+    if (viewMode === "calendar") {
       return (
         <CalendarGrid
           availableSlots={availableSlots}
@@ -286,11 +304,9 @@ export function AvailabilityCalendar({
       {renderHeader()}
       {renderFilters()}
       {renderDateNavigation()}
-      
-      <div className="border border-gray-200 rounded-lg">
-        {renderContent()}
-      </div>
-      
+
+      <div className="border border-gray-200 rounded-lg">{renderContent()}</div>
+
       {/* Booking Modal */}
       {showBookingModal && selectedSlot && (
         <BookingModal

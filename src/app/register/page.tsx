@@ -1,4 +1,4 @@
-import { AttorneyRegistration, Navbar } from '@/components'
+import { AttorneyRegistration, Navbar } from "@/components";
 
 export default function RegisterPage() {
   return (
@@ -6,5 +6,5 @@ export default function RegisterPage() {
       <Navbar />
       <AttorneyRegistration />
     </div>
-  )
+  );
 }

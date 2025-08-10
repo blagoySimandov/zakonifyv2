@@ -10,8 +10,8 @@ export const getByAttorneyId = query({
         v.literal("pending"),
         v.literal("confirmed"),
         v.literal("completed"),
-        v.literal("cancelled")
-      )
+        v.literal("cancelled"),
+      ),
     ),
   },
   handler: async (ctx, args) => {
@@ -29,7 +29,7 @@ export const getByAttorneyId = query({
       list.map(async (c) => ({
         ...c,
         matter: c.matterId ? await ctx.db.get(c.matterId) : null,
-      }))
+      })),
     );
   },
 });
@@ -44,8 +44,8 @@ export const getUpcomingConsultations = query({
     const now = Date.now();
     const days = args.days || 30;
     const limit = args.limit || 10;
-    const endTime = now + (days * 24 * 60 * 60 * 1000); // days in milliseconds
-    
+    const endTime = now + days * 24 * 60 * 60 * 1000; // days in milliseconds
+
     const consultations = await ctx.db
       .query("consultations")
       .withIndex("by_attorney", (q) => q.eq("attorneyId", args.attorneyId))
@@ -55,9 +55,9 @@ export const getUpcomingConsultations = query({
           q.lte(q.field("scheduledAt"), endTime),
           q.or(
             q.eq(q.field("status"), "pending"),
-            q.eq(q.field("status"), "confirmed")
-          )
-        )
+            q.eq(q.field("status"), "confirmed"),
+          ),
+        ),
       )
       .order("asc")
       .take(limit);
@@ -65,11 +65,13 @@ export const getUpcomingConsultations = query({
     // Enrich with client information
     return Promise.all(
       consultations.map(async (consultation) => {
-        const client = consultation.clientId ? await ctx.db.get(consultation.clientId) : null;
+        const client = consultation.clientId
+          ? await ctx.db.get(consultation.clientId)
+          : null;
         return {
           id: consultation._id,
           startTime: consultation.scheduledAt,
-          endTime: consultation.scheduledAt + (consultation.duration * 60 * 1000),
+          endTime: consultation.scheduledAt + consultation.duration * 60 * 1000,
           type: consultation.status === "confirmed" ? "video" : "pending", // Default type
           clientName: client ? client.fullName : "Unknown Client",
           topic: consultation.notes || "General Consultation",
@@ -77,7 +79,7 @@ export const getUpcomingConsultations = query({
           price: consultation.price,
           duration: consultation.duration,
         };
-      })
+      }),
     );
   },
 });
@@ -90,8 +92,8 @@ export const getByClientId = query({
         v.literal("pending"),
         v.literal("confirmed"),
         v.literal("completed"),
-        v.literal("cancelled")
-      )
+        v.literal("cancelled"),
+      ),
     ),
   },
   handler: async (ctx, args) => {
@@ -138,8 +140,8 @@ export const getAvailableSlots = query({
         q.and(
           q.gte(q.field("scheduledAt"), startOfDay),
           q.lte(q.field("scheduledAt"), endOfDay),
-          q.neq(q.field("status"), "cancelled")
-        )
+          q.neq(q.field("status"), "cancelled"),
+        ),
       )
       .collect();
 
@@ -150,11 +152,11 @@ export const getAvailableSlots = query({
         scheduledAt: new Date(c.scheduledAt),
         hour: new Date(c.scheduledAt).getHours(),
         status: c.status,
-      }))
+      })),
     );
 
     const bookedHours = new Set(
-      existingConsultations.map((c) => new Date(c.scheduledAt).getHours())
+      existingConsultations.map((c) => new Date(c.scheduledAt).getHours()),
     );
     console.log("Booked hours:", Array.from(bookedHours));
 
@@ -209,8 +211,8 @@ export const create = mutation({
         q.and(
           q.gte(q.field("scheduledAt"), startOfDay),
           q.lte(q.field("scheduledAt"), endOfDay),
-          q.neq(q.field("status"), "cancelled")
-        )
+          q.neq(q.field("status"), "cancelled"),
+        ),
       )
       .collect();
 
@@ -246,7 +248,7 @@ export const create = mutation({
       price = attorney.hourlyRate * (args.duration / 60);
     } else if (args.packageId && attorney.fixedFeePackages) {
       const pkg = attorney.fixedFeePackages.find(
-        (p) => p.name === args.packageId
+        (p) => p.name === args.packageId,
       );
       if (pkg) {
         price = pkg.price;
@@ -257,7 +259,7 @@ export const create = mutation({
     let matter = await ctx.db
       .query("matters")
       .withIndex("by_attorney_client", (q) =>
-        q.eq("attorneyId", args.attorneyId).eq("clientId", clientId!)
+        q.eq("attorneyId", args.attorneyId).eq("clientId", clientId!),
       )
       .first();
 
@@ -303,7 +305,7 @@ export const updateStatus = mutation({
       v.literal("pending"),
       v.literal("confirmed"),
       v.literal("completed"),
-      v.literal("cancelled")
+      v.literal("cancelled"),
     ),
   },
   handler: async (ctx, args) => {

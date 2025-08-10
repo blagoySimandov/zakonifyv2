@@ -1,1 +1,1 @@
-export { MESSAGES } from './common'
+export { MESSAGES } from "./common";

@@ -25,19 +25,19 @@ interface UseScheduleDataReturn {
 }
 
 export function useScheduleData(
-  attorneyId: Id<"attorneys">
+  attorneyId: Id<"attorneys">,
 ): UseScheduleDataReturn {
   const availabilityProfile = useQuery(
     api.availability.getAvailabilityProfile,
     {
       attorneyId,
-    }
+    },
   );
 
   const isLoading = availabilityProfile === undefined;
 
   const [workingHours, setWorkingHours] = useState<WeeklySchedule>(
-    DEFAULT_WORKING_HOURS
+    DEFAULT_WORKING_HOURS,
   );
   const [consultationSettings, setConsultationSettings] =
     useState<ConsultationSettings>(DEFAULT_CONSULTATION_SETTINGS);

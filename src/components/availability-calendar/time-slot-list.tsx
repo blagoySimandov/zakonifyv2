@@ -10,14 +10,17 @@ interface TimeSlotListProps {
   consultationType: ConsultationType;
 }
 
-export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps) {
+export function TimeSlotList({
+  availableSlots,
+  onSlotClick,
+}: TimeSlotListProps) {
   const getConsultationTypeIcon = (type: ConsultationType) => {
     switch (type) {
-      case 'video':
+      case "video":
         return <Video className="w-4 h-4" />;
-      case 'phone':
+      case "phone":
         return <Phone className="w-4 h-4" />;
-      case 'in-person':
+      case "in-person":
         return <MapPin className="w-4 h-4" />;
       default:
         return <Video className="w-4 h-4" />;
@@ -33,22 +36,22 @@ export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps)
     const isToday = date.toDateString() === today.toDateString();
     const isTomorrow = date.toDateString() === tomorrow.toDateString();
 
-    const timeString = date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
+    const timeString = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
 
-    const dateString = date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
+    const dateString = date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
     });
 
     if (isToday) {
-      return { date: 'Today', time: timeString };
+      return { date: "Today", time: timeString };
     } else if (isTomorrow) {
-      return { date: 'Tomorrow', time: timeString };
+      return { date: "Tomorrow", time: timeString };
     } else {
       return { date: dateString, time: timeString };
     }
@@ -56,7 +59,7 @@ export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps)
 
   const renderSlot = (slot: AvailableSlot) => {
     const { date, time } = formatDateTime(slot.startTime);
-    
+
     return (
       <button
         key={slot.startTime}
@@ -75,7 +78,7 @@ export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps)
             <span className="font-semibold">{slot.price}</span>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-gray-600">
             <Clock className="w-4 h-4" />
@@ -85,7 +88,7 @@ export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps)
             <span>{CALENDAR_CONSTANTS.TIME_SLOT_LIST.SELECT_SLOT}</span>
           </div>
         </div>
-        
+
         {slot.isEmergencySlot && (
           <div className="mt-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded">
             Emergency Slot Available
@@ -99,28 +102,30 @@ export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps)
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-    
+
     const groups: { [key: string]: AvailableSlot[] } = {
       today: [],
       tomorrow: [],
       thisWeek: [],
       nextWeek: [],
     };
-    
-    availableSlots.forEach(slot => {
+
+    availableSlots.forEach((slot) => {
       const slotDate = new Date(slot.startTime);
-      
+
       if (slotDate.toDateString() === today.toDateString()) {
         groups.today.push(slot);
       } else if (slotDate.toDateString() === tomorrow.toDateString()) {
         groups.tomorrow.push(slot);
-      } else if (slotDate < new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)) {
+      } else if (
+        slotDate < new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+      ) {
         groups.thisWeek.push(slot);
       } else {
         groups.nextWeek.push(slot);
       }
     });
-    
+
     return groups;
   };
 
@@ -128,16 +133,14 @@ export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps)
 
   const renderGroup = (title: string, slots: AvailableSlot[]) => {
     if (slots.length === 0) return null;
-    
+
     return (
       <div key={title} className="mb-6">
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
           <Clock className="w-5 h-5" />
           {title} ({slots.length} available)
         </h3>
-        <div className="space-y-3">
-          {slots.map(renderSlot)}
-        </div>
+        <div className="space-y-3">{slots.map(renderSlot)}</div>
       </div>
     );
   };
@@ -152,18 +155,25 @@ export function TimeSlotList({ availableSlots, onSlotClick }: TimeSlotListProps)
           {availableSlots.length} time slots available
         </p>
       </div>
-      
+
       {renderGroup(CALENDAR_CONSTANTS.TIME_SLOT_LIST.TODAY, slotGroups.today)}
-      {renderGroup(CALENDAR_CONSTANTS.TIME_SLOT_LIST.TOMORROW, slotGroups.tomorrow)}
-      {renderGroup(CALENDAR_CONSTANTS.TIME_SLOT_LIST.THIS_WEEK, slotGroups.thisWeek)}
-      {renderGroup(CALENDAR_CONSTANTS.TIME_SLOT_LIST.NEXT_WEEK, slotGroups.nextWeek)}
-      
+      {renderGroup(
+        CALENDAR_CONSTANTS.TIME_SLOT_LIST.TOMORROW,
+        slotGroups.tomorrow,
+      )}
+      {renderGroup(
+        CALENDAR_CONSTANTS.TIME_SLOT_LIST.THIS_WEEK,
+        slotGroups.thisWeek,
+      )}
+      {renderGroup(
+        CALENDAR_CONSTANTS.TIME_SLOT_LIST.NEXT_WEEK,
+        slotGroups.nextWeek,
+      )}
+
       {availableSlots.length === 0 && (
         <div className="text-center py-12">
           <Clock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">
-            No available time slots found
-          </p>
+          <p className="text-gray-500">No available time slots found</p>
         </div>
       )}
     </div>

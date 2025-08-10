@@ -15,4 +15,5 @@ export const API_ROUTES = {
 } as const;
 
 // Mock current attorney id for dashboard development
-export const MOCK_ATTORNEY_ID = "j57ee1tx3k7xgaw35vyqptkybn7n49te" as Id<"attorneys">;
+export const MOCK_ATTORNEY_ID =
+  "j57ee1tx3k7xgaw35vyqptkybn7n49te" as Id<"attorneys">;

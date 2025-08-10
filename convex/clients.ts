@@ -13,7 +13,7 @@ export const getByAttorneyId = query({
       .collect();
 
     // Get unique client IDs from matters
-    const clientIds = Array.from(new Set(matters.map(m => m.clientId)));
+    const clientIds = Array.from(new Set(matters.map((m) => m.clientId)));
 
     // Get clients with consultation details
     const clientsWithDetails = await Promise.all(
@@ -30,7 +30,7 @@ export const getByAttorneyId = query({
           .collect();
 
         // Get the active matter for this client-attorney pair
-        const activeMatter = matters.find(m => m.clientId === clientId);
+        const activeMatter = matters.find((m) => m.clientId === clientId);
 
         // Get the most recent consultation
         const lastConsultation = consultations[0] || null;
@@ -41,12 +41,12 @@ export const getByAttorneyId = query({
           lastConsultation,
           activeMatter,
         };
-      })
+      }),
     );
 
     // Filter out null clients and sort by most recent activity
     return clientsWithDetails
-      .filter(client => client !== null)
+      .filter((client) => client !== null)
       .sort((a, b) => {
         const aTime = a.lastConsultation?.scheduledAt || a.createdAt;
         const bTime = b.lastConsultation?.scheduledAt || b.createdAt;

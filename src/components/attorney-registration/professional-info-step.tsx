@@ -1,58 +1,63 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { AttorneyRegistrationFormData } from './validation'
-import { REGISTRATION_CONSTANTS } from './constants'
-import { REGISTRATION_MESSAGES } from './messages'
-import { trpc } from '@/utils'
-import { AlertCircle, CheckCircle } from 'lucide-react'
+import { useState } from "react";
+import { AttorneyRegistrationFormData } from "./validation";
+import { REGISTRATION_CONSTANTS } from "./constants";
+import { REGISTRATION_MESSAGES } from "./messages";
+import { trpc } from "@/utils";
+import { AlertCircle, CheckCircle } from "lucide-react";
 
 interface ProfessionalInfoStepProps {
-  formData: Partial<AttorneyRegistrationFormData>
-  errors: Record<string, string[]>
-  updateFormData: (updates: Partial<AttorneyRegistrationFormData>) => void
+  formData: Partial<AttorneyRegistrationFormData>;
+  errors: Record<string, string[]>;
+  updateFormData: (updates: Partial<AttorneyRegistrationFormData>) => void;
 }
 
-export function ProfessionalInfoStep({ formData, errors, updateFormData }: ProfessionalInfoStepProps) {
-  const [barIdCheckTimeout, setBarIdCheckTimeout] = useState<NodeJS.Timeout | null>(null)
-  const [isCheckingBarId, setIsCheckingBarId] = useState(false)
-  const [barIdTaken, setBarIdTaken] = useState(false)
+export function ProfessionalInfoStep({
+  formData,
+  errors,
+  updateFormData,
+}: ProfessionalInfoStepProps) {
+  const [barIdCheckTimeout, setBarIdCheckTimeout] =
+    useState<NodeJS.Timeout | null>(null);
+  const [isCheckingBarId, setIsCheckingBarId] = useState(false);
+  const [barIdTaken, setBarIdTaken] = useState(false);
 
   const checkBarIdQuery = trpc.attorneys.checkBarIdExists.useQuery(
-    { barAssociationId: formData.barAssociationId || '' },
-    { enabled: false }
-  )
+    { barAssociationId: formData.barAssociationId || "" },
+    { enabled: false },
+  );
 
   const handleBarIdChange = (barId: string) => {
-    updateFormData({ barAssociationId: barId })
-    setBarIdTaken(false)
-    setIsCheckingBarId(false)
+    updateFormData({ barAssociationId: barId });
+    setBarIdTaken(false);
+    setIsCheckingBarId(false);
 
     // Clear existing timeout
     if (barIdCheckTimeout) {
-      clearTimeout(barIdCheckTimeout)
+      clearTimeout(barIdCheckTimeout);
     }
 
     // Set new timeout to check bar ID after user stops typing
     if (barId.length >= 5) {
-      setIsCheckingBarId(true)
+      setIsCheckingBarId(true);
       const timeout = setTimeout(() => {
         checkBarIdQuery
           .refetch()
           .then((res) => {
             if (!res.error) {
-              setBarIdTaken(Boolean(res.data))
+              setBarIdTaken(Boolean(res.data));
             } else {
-              console.error('Bar ID check failed:', res.error)
-              setBarIdTaken(false)
+              console.error("Bar ID check failed:", res.error);
+              setBarIdTaken(false);
             }
           })
-          .finally(() => setIsCheckingBarId(false))
-      }, 500) // Check after 500ms of no typing
+          .finally(() => setIsCheckingBarId(false));
+      }, 500); // Check after 500ms of no typing
 
-      setBarIdCheckTimeout(timeout)
+      setBarIdCheckTimeout(timeout);
     }
-  }
+  };
   return (
     <div className="space-y-6">
       <div>
@@ -72,13 +77,13 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
           <div className="relative">
             <input
               type="text"
-              value={formData.barAssociationId || ''}
+              value={formData.barAssociationId || ""}
               onChange={(e) => handleBarIdChange(e.target.value)}
               placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.BAR_ID}
               className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                 errors.barAssociationId || barIdTaken
-                  ? 'border-red-300 bg-red-50 focus:ring-red-500'
-                  : 'border-gray-200 hover:border-gray-300 focus:bg-white'
+                  ? "border-red-300 bg-red-50 focus:ring-red-500"
+                  : "border-gray-200 hover:border-gray-300 focus:bg-white"
               }`}
             />
             {isCheckingBarId && (
@@ -86,11 +91,15 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
                 <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
-            {!isCheckingBarId && !barIdTaken && formData.barAssociationId && formData.barAssociationId.length >= 5 && !errors.barAssociationId && (
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-              </div>
-            )}
+            {!isCheckingBarId &&
+              !barIdTaken &&
+              formData.barAssociationId &&
+              formData.barAssociationId.length >= 5 &&
+              !errors.barAssociationId && (
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                </div>
+              )}
           </div>
 
           {errors.barAssociationId && (
@@ -99,14 +108,14 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
               {errors.barAssociationId[0]}
             </p>
           )}
-          
+
           {barIdTaken && !errors.barAssociationId && (
             <p className="text-red-500 text-sm mt-2 flex items-center">
               <AlertCircle className="w-4 h-4 mr-1" />
               Този номер в адвокатската колегия вече е регистриран
             </p>
           )}
-          
+
           {!barIdTaken &&
             formData.barAssociationId &&
             formData.barAssociationId.length >= 5 &&
@@ -117,7 +126,7 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
                 Номерът е свободен
               </p>
             )}
-          
+
           <p className="text-gray-500 text-sm mt-2">
             {REGISTRATION_MESSAGES.HELP.BAR_ID}
           </p>
@@ -131,15 +140,21 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
             type="number"
             min="0"
             max="70"
-            value={formData.yearsOfExperience || ''}
-            onChange={(e) => updateFormData({ yearsOfExperience: Number(e.target.value) })}
+            value={formData.yearsOfExperience || ""}
+            onChange={(e) =>
+              updateFormData({ yearsOfExperience: Number(e.target.value) })
+            }
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.YEARS_EXPERIENCE}
             className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-              errors.yearsOfExperience ? 'border-red-300 bg-red-50 focus:ring-red-500' : 'border-gray-200 hover:border-gray-300 focus:bg-white'
+              errors.yearsOfExperience
+                ? "border-red-300 bg-red-50 focus:ring-red-500"
+                : "border-gray-200 hover:border-gray-300 focus:bg-white"
             }`}
           />
           {errors.yearsOfExperience && (
-            <p className="text-red-500 text-sm mt-1">{errors.yearsOfExperience[0]}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.yearsOfExperience[0]}
+            </p>
           )}
         </div>
 
@@ -149,11 +164,13 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
           </label>
           <input
             type="text"
-            value={formData.education || ''}
+            value={formData.education || ""}
             onChange={(e) => updateFormData({ education: e.target.value })}
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.EDUCATION}
             className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-              errors.education ? 'border-red-300 bg-red-50 focus:ring-red-500' : 'border-gray-200 hover:border-gray-300 focus:bg-white'
+              errors.education
+                ? "border-red-300 bg-red-50 focus:ring-red-500"
+                : "border-gray-200 hover:border-gray-300 focus:bg-white"
             }`}
           />
           {errors.education && (
@@ -167,11 +184,13 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
           </label>
           <textarea
             rows={4}
-            value={formData.bio || ''}
+            value={formData.bio || ""}
             onChange={(e) => updateFormData({ bio: e.target.value })}
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.BIO}
             className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
-              errors.bio ? 'border-red-300 bg-red-50 focus:ring-red-500' : 'border-gray-200 hover:border-gray-300 focus:bg-white'
+              errors.bio
+                ? "border-red-300 bg-red-50 focus:ring-red-500"
+                : "border-gray-200 hover:border-gray-300 focus:bg-white"
             }`}
           />
           {errors.bio && (
@@ -183,5 +202,5 @@ export function ProfessionalInfoStep({ formData, errors, updateFormData }: Profe
         </div>
       </div>
     </div>
-  )
+  );
 }

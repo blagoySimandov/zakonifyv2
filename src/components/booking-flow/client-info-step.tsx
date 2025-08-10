@@ -13,40 +13,62 @@ interface ClientInfoStepProps {
 
 function validateClientInfo(clientInfo: ClientInfo): ValidationErrors {
   const errors: ValidationErrors = {};
-  
+
   if (!clientInfo.fullName.trim()) {
-    errors.fullName = [BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.FULL_NAME_REQUIRED];
+    errors.fullName = [
+      BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.FULL_NAME_REQUIRED,
+    ];
   }
-  
+
   if (!clientInfo.email.trim()) {
-    errors.email = [BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.EMAIL_REQUIRED];
+    errors.email = [
+      BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.EMAIL_REQUIRED,
+    ];
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientInfo.email)) {
-    errors.email = [BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.EMAIL_INVALID];
+    errors.email = [
+      BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.EMAIL_INVALID,
+    ];
   }
-  
-  if (clientInfo.phone && !/^[\+]?[1-9]?[\d\s\-\(\)]{10,}$/.test(clientInfo.phone.replace(/\s/g, ''))) {
-    errors.phone = [BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.PHONE_INVALID];
+
+  if (
+    clientInfo.phone &&
+    !/^[\+]?[1-9]?[\d\s\-\(\)]{10,}$/.test(clientInfo.phone.replace(/\s/g, ""))
+  ) {
+    errors.phone = [
+      BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.PHONE_INVALID,
+    ];
   }
-  
+
   if (!clientInfo.consultationTopic.trim()) {
-    errors.consultationTopic = [BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.CONSULTATION_TOPIC_REQUIRED];
+    errors.consultationTopic = [
+      BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.CONSULTATION_TOPIC_REQUIRED,
+    ];
   }
-  
+
   if (!clientInfo.privacyConsent) {
-    errors.privacyConsent = [BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.PRIVACY_CONSENT_REQUIRED];
+    errors.privacyConsent = [
+      BOOKING_CONSTANTS.CLIENT_INFO_STEP.VALIDATION.PRIVACY_CONSENT_REQUIRED,
+    ];
   }
-  
+
   return errors;
 }
 
-export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }: ClientInfoStepProps) {
+export function ClientInfoStep({
+  clientInfo,
+  onChange,
+  errors: externalErrors,
+}: ClientInfoStepProps) {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  
+
   const errors = useMemo(() => {
     return externalErrors || validateClientInfo(clientInfo);
   }, [clientInfo, externalErrors]);
 
-  function updateField<K extends keyof ClientInfo>(field: K, value: ClientInfo[K]) {
+  function updateField<K extends keyof ClientInfo>(
+    field: K,
+    value: ClientInfo[K],
+  ) {
     onChange({
       ...clientInfo,
       [field]: value,
@@ -61,7 +83,9 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
   function getFieldInputClasses(field: string) {
     const hasError = touched[field] && errors[field];
     return `w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-      hasError ? 'border-red-300 bg-red-50 focus:ring-red-500' : 'border-gray-200 hover:border-gray-300 focus:bg-white'
+      hasError
+        ? "border-red-300 bg-red-50 focus:ring-red-500"
+        : "border-gray-200 hover:border-gray-300 focus:bg-white"
     }`;
   }
 
@@ -83,7 +107,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
             <User className="w-5 h-5 text-blue-600" />
             {BOOKING_CONSTANTS.CLIENT_INFO_STEP.PERSONAL_INFO}
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
@@ -92,25 +116,27 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
               <input
                 type="text"
                 value={clientInfo.fullName}
-                onChange={(e) => updateField('fullName', e.target.value)}
+                onChange={(e) => updateField("fullName", e.target.value)}
                 onBlur={() => setTouched({ ...touched, fullName: true })}
-                className={getFieldInputClasses('fullName')}
+                className={getFieldInputClasses("fullName")}
                 placeholder="John Doe"
               />
-              {getFieldError('fullName') && (
-                <p className="text-red-600 text-sm mt-1">{getFieldError('fullName')}</p>
+              {getFieldError("fullName") && (
+                <p className="text-red-600 text-sm mt-1">
+                  {getFieldError("fullName")}
+                </p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.COMPANY}
               </label>
               <input
                 type="text"
-                value={clientInfo.company || ''}
-                onChange={(e) => updateField('company', e.target.value)}
-                className={getFieldInputClasses('company')}
+                value={clientInfo.company || ""}
+                onChange={(e) => updateField("company", e.target.value)}
+                className={getFieldInputClasses("company")}
                 placeholder="Company Name Inc."
               />
             </div>
@@ -123,7 +149,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
             <Mail className="w-5 h-5 text-blue-600" />
             {BOOKING_CONSTANTS.CLIENT_INFO_STEP.CONTACT_INFO}
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
@@ -132,16 +158,18 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
               <input
                 type="email"
                 value={clientInfo.email}
-                onChange={(e) => updateField('email', e.target.value)}
+                onChange={(e) => updateField("email", e.target.value)}
                 onBlur={() => setTouched({ ...touched, email: true })}
-                className={getFieldInputClasses('email')}
+                className={getFieldInputClasses("email")}
                 placeholder="john@example.com"
               />
-              {getFieldError('email') && (
-                <p className="text-red-600 text-sm mt-1">{getFieldError('email')}</p>
+              {getFieldError("email") && (
+                <p className="text-red-600 text-sm mt-1">
+                  {getFieldError("email")}
+                </p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.PHONE}
@@ -149,13 +177,15 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
               <input
                 type="tel"
                 value={clientInfo.phone}
-                onChange={(e) => updateField('phone', e.target.value)}
+                onChange={(e) => updateField("phone", e.target.value)}
                 onBlur={() => setTouched({ ...touched, phone: true })}
-                className={getFieldInputClasses('phone')}
+                className={getFieldInputClasses("phone")}
                 placeholder="+1 (555) 123-4567"
               />
-              {getFieldError('phone') && (
-                <p className="text-red-600 text-sm mt-1">{getFieldError('phone')}</p>
+              {getFieldError("phone") && (
+                <p className="text-red-600 text-sm mt-1">
+                  {getFieldError("phone")}
+                </p>
               )}
             </div>
           </div>
@@ -167,7 +197,7 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
             <MessageSquare className="w-5 h-5 text-blue-600" />
             {BOOKING_CONSTANTS.CLIENT_INFO_STEP.CONSULTATION_DETAILS}
           </h3>
-          
+
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
@@ -176,31 +206,47 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
               <div className="relative">
                 <select
                   value={clientInfo.consultationTopic}
-                  onChange={(e) => updateField('consultationTopic', e.target.value)}
-                  onBlur={() => setTouched({ ...touched, consultationTopic: true })}
-                  className={getFieldInputClasses('consultationTopic')}
+                  onChange={(e) =>
+                    updateField("consultationTopic", e.target.value)
+                  }
+                  onBlur={() =>
+                    setTouched({ ...touched, consultationTopic: true })
+                  }
+                  className={getFieldInputClasses("consultationTopic")}
                 >
-                  <option value="">{BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.CONSULTATION_TOPIC_PLACEHOLDER}</option>
+                  <option value="">
+                    {
+                      BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS
+                        .CONSULTATION_TOPIC_PLACEHOLDER
+                    }
+                  </option>
                   {BOOKING_CONSTANTS.CONSULTATION_TOPICS.map((topic) => (
-                    <option key={topic} value={topic}>{topic}</option>
+                    <option key={topic} value={topic}>
+                      {topic}
+                    </option>
                   ))}
                 </select>
               </div>
-              {getFieldError('consultationTopic') && (
-                <p className="text-red-600 text-sm mt-1">{getFieldError('consultationTopic')}</p>
+              {getFieldError("consultationTopic") && (
+                <p className="text-red-600 text-sm mt-1">
+                  {getFieldError("consultationTopic")}
+                </p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
                 {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.ADDITIONAL_NOTES}
               </label>
               <textarea
-                value={clientInfo.additionalNotes || ''}
-                onChange={(e) => updateField('additionalNotes', e.target.value)}
+                value={clientInfo.additionalNotes || ""}
+                onChange={(e) => updateField("additionalNotes", e.target.value)}
                 rows={4}
-                className={getFieldInputClasses('additionalNotes')}
-                placeholder={BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.ADDITIONAL_NOTES_PLACEHOLDER}
+                className={getFieldInputClasses("additionalNotes")}
+                placeholder={
+                  BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS
+                    .ADDITIONAL_NOTES_PLACEHOLDER
+                }
               />
             </div>
           </div>
@@ -212,15 +258,19 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
             <Shield className="w-5 h-5 text-blue-600" />
             Privacy & Consent
           </h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <div className="flex items-center h-5">
                 <input
                   type="checkbox"
                   checked={clientInfo.privacyConsent}
-                  onChange={(e) => updateField('privacyConsent', e.target.checked)}
-                  onBlur={() => setTouched({ ...touched, privacyConsent: true })}
+                  onChange={(e) =>
+                    updateField("privacyConsent", e.target.checked)
+                  }
+                  onBlur={() =>
+                    setTouched({ ...touched, privacyConsent: true })
+                  }
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                 />
               </div>
@@ -228,18 +278,22 @@ export function ClientInfoStep({ clientInfo, onChange, errors: externalErrors }:
                 <label className="text-gray-700 font-medium">
                   {BOOKING_CONSTANTS.CLIENT_INFO_STEP.FIELDS.PRIVACY_CONSENT} *
                 </label>
-                {getFieldError('privacyConsent') && (
-                  <p className="text-red-600 mt-1">{getFieldError('privacyConsent')}</p>
+                {getFieldError("privacyConsent") && (
+                  <p className="text-red-600 mt-1">
+                    {getFieldError("privacyConsent")}
+                  </p>
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <div className="flex items-center h-5">
                 <input
                   type="checkbox"
                   checked={clientInfo.marketingConsent}
-                  onChange={(e) => updateField('marketingConsent', e.target.checked)}
+                  onChange={(e) =>
+                    updateField("marketingConsent", e.target.checked)
+                  }
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                 />
               </div>

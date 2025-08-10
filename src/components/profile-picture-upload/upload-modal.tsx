@@ -35,7 +35,8 @@ export function UploadModal({
           <button
             onClick={onCancel}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-            disabled={isUploading}>
+            disabled={isUploading}
+          >
             <X className="h-5 w-5 text-slate-500" />
           </button>
         </div>
@@ -59,13 +60,15 @@ export function UploadModal({
             <button
               onClick={onCancel}
               disabled={isUploading}
-              className="flex-1 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-700 border border-slate-300 rounded-lg transition-colors disabled:opacity-50">
+              className="flex-1 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-700 border border-slate-300 rounded-lg transition-colors disabled:opacity-50"
+            >
               Cancel
             </button>
             <button
               onClick={onUpload}
               disabled={isUploading || !selectedFile}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50">
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
+            >
               {isUploading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />

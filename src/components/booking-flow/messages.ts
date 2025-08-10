@@ -6,13 +6,13 @@ export const BOOKING_MESSAGES = {
     PAYMENT_METHOD: "Payment Method",
     BILLING_ADDRESS: "Billing Address",
     PAYMENT_SECURITY: "Your payment information is encrypted and secure",
-    
+
     PAYMENT_METHODS: {
       CREDIT_CARD: "Credit Card",
       PAYPAL: "PayPal",
       BANK_TRANSFER: "Bank Transfer",
     },
-    
+
     FIELDS: {
       CARD_NUMBER: "Card Number",
       EXPIRY_DATE: "Expiry Date",
@@ -24,13 +24,13 @@ export const BOOKING_MESSAGES = {
       ZIP_CODE: "ZIP Code",
       COUNTRY: "Country",
     },
-    
+
     PRICING: {
       PROCESSING_FEE: "Processing Fee",
       TAX: "Tax",
       TOTAL: "Total",
     },
-    
+
     VALIDATION: {
       CARD_NUMBER_REQUIRED: "Card number is required",
       CARD_NUMBER_INVALID: "Please enter a valid card number",
@@ -41,7 +41,7 @@ export const BOOKING_MESSAGES = {
       CARDHOLDER_NAME_REQUIRED: "Cardholder name is required",
       BILLING_ADDRESS_REQUIRED: "Billing address is required",
     },
-    
+
     PLACEHOLDERS: {
       CARD_NUMBER: "1234 5678 9012 3456",
       EXPIRY_DATE: "MM/YY",
@@ -52,15 +52,17 @@ export const BOOKING_MESSAGES = {
       STATE: "NY",
       ZIP_CODE: "10001",
     },
-    
+
     PAYPAL: {
       TITLE: "PayPal Payment",
-      DESCRIPTION: "You will be redirected to PayPal to complete your payment securely.",
+      DESCRIPTION:
+        "You will be redirected to PayPal to complete your payment securely.",
     },
-    
+
     BANK_TRANSFER: {
       TITLE: "Bank Transfer Payment",
-      DESCRIPTION: "You will receive bank transfer instructions after booking confirmation.",
+      DESCRIPTION:
+        "You will receive bank transfer instructions after booking confirmation.",
       NOTE: "Note: Your consultation will be confirmed once payment is received (usually 1-2 business days).",
     },
   },

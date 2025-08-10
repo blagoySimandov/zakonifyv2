@@ -16,13 +16,16 @@ const getDayOfWeek = (timestamp: number): string => {
 };
 
 // Shared calculation logic that both calculateAvailability and getNextAvailableSlot use
-const calculateAvailabilityLogic = async (ctx: any, args: {
-  attorneyId: any;
-  startDate: number;
-  endDate: number;
-  consultationType?: "phone" | "video" | "in-person";
-  duration?: number;
-}) => {
+const calculateAvailabilityLogic = async (
+  ctx: any,
+  args: {
+    attorneyId: any;
+    startDate: number;
+    endDate: number;
+    consultationType?: "phone" | "video" | "in-person";
+    duration?: number;
+  },
+) => {
   // Get attorney availability profile
   const profile = await ctx.db
     .query("attorneyAvailability")
@@ -73,7 +76,9 @@ const calculateAvailabilityLogic = async (ctx: any, args: {
   // Get active slot reservations
   const reservations = await ctx.db
     .query("slotReservations")
-    .withIndex("by_attorney_time", (q: any) => q.eq("attorneyId", args.attorneyId))
+    .withIndex("by_attorney_time", (q: any) =>
+      q.eq("attorneyId", args.attorneyId),
+    )
     .filter((q: any) =>
       q.and(
         q.gte(q.field("startTime"), args.startDate),
@@ -138,34 +143,38 @@ const calculateAvailabilityLogic = async (ctx: any, args: {
       if (slotStart < minAdvanceTime) continue;
 
       // Check if slot conflicts with breaks
-      const conflictsWithBreak = daySchedule.breaks?.some((breakPeriod: any) => {
-        const breakStart = new Date(date);
-        const [breakStartHour, breakStartMinute] = breakPeriod.start
-          .split(":")
-          .map(Number);
-        breakStart.setHours(breakStartHour, breakStartMinute, 0, 0);
+      const conflictsWithBreak = daySchedule.breaks?.some(
+        (breakPeriod: any) => {
+          const breakStart = new Date(date);
+          const [breakStartHour, breakStartMinute] = breakPeriod.start
+            .split(":")
+            .map(Number);
+          breakStart.setHours(breakStartHour, breakStartMinute, 0, 0);
 
-        const breakEnd = new Date(date);
-        const [breakEndHour, breakEndMinute] = breakPeriod.end
-          .split(":")
-          .map(Number);
-        breakEnd.setHours(breakEndHour, breakEndMinute, 0, 0);
+          const breakEnd = new Date(date);
+          const [breakEndHour, breakEndMinute] = breakPeriod.end
+            .split(":")
+            .map(Number);
+          breakEnd.setHours(breakEndHour, breakEndMinute, 0, 0);
 
-        return (
-          slotStart < breakEnd.getTime() && slotEnd > breakStart.getTime()
-        );
-      });
+          return (
+            slotStart < breakEnd.getTime() && slotEnd > breakStart.getTime()
+          );
+        },
+      );
 
       if (conflictsWithBreak) continue;
 
       // Check if slot conflicts with existing consultations
-      const conflictsWithConsultation = consultations.some((consultation: any) => {
-        const consultationEnd =
-          consultation.scheduledAt + consultation.duration * 60 * 1000;
-        return (
-          slotStart < consultationEnd && slotEnd > consultation.scheduledAt
-        );
-      });
+      const conflictsWithConsultation = consultations.some(
+        (consultation: any) => {
+          const consultationEnd =
+            consultation.scheduledAt + consultation.duration * 60 * 1000;
+          return (
+            slotStart < consultationEnd && slotEnd > consultation.scheduledAt
+          );
+        },
+      );
 
       if (conflictsWithConsultation) continue;
 

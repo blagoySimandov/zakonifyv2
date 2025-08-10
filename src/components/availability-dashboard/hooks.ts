@@ -4,7 +4,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
-import { AttorneyAvailabilityProfile, AvailabilityStats, DayOfWeek } from "@/types/availability";
+import {
+  AttorneyAvailabilityProfile,
+  AvailabilityStats,
+  DayOfWeek,
+} from "@/types/availability";
+import { daysOfWeek } from "@/constants/time";
 
 interface UseAvailabilityDashboardReturn {
   availabilityProfile: AttorneyAvailabilityProfile | null;
@@ -27,101 +32,130 @@ interface UseAvailabilityDashboardReturn {
   refreshData: () => void;
 }
 
-export function useAvailabilityDashboard(attorneyId: Id<"attorneys">): UseAvailabilityDashboardReturn {
+export function useAvailabilityDashboard(
+  attorneyId: Id<"attorneys">,
+): UseAvailabilityDashboardReturn {
   const [isOnline, setIsOnline] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Query availability profile
-  const availabilityProfile = useQuery(api.availability.getAvailabilityProfile, {
-    attorneyId,
-  });
+  const availabilityProfile = useQuery(
+    api.availability.getAvailabilityProfile,
+    {
+      attorneyId,
+    },
+  );
 
-  // Query upcoming consultations (next 7 days)
-  const upcomingConsultations = useQuery(api.consultations.getUpcomingConsultations, {
-    attorneyId,
-    days: 7,
-  });
+  const upcomingConsultations = useQuery(
+    api.consultations.getUpcomingConsultations,
+    {
+      attorneyId,
+      days: 7,
+    },
+  );
 
-  // Mutation to update availability status
-  const updateAvailabilityStatus = useMutation(api.availability.updateAvailabilityStatus);
+  const updateAvailabilityStatus = useMutation(
+    api.availability.updateAvailabilityStatus,
+  );
 
   const isLoading = useMemo(() => {
-    return availabilityProfile === undefined || upcomingConsultations === undefined;
+    return (
+      availabilityProfile === undefined || upcomingConsultations === undefined
+    );
   }, [availabilityProfile, upcomingConsultations]);
 
-  // Calculate availability stats
   const availabilityStats = useMemo(() => {
     if (!availabilityProfile || !upcomingConsultations) return null;
 
     const today = new Date();
-    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
     const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
-    
+
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
     startOfWeek.setHours(0, 0, 0, 0);
-    
+
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 7);
 
-    // Today's consultations
-    const consultationsToday = upcomingConsultations.filter(consultation => 
-      consultation.startTime >= startOfToday.getTime() && 
-      consultation.startTime < endOfToday.getTime()
+    const consultationsToday = upcomingConsultations.filter(
+      (consultation) =>
+        consultation.startTime >= startOfToday.getTime() &&
+        consultation.startTime < endOfToday.getTime(),
     ).length;
 
-    // This week's bookings
-    const bookingsThisWeek = upcomingConsultations.filter(consultation => 
-      consultation.startTime >= startOfWeek.getTime() && 
-      consultation.startTime < endOfWeek.getTime()
+    const bookingsThisWeek = upcomingConsultations.filter(
+      (consultation) =>
+        consultation.startTime >= startOfWeek.getTime() &&
+        consultation.startTime < endOfWeek.getTime(),
     ).length;
 
-    // Calculate available hours today
-    const todayDayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][today.getDay()] as keyof typeof availabilityProfile.workingHours;
+    const todayDayOfWeek = daysOfWeek[
+      today.getDay()
+    ] as keyof typeof availabilityProfile.workingHours;
     const todaySchedule = availabilityProfile.workingHours[todayDayOfWeek];
-    
+
     let availableHoursToday = 0;
     if (todaySchedule) {
-      const [startHour, startMinute] = todaySchedule.start.split(':').map(Number);
-      const [endHour, endMinute] = todaySchedule.end.split(':').map(Number);
-      
+      const [startHour, startMinute] = todaySchedule.start
+        .split(":")
+        .map(Number);
+      const [endHour, endMinute] = todaySchedule.end.split(":").map(Number);
+
       const startMinutes = startHour * 60 + startMinute;
       const endMinutes = endHour * 60 + endMinute;
-      
+
       let totalMinutes = endMinutes - startMinutes;
-      
+
       // Subtract break time
-      if (todaySchedule.breaks) {
+      if ("breaks" in todaySchedule && todaySchedule.breaks) {
         for (const breakPeriod of todaySchedule.breaks) {
-          const [breakStartHour, breakStartMinute] = breakPeriod.start.split(':').map(Number);
-          const [breakEndHour, breakEndMinute] = breakPeriod.end.split(':').map(Number);
-          const breakMinutes = (breakEndHour * 60 + breakEndMinute) - (breakStartHour * 60 + breakStartMinute);
+          const [breakStartHour, breakStartMinute] = breakPeriod.start
+            .split(":")
+            .map(Number);
+          const [breakEndHour, breakEndMinute] = breakPeriod.end
+            .split(":")
+            .map(Number);
+          const breakMinutes =
+            breakEndHour * 60 +
+            breakEndMinute -
+            (breakStartHour * 60 + breakStartMinute);
           totalMinutes -= breakMinutes;
         }
       }
-      
+
       // Subtract booked consultation time
       const bookedMinutesToday = upcomingConsultations
-        .filter(consultation => 
-          consultation.startTime >= startOfToday.getTime() && 
-          consultation.startTime < endOfToday.getTime()
+        .filter(
+          (consultation) =>
+            consultation.startTime >= startOfToday.getTime() &&
+            consultation.startTime < endOfToday.getTime(),
         )
         .reduce((total, consultation) => total + consultation.duration, 0);
-      
+
       totalMinutes -= bookedMinutesToday;
       availableHoursToday = Math.max(0, totalMinutes / 60);
     }
 
     // Calculate weekly utilization rate
-    const weeklyWorkingHours = calculateWeeklyWorkingHours(availabilityProfile.workingHours);
+    const weeklyWorkingHours = calculateWeeklyWorkingHours(
+      availabilityProfile.workingHours,
+    );
     const weeklyBookedMinutes = upcomingConsultations
-      .filter(consultation => 
-        consultation.startTime >= startOfWeek.getTime() && 
-        consultation.startTime < endOfWeek.getTime()
+      .filter(
+        (consultation) =>
+          consultation.startTime >= startOfWeek.getTime() &&
+          consultation.startTime < endOfWeek.getTime(),
       )
       .reduce((total, consultation) => total + consultation.duration, 0);
-    
-    const utilizationRate = weeklyWorkingHours > 0 ? Math.round((weeklyBookedMinutes / 60) / weeklyWorkingHours * 100) : 0;
+
+    const utilizationRate =
+      weeklyWorkingHours > 0
+        ? Math.round((weeklyBookedMinutes / 60 / weeklyWorkingHours) * 100)
+        : 0;
 
     return {
       consultationsToday,
@@ -129,7 +163,11 @@ export function useAvailabilityDashboard(attorneyId: Id<"attorneys">): UseAvaila
       bookingsThisWeek,
       utilizationRate,
       totalHoursPerWeek: weeklyWorkingHours,
-      averageSlotsPerDay: Math.round(weeklyWorkingHours * 60 / availabilityProfile.consultationSettings.defaultDuration / 7),
+      averageSlotsPerDay: Math.round(
+        (weeklyWorkingHours * 60) /
+          availabilityProfile.consultationSettings.defaultDuration /
+          7,
+      ),
       peakHours: calculatePeakHours(upcomingConsultations),
       leastBookedDays: calculateLeastBookedDays(upcomingConsultations),
     };
@@ -139,7 +177,7 @@ export function useAvailabilityDashboard(attorneyId: Id<"attorneys">): UseAvaila
     try {
       const newStatus = !isOnline;
       setIsOnline(newStatus);
-      
+
       if (availabilityProfile) {
         await updateAvailabilityStatus({
           attorneyId,
@@ -147,7 +185,7 @@ export function useAvailabilityDashboard(attorneyId: Id<"attorneys">): UseAvaila
         });
       }
     } catch {
-      setError('Failed to update online status');
+      setError("Failed to update online status");
       setIsOnline(!isOnline); // Revert on error
     }
   };
@@ -165,7 +203,12 @@ export function useAvailabilityDashboard(attorneyId: Id<"attorneys">): UseAvaila
   }, [availabilityProfile]);
 
   return {
-    availabilityProfile,
+    availabilityProfile: availabilityProfile
+      ? {
+          ...availabilityProfile,
+          id: availabilityProfile._id,
+        }
+      : null,
     upcomingConsultations: upcomingConsultations || [],
     availabilityStats,
     isLoading,
@@ -177,31 +220,55 @@ export function useAvailabilityDashboard(attorneyId: Id<"attorneys">): UseAvaila
 }
 
 // Helper functions
-function calculateWeeklyWorkingHours(workingHours: Record<string, { start: string; end: string; breaks?: Array<{ start: string; end: string }> }> | null): number {
-  const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+function calculateWeeklyWorkingHours(
+  workingHours: Record<
+    string,
+    {
+      start: string;
+      end: string;
+      breaks?: Array<{ start: string; end: string }>;
+    }
+  > | null,
+): number {
+  const days = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
   let totalHours = 0;
 
   for (const day of days) {
     const schedule = workingHours?.[day];
     if (schedule) {
-      const [startHour, startMinute] = schedule.start.split(':').map(Number);
-      const [endHour, endMinute] = schedule.end.split(':').map(Number);
-      
+      const [startHour, startMinute] = schedule.start.split(":").map(Number);
+      const [endHour, endMinute] = schedule.end.split(":").map(Number);
+
       const startMinutes = startHour * 60 + startMinute;
       const endMinutes = endHour * 60 + endMinute;
-      
+
       let dayMinutes = endMinutes - startMinutes;
-      
+
       // Subtract break time
-      if (schedule.breaks) {
+      if ("breaks" in schedule && schedule.breaks) {
         for (const breakPeriod of schedule.breaks) {
-          const [breakStartHour, breakStartMinute] = breakPeriod.start.split(':').map(Number);
-          const [breakEndHour, breakEndMinute] = breakPeriod.end.split(':').map(Number);
-          const breakMinutes = (breakEndHour * 60 + breakEndMinute) - (breakStartHour * 60 + breakStartMinute);
+          const [breakStartHour, breakStartMinute] = breakPeriod.start
+            .split(":")
+            .map(Number);
+          const [breakEndHour, breakEndMinute] = breakPeriod.end
+            .split(":")
+            .map(Number);
+          const breakMinutes =
+            breakEndHour * 60 +
+            breakEndMinute -
+            (breakStartHour * 60 + breakStartMinute);
           dayMinutes -= breakMinutes;
         }
       }
-      
+
       totalHours += dayMinutes / 60;
     }
   }
@@ -209,46 +276,11 @@ function calculateWeeklyWorkingHours(workingHours: Record<string, { start: strin
   return totalHours;
 }
 
-function calculatePeakHours(consultations: Array<{ startTime: number; endTime: number }>): Array<{ start: string; end: string }> {
-  // For now, return common peak hours
-  return [
-    { start: "09:00", end: "11:00" },
-    { start: "14:00", end: "16:00" }
-  ];
-}
-
-function calculateLeastBookedDays(consultations: Array<{ startTime: number }>): DayOfWeek[] {
-  // Count consultations by day of week
-  const dayCounts: Record<string, number> = {
-    sunday: 0,
-    monday: 0,
-    tuesday: 0,
-    wednesday: 0,
-    thursday: 0,
-    friday: 0,
-    saturday: 0
-  };
-  
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  
-  consultations.forEach(consultation => {
-    const date = new Date(consultation.startTime);
-    const dayName = dayNames[date.getDay()];
-    dayCounts[dayName]++;
-  });
-  
-  // Find the days with the least bookings
-  const minCount = Math.min(...Object.values(dayCounts));
-  const leastBookedDays = Object.entries(dayCounts)
-    .filter(([_, count]) => count === minCount)
-    .map(([day, _]) => day as DayOfWeek);
-    
-  return leastBookedDays;
-}
-
-function calculatePeakHours(consultations: Array<{ startTime: number }>): { start: string; end: string }[] {
+function calculatePeakHours(
+  consultations: Array<{ startTime: number }>,
+): { start: string; end: string }[] {
   const hourCounts: { [hour: number]: number } = {};
-  
+
   for (const consultation of consultations) {
     const date = new Date(consultation.startTime);
     const hour = date.getHours();
@@ -257,22 +289,40 @@ function calculatePeakHours(consultations: Array<{ startTime: number }>): { star
 
   // Find the hours with the most bookings
   const maxCount = Math.max(...Object.values(hourCounts));
+  if (maxCount === 0) {
+    // Return common peak hours as default
+    return [
+      { start: "09:00", end: "11:00" },
+      { start: "14:00", end: "16:00" },
+    ];
+  }
+
   const peakHours = Object.keys(hourCounts)
-    .filter(hour => hourCounts[parseInt(hour)] === maxCount)
-    .map(hour => ({
-      start: `${hour.padStart(2, '0')}:00`,
-      end: `${(parseInt(hour) + 1).toString().padStart(2, '0')}:00`,
+    .filter((hour) => hourCounts[parseInt(hour)] === maxCount)
+    .map((hour) => ({
+      start: `${hour.padStart(2, "0")}:00`,
+      end: `${(parseInt(hour) + 1).toString().padStart(2, "0")}:00`,
     }));
 
   return peakHours;
 }
 
-function calculateLeastBookedDays(consultations: Array<{ startTime: number }>): string[] {
+function calculateLeastBookedDays(
+  consultations: Array<{ startTime: number }>,
+): DayOfWeek[] {
   const dayCounts: { [day: string]: number } = {};
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  
+  const dayNames = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+
   // Initialize all days with 0
-  dayNames.forEach(day => {
+  dayNames.forEach((day) => {
     dayCounts[day] = 0;
   });
 
@@ -284,5 +334,7 @@ function calculateLeastBookedDays(consultations: Array<{ startTime: number }>): 
 
   // Find the days with the least bookings
   const minCount = Math.min(...Object.values(dayCounts));
-  return Object.keys(dayCounts).filter(day => dayCounts[day] === minCount) as string[];
+  return Object.keys(dayCounts).filter(
+    (day) => dayCounts[day] === minCount,
+  ) as DayOfWeek[];
 }

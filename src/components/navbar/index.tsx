@@ -1,22 +1,23 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { useNavbarState } from './hooks'
-import { NAVBAR_CONSTANTS } from './constants'
-import { Menu, X } from 'lucide-react'
+import Link from "next/link";
+import { useNavbarState } from "./hooks";
+import { NAVBAR_CONSTANTS } from "./constants";
+import { Menu, X } from "lucide-react";
 
 export function Navbar() {
-  const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useNavbarState()
+  const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } =
+    useNavbarState();
 
   const renderBrandLogo = () => (
-    <Link 
-      href="/" 
+    <Link
+      href="/"
       className="text-2xl font-bold text-blue-500 hover:text-blue-600 transition-colors"
       onClick={closeMobileMenu}
     >
       {NAVBAR_CONSTANTS.BRAND_NAME}
     </Link>
-  )
+  );
 
   const renderMobileMenuToggle = () => (
     <button
@@ -24,9 +25,13 @@ export function Navbar() {
       className="md:hidden p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
       aria-label="Toggle mobile menu"
     >
-      {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      {isMobileMenuOpen ? (
+        <X className="w-6 h-6" />
+      ) : (
+        <Menu className="w-6 h-6" />
+      )}
     </button>
-  )
+  );
 
   const renderNavigationLinks = () => (
     <div className="hidden md:flex items-center space-x-8">
@@ -40,7 +45,7 @@ export function Navbar() {
         </Link>
       ))}
     </div>
-  )
+  );
 
   const renderActionButtons = () => (
     <div className="hidden md:flex items-center space-x-4">
@@ -63,10 +68,12 @@ export function Navbar() {
         {NAVBAR_CONSTANTS.ACTIONS.SIGN_UP}
       </Link>
     </div>
-  )
+  );
 
   const renderMobileMenu = () => (
-    <div className={`md:hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+    <div
+      className={`md:hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}
+    >
       <div className="px-6 py-4 space-y-4 bg-gray-50 border-t">
         {NAVBAR_CONSTANTS.NAVIGATION_ITEMS.map((navigationItem) => (
           <Link
@@ -78,7 +85,7 @@ export function Navbar() {
             {navigationItem.label}
           </Link>
         ))}
-        
+
         <div className="pt-4 border-t border-gray-200 space-y-3">
           <Link
             href="/register"
@@ -104,7 +111,7 @@ export function Navbar() {
         </div>
       </div>
     </div>
-  )
+  );
 
   return (
     <nav className="bg-white shadow-sm border-b">
@@ -118,5 +125,5 @@ export function Navbar() {
       </div>
       {renderMobileMenu()}
     </nav>
-  )
+  );
 }

@@ -26,29 +26,34 @@ export default function Home() {
             <nav className="hidden md:flex items-center gap-8 text-sm">
               <Link
                 href="/attorneys"
-                className="text-slate-600 hover:text-slate-900">
+                className="text-slate-600 hover:text-slate-900"
+              >
                 Find Attorneys
               </Link>
               <Link
                 href="/attorneys"
-                className="text-slate-600 hover:text-slate-900">
+                className="text-slate-600 hover:text-slate-900"
+              >
                 Practice Areas
               </Link>
               <Link
                 href="/register"
-                className="text-slate-600 hover:text-slate-900">
+                className="text-slate-600 hover:text-slate-900"
+              >
                 For Attorneys
               </Link>
             </nav>
             <div className="flex items-center gap-3">
               <Link
                 href="/register"
-                className="hidden md:inline-flex rounded-md border border-blue-600 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-50">
+                className="hidden md:inline-flex rounded-md border border-blue-600 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-50"
+              >
                 Join as Attorney
               </Link>
               <Link
                 href="/attorneys"
-                className="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
+                className="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+              >
                 Find an Attorney
               </Link>
             </div>
@@ -92,7 +97,8 @@ export default function Home() {
                   </div>
                   <Link
                     href="/attorneys"
-                    className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700">
+                    className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
+                  >
                     Search
                   </Link>
                 </div>
@@ -210,7 +216,8 @@ export default function Home() {
               <div className="shrink-0">
                 <Link
                   href="/attorneys"
-                  className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white shadow-sm hover:bg-blue-700">
+                  className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white shadow-sm hover:bg-blue-700"
+                >
                   Start your search
                 </Link>
               </div>
@@ -236,7 +243,8 @@ export default function Home() {
                 </div>
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 font-semibold text-blue-700 shadow-sm hover:bg-blue-50">
+                  className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 font-semibold text-blue-700 shadow-sm hover:bg-blue-50"
+                >
                   Create your profile
                 </Link>
               </div>
@@ -260,17 +268,20 @@ export default function Home() {
             <nav className="flex flex-wrap items-center gap-4 text-sm">
               <Link
                 href="/attorneys"
-                className="text-slate-600 hover:text-slate-900">
+                className="text-slate-600 hover:text-slate-900"
+              >
                 Browse
               </Link>
               <Link
                 href="/register"
-                className="text-slate-600 hover:text-slate-900">
+                className="text-slate-600 hover:text-slate-900"
+              >
                 Become a Partner
               </Link>
               <a
                 href="mailto:hello@zakonify.com"
-                className="text-slate-600 hover:text-slate-900">
+                className="text-slate-600 hover:text-slate-900"
+              >
                 Contact
               </a>
               <a href="#" className="text-slate-600 hover:text-slate-900">

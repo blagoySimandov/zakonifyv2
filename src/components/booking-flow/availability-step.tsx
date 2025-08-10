@@ -33,7 +33,7 @@ export function AvailabilityStep({
 
       <AvailabilityCalendar
         attorneyId={attorneyId}
-        consultationType={consultationType || 'video'}
+        consultationType={consultationType || "video"}
         duration={duration || 60}
         onSlotSelected={onSlotSelect}
         showBookingModal={false}
@@ -45,13 +45,13 @@ export function AvailabilityStep({
             {BOOKING_CONSTANTS.AVAILABILITY_STEP.SELECTED_SLOT}
           </h3>
           <p className="text-green-700">
-            {new Date(selectedSlot.startTime).toLocaleString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit',
+            {new Date(selectedSlot.startTime).toLocaleString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
               hour12: true,
             })}
           </p>

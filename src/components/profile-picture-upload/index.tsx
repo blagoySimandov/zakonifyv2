@@ -17,7 +17,7 @@ export function ProfilePictureUpload({
 }: ProfilePictureUploadProps) {
   const profileImageUrl = trpc.getStorageUrl.useQuery(
     { storageId: attorney.profileImageStorageId! },
-    { enabled: !!attorney.profileImageStorageId }
+    { enabled: !!attorney.profileImageStorageId },
   );
 
   const {

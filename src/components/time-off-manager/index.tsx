@@ -195,4 +195,3 @@ export function TimeOffManager({ attorneyId, onClose }: TimeOffManagerProps) {
     </div>
   );
 }
-

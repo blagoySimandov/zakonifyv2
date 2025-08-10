@@ -22,4 +22,3 @@ export function ConsultationSettingsEditor({}: ConsultationSettingsEditorProps) 
     </div>
   );
 }
-

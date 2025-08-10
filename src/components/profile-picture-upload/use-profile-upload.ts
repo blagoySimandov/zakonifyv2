@@ -55,7 +55,7 @@ export function useProfileUpload({
 
       setShowUploadModal(true);
     },
-    []
+    [],
   );
 
   const handleUpload = useCallback(async () => {

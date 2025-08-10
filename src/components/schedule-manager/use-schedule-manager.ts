@@ -27,7 +27,7 @@ interface UseScheduleManagerReturn {
 }
 
 export function useScheduleManager(
-  attorneyId: Id<"attorneys">
+  attorneyId: Id<"attorneys">,
 ): UseScheduleManagerReturn {
   const {
     workingHours,
@@ -44,7 +44,7 @@ export function useScheduleManager(
     useValidation();
 
   const createOrUpdateProfile = useMutation(
-    api.availability.createOrUpdateAvailabilityProfile
+    api.availability.createOrUpdateAvailabilityProfile,
   );
 
   const [isSaving, setIsSaving] = useState(false);
@@ -67,7 +67,7 @@ export function useScheduleManager(
       setWorkingHours(newSchedule);
       setError(null);
     },
-    [setWorkingHours]
+    [setWorkingHours],
   );
 
   const updateConsultationSettings = useCallback(
@@ -75,7 +75,7 @@ export function useScheduleManager(
       setConsultationSettings(newSettings);
       setError(null);
     },
-    [setConsultationSettings]
+    [setConsultationSettings],
   );
 
   const updateTimeZone = useCallback(
@@ -83,7 +83,7 @@ export function useScheduleManager(
       setTimeZone(newTimeZone);
       setError(null);
     },
-    [setTimeZone]
+    [setTimeZone],
   );
 
   // Save changes to database
@@ -141,7 +141,7 @@ export function useScheduleManager(
         setError(null);
       }
     },
-    [setWorkingHours]
+    [setWorkingHours],
   );
 
   // Run validation on changes

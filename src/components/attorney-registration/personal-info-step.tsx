@@ -24,7 +24,7 @@ export function PersonalInfoStep({
 
   const checkEmailQuery = trpc.attorneys.checkEmailExists.useQuery(
     { email: formData.email || "" },
-    { enabled: false }
+    { enabled: false },
   );
 
   const handleEmailChange = (email: string) => {
@@ -85,13 +85,16 @@ export function PersonalInfoStep({
             onChange={(e) => updateFormData({ fullName: e.target.value })}
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.FULL_NAME}
             className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-              errors.fullName 
-                ? "border-red-300 bg-red-50 focus:ring-red-500" 
+              errors.fullName
+                ? "border-red-300 bg-red-50 focus:ring-red-500"
                 : "border-gray-200 hover:border-gray-300 focus:bg-white"
             }`}
           />
           {errors.fullName && (
-            <p id="fullName-error" className="text-red-500 text-sm mt-2 flex items-center">
+            <p
+              id="fullName-error"
+              className="text-red-500 text-sm mt-2 flex items-center"
+            >
               <AlertCircle className="w-4 h-4 mr-1" />
               {errors.fullName[0]}
             </p>
@@ -124,27 +127,37 @@ export function PersonalInfoStep({
                 <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
-            {!isCheckingEmail && !emailTaken && formData.email && formData.email.includes("@") && !errors.email && (
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-              </div>
-            )}
+            {!isCheckingEmail &&
+              !emailTaken &&
+              formData.email &&
+              formData.email.includes("@") &&
+              !errors.email && (
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                </div>
+              )}
           </div>
-          
+
           {errors.email && (
-            <p id="email-error" className="text-red-500 text-sm mt-2 flex items-center">
+            <p
+              id="email-error"
+              className="text-red-500 text-sm mt-2 flex items-center"
+            >
               <AlertCircle className="w-4 h-4 mr-1" />
               {errors.email[0]}
             </p>
           )}
-          
+
           {emailTaken && !errors.email && (
-            <p id="email-error" className="text-red-500 text-sm mt-2 flex items-center">
+            <p
+              id="email-error"
+              className="text-red-500 text-sm mt-2 flex items-center"
+            >
               <AlertCircle className="w-4 h-4 mr-1" />
               Този имейл вече е регистриран
             </p>
           )}
-          
+
           {!emailTaken &&
             formData.email &&
             formData.email.includes("@") &&
@@ -155,9 +168,10 @@ export function PersonalInfoStep({
                 Имейлът е свободен
               </p>
             )}
-          
+
           <p id="email-help" className="text-gray-500 text-sm mt-2">
-            Това ще бъде вашият имейл за вход и как клиентите ще се свързват с вас
+            Това ще бъде вашият имейл за вход и как клиентите ще се свързват с
+            вас
           </p>
         </div>
       </div>

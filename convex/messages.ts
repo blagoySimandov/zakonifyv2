@@ -36,4 +36,3 @@ export const send = mutation({
     return { success: true, id: messageId };
   },
 });
-

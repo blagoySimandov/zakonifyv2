@@ -11,14 +11,14 @@ import { ClientInfoStep } from "./client-info-step";
 import { PaymentStep } from "./payment-step";
 import { ConfirmationStep } from "./confirmation-step";
 import { BookingSuccessModal } from "./booking-success-modal";
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Calendar,
-  Loader
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Calendar, Loader } from "lucide-react";
 
-export type BookingStep = 'consultation-type' | 'availability' | 'client-info' | 'payment' | 'confirmation';
+export type BookingStep =
+  | "consultation-type"
+  | "availability"
+  | "client-info"
+  | "payment"
+  | "confirmation";
 
 interface BookingFlowProps {
   attorneyId: Id<"attorneys">;
@@ -27,11 +27,11 @@ interface BookingFlowProps {
   onCancel?: () => void;
 }
 
-export function BookingFlow({ 
-  attorneyId, 
-  initialStep = 'consultation-type',
+export function BookingFlow({
+  attorneyId,
+  initialStep = "consultation-type",
   onComplete,
-  onCancel 
+  onCancel,
 }: BookingFlowProps) {
   const [currentStep, setCurrentStep] = useState<BookingStep>(initialStep);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -56,33 +56,33 @@ export function BookingFlow({
 
   const steps: { step: BookingStep; label: string; isCompleted: boolean }[] = [
     {
-      step: 'consultation-type',
+      step: "consultation-type",
       label: BOOKING_CONSTANTS.STEPS.CONSULTATION_TYPE,
       isCompleted: !!consultationType && !!duration,
     },
     {
-      step: 'availability',
+      step: "availability",
       label: BOOKING_CONSTANTS.STEPS.AVAILABILITY,
       isCompleted: !!selectedSlot,
     },
     {
-      step: 'client-info',
+      step: "client-info",
       label: BOOKING_CONSTANTS.STEPS.CLIENT_INFO,
       isCompleted: !!clientInfo?.fullName && !!clientInfo?.email,
     },
     {
-      step: 'payment',
+      step: "payment",
       label: BOOKING_CONSTANTS.STEPS.PAYMENT,
-      isCompleted: !!paymentInfo?.paymentMethodId,
+      isCompleted: !!paymentInfo?.paymentMethod,
     },
     {
-      step: 'confirmation',
+      step: "confirmation",
       label: BOOKING_CONSTANTS.STEPS.CONFIRMATION,
       isCompleted: false,
     },
   ];
 
-  const currentStepIndex = steps.findIndex(s => s.step === currentStep);
+  const currentStepIndex = steps.findIndex((s) => s.step === currentStep);
   const isLastStep = currentStepIndex === steps.length - 1;
   const isFirstStep = currentStepIndex === 0;
 
@@ -114,18 +114,21 @@ export function BookingFlow({
   };
 
   const handleStepClick = (step: BookingStep) => {
-    const stepIndex = steps.findIndex(s => s.step === step);
+    const stepIndex = steps.findIndex((s) => s.step === step);
     const currentIndex = currentStepIndex;
-    
+
     // Only allow going to previous steps or the next immediate step if current is completed
-    if (stepIndex < currentIndex || (stepIndex === currentIndex + 1 && steps[currentIndex].isCompleted)) {
+    if (
+      stepIndex < currentIndex ||
+      (stepIndex === currentIndex + 1 && steps[currentIndex].isCompleted)
+    ) {
       setCurrentStep(step);
     }
   };
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case 'consultation-type':
+      case "consultation-type":
         return (
           <ConsultationTypeStep
             attorneyId={attorneyId}
@@ -135,8 +138,8 @@ export function BookingFlow({
             onDurationChange={updateDuration}
           />
         );
-        
-      case 'availability':
+
+      case "availability":
         return (
           <AvailabilityStep
             attorneyId={attorneyId}
@@ -146,26 +149,50 @@ export function BookingFlow({
             onSlotSelect={updateSelectedSlot}
           />
         );
-        
-      case 'client-info':
+
+      case "client-info":
         return (
           <ClientInfoStep
-            clientInfo={clientInfo}
+            clientInfo={
+              clientInfo || {
+                fullName: "",
+                email: "",
+                phone: "",
+                consultationTopic: "",
+                privacyConsent: false,
+                marketingConsent: false,
+              }
+            }
             onChange={updateClientInfo}
           />
         );
-        
-      case 'payment':
-        return (
+
+      case "payment":
+        return selectedSlot ? (
           <PaymentStep
             selectedSlot={selectedSlot}
-            paymentInfo={paymentInfo}
+            paymentInfo={
+              paymentInfo || {
+                paymentMethod: "credit-card" as const,
+                billingAddress: {
+                  street: "",
+                  city: "",
+                  state: "",
+                  zipCode: "",
+                  country: "",
+                },
+              }
+            }
             onChange={updatePaymentInfo}
           />
-        );
-        
-      case 'confirmation':
-        return (
+        ) : null;
+
+      case "confirmation":
+        return consultationType &&
+          duration &&
+          selectedSlot &&
+          clientInfo &&
+          paymentInfo ? (
           <ConfirmationStep
             attorneyId={attorneyId}
             consultationType={consultationType}
@@ -174,8 +201,8 @@ export function BookingFlow({
             clientInfo={clientInfo}
             paymentInfo={paymentInfo}
           />
-        );
-        
+        ) : null;
+
       default:
         return null;
     }
@@ -183,9 +210,9 @@ export function BookingFlow({
 
   const getNextButtonText = () => {
     switch (currentStep) {
-      case 'confirmation':
+      case "confirmation":
         return BOOKING_CONSTANTS.ACTIONS.CONFIRM_BOOKING;
-      case 'payment':
+      case "payment":
         return BOOKING_CONSTANTS.ACTIONS.PROCEED_TO_CONFIRMATION;
       default:
         return BOOKING_CONSTANTS.ACTIONS.CONTINUE;
@@ -205,11 +232,9 @@ export function BookingFlow({
             <Calendar className="w-6 h-6 text-blue-600" />
             {BOOKING_CONSTANTS.TITLE}
           </h1>
-          <p className="text-gray-600 mt-1">
-            {BOOKING_CONSTANTS.SUBTITLE}
-          </p>
+          <p className="text-gray-600 mt-1">{BOOKING_CONSTANTS.SUBTITLE}</p>
         </div>
-        
+
         {onCancel && (
           <button
             onClick={onCancel}
@@ -264,7 +289,7 @@ export function BookingFlow({
   return (
     <div className="min-h-screen bg-gray-50">
       {renderHeader()}
-      
+
       {/* Step Indicator */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <StepIndicator
@@ -276,9 +301,7 @@ export function BookingFlow({
 
       {/* Main Content */}
       <div className="flex-1 p-6">
-        <div className="max-w-4xl mx-auto">
-          {renderStepContent()}
-        </div>
+        <div className="max-w-4xl mx-auto">{renderStepContent()}</div>
       </div>
 
       {renderFooter()}

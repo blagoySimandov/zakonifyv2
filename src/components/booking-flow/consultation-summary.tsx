@@ -9,7 +9,10 @@ interface ConsultationSummaryProps {
   duration: number;
 }
 
-export function ConsultationSummary({ price, duration }: ConsultationSummaryProps) {
+export function ConsultationSummary({
+  price,
+  duration,
+}: ConsultationSummaryProps) {
   const { processingFee, tax, totalAmount } = calculatePricing(price);
 
   return (
@@ -18,18 +21,22 @@ export function ConsultationSummary({ price, duration }: ConsultationSummaryProp
         <DollarSign className="w-5 h-5 text-green-600" />
         {BOOKING_MESSAGES.PAYMENT_STEP.CONSULTATION_SUMMARY}
       </h3>
-      
+
       <div className="space-y-3">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Consultation ({duration} min)</span>
           <span className="font-medium">${price}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">{BOOKING_MESSAGES.PAYMENT_STEP.PRICING.PROCESSING_FEE}</span>
+          <span className="text-gray-600">
+            {BOOKING_MESSAGES.PAYMENT_STEP.PRICING.PROCESSING_FEE}
+          </span>
           <span className="font-medium">${processingFee}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">{BOOKING_MESSAGES.PAYMENT_STEP.PRICING.TAX}</span>
+          <span className="text-gray-600">
+            {BOOKING_MESSAGES.PAYMENT_STEP.PRICING.TAX}
+          </span>
           <span className="font-medium">${tax}</span>
         </div>
         <div className="border-t pt-3">
@@ -39,7 +46,7 @@ export function ConsultationSummary({ price, duration }: ConsultationSummaryProp
           </div>
         </div>
       </div>
-      
+
       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
         <p className="text-xs text-blue-700 flex items-center gap-2">
           <Shield className="w-4 h-4" />

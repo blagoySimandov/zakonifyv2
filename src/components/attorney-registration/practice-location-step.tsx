@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AttorneyRegistrationFormData } from "./validation";
 import { REGISTRATION_CONSTANTS } from "./constants";
 import { REGISTRATION_MESSAGES } from "./messages";
-import { PRACTICE_AREAS } from "@/constants";
+import { PRACTICE_AREAS, PRACTICE_AREA_LABELS } from "@/constants";
 import { Upload } from "lucide-react";
 import { trpc } from "@/utils";
 
@@ -31,7 +31,7 @@ export function PracticeLocationStep({
     try {
       // Get upload URL from Convex
       const uploadUrlResult = await generateUploadUrlMutation.mutateAsync();
-      
+
       // Upload file to Convex storage
       const uploadResult = await fetch(uploadUrlResult, {
         method: "POST",
@@ -105,7 +105,9 @@ export function PracticeLocationStep({
                   }
                   className="rounded text-blue-500"
                 />
-                <span className="text-sm text-gray-700">{area}</span>
+                <span className="text-sm text-gray-700">
+                  {PRACTICE_AREA_LABELS[area]}
+                </span>
               </label>
             ))}
           </div>
@@ -323,4 +325,3 @@ export function PracticeLocationStep({
     </div>
   );
 }
-

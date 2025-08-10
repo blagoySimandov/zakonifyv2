@@ -1,18 +1,17 @@
-export { TRPCProvider, ConvexClientProvider } from './providers'
-export { ExampleComponent } from './example'
-export { AttorneyCard } from './attorney-card'
-export { AttorneySearch } from './attorney-search'
-export { AttorneyRegistration } from './attorney-registration'
-export { Navbar } from './navbar'
-export { Calendar } from './calendar'
-export { ClientsSection } from './clients-section'
-export { ChatFab } from './chat-fab'
-export { ChatDialog } from './chat-dialog'
-export { VerticalNavbar } from './vertical-navbar'
-export { ConsultationDetailsModal } from './consultation-details-modal'
-export { AttorneyLayout } from './attorney-layout'
-export { ProfilePictureUpload } from './profile-picture-upload'
-export { AvailabilityDashboard } from './availability-dashboard'
-export { ScheduleManager } from './schedule-manager'
-export { TimeOffManager } from './time-off-manager'
-export { AvailabilityCalendar } from './availability-calendar'
+export { TRPCProvider, ConvexClientProvider } from "./providers";
+export { AttorneyCard } from "./attorney-card";
+export { AttorneySearch } from "./attorney-search";
+export { AttorneyRegistration } from "./attorney-registration";
+export { Navbar } from "./navbar";
+export { Calendar } from "./calendar";
+export { ClientsSection } from "./clients-section";
+export { ChatFab } from "./chat-fab";
+export { ChatDialog } from "./chat-dialog";
+export { VerticalNavbar } from "./vertical-navbar";
+export { ConsultationDetailsModal } from "./consultation-details-modal";
+export { AttorneyLayout } from "./attorney-layout";
+export { ProfilePictureUpload } from "./profile-picture-upload";
+export { AvailabilityDashboard } from "./availability-dashboard";
+export { ScheduleManager } from "./schedule-manager";
+export { TimeOffManager } from "./time-off-manager";
+export { AvailabilityCalendar } from "./availability-calendar";

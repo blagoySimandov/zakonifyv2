@@ -3,7 +3,11 @@
 import { useAttorneySearch } from "./hooks";
 import { SEARCH_CONSTANTS } from "./constants";
 import { AttorneyCard } from "../attorney-card";
-import { PRACTICE_AREAS, type PracticeArea } from "@/constants";
+import {
+  PRACTICE_AREAS,
+  PRACTICE_AREA_LABELS,
+  type PracticeArea,
+} from "@/constants";
 import { Search, AlertCircle, Loader } from "lucide-react";
 
 export function AttorneySearch() {
@@ -61,7 +65,7 @@ export function AttorneySearch() {
                   <option>Practice Areas</option>
                   {PRACTICE_AREAS.map((area: PracticeArea) => (
                     <option key={area} value={area}>
-                      {area}
+                      {PRACTICE_AREA_LABELS[area]}
                     </option>
                   ))}
                 </select>

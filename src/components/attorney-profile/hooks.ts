@@ -1,51 +1,51 @@
-'use client'
+"use client";
 
-import { trpc } from '@/utils'
+import { trpc } from "@/utils";
 
 export function useAttorneyProfile(attorneyId: string) {
-  const { 
-    data: attorney, 
-    isLoading: attorneyLoading, 
+  const {
+    data: attorney,
+    isLoading: attorneyLoading,
     error: attorneyError,
-    refetch: refetchProfile 
+    refetch: refetchProfile,
   } = trpc.attorneys.getById.useQuery(
     { id: attorneyId },
-    { 
+    {
       enabled: !!attorneyId,
       retry: 1,
-    }
-  )
+    },
+  );
 
-  const { 
-    data: reviews, 
+  const {
+    data: reviews,
     isLoading: reviewsLoading,
     error: reviewsError,
-    refetch: refetchReviews
+    refetch: refetchReviews,
   } = trpc.reviews.getByAttorneyId.useQuery(
     { attorneyId },
-    { 
+    {
       enabled: !!attorneyId,
       retry: 1,
-    }
-  )
+    },
+  );
 
-  const { 
-    data: ratingStats, 
+  const {
+    data: ratingStats,
     isLoading: ratingLoading,
-    refetch: refetchRating
+    refetch: refetchRating,
   } = trpc.reviews.getAverageRating.useQuery(
     { attorneyId },
-    { 
+    {
       enabled: !!attorneyId,
       retry: 1,
-    }
-  )
+    },
+  );
 
   const refetchAll = () => {
-    refetchProfile()
-    refetchReviews()
-    refetchRating()
-  }
+    refetchProfile();
+    refetchReviews();
+    refetchRating();
+  };
 
   return {
     attorney: attorney || null,
@@ -57,6 +57,5 @@ export function useAttorneyProfile(attorneyId: string) {
     refetchReviews,
     refetchRating,
     refetchAll,
-  }
+  };
 }
-

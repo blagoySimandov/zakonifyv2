@@ -1,7 +1,21 @@
 "use client";
 
-import { Calendar, Clock, User, CreditCard, FileText, Shield, AlertCircle, CheckCircle } from "lucide-react";
-import { ClientInfo, PaymentInfo, AvailableSlot, ConsultationType } from "@/types/availability";
+import {
+  Calendar,
+  Clock,
+  User,
+  CreditCard,
+  FileText,
+  Shield,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import {
+  ClientInfo,
+  PaymentInfo,
+  AvailableSlot,
+  ConsultationType,
+} from "@/types/availability";
 import { Id } from "../../../convex/_generated/dataModel";
 import { BOOKING_CONSTANTS } from "./constants";
 
@@ -27,11 +41,11 @@ export function ConfirmationStep({
 
   function getPaymentMethodDisplay(method: string) {
     switch (method) {
-      case 'credit-card':
+      case "credit-card":
         return BOOKING_CONSTANTS.PAYMENT_STEP.PAYMENT_METHODS.CREDIT_CARD;
-      case 'paypal':
+      case "paypal":
         return BOOKING_CONSTANTS.PAYMENT_STEP.PAYMENT_METHODS.PAYPAL;
-      case 'bank-transfer':
+      case "bank-transfer":
         return BOOKING_CONSTANTS.PAYMENT_STEP.PAYMENT_METHODS.BANK_TRANSFER;
       default:
         return method;
@@ -63,34 +77,44 @@ export function ConfirmationStep({
               <Calendar className="w-5 h-5 text-blue-600" />
               {BOOKING_CONSTANTS.CONFIRMATION_STEP.CONSULTATION_DETAILS}
             </h3>
-            
+
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="font-medium text-gray-900">
-                    {new Date(selectedSlot.startTime).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    {new Date(selectedSlot.startTime).toLocaleDateString(
+                      "en-US",
+                      {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      },
+                    )}
                   </p>
                   <p className="text-sm text-gray-600">
-                    {new Date(selectedSlot.startTime).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    })}
+                    {new Date(selectedSlot.startTime).toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      },
+                    )}
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="font-medium text-gray-900">{duration} minutes</p>
-                  <p className="text-sm text-gray-600">{getConsultationTypeDisplay(consultationType)}</p>
+                  <p className="font-medium text-gray-900">
+                    {duration} minutes
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {getConsultationTypeDisplay(consultationType)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -102,10 +126,12 @@ export function ConfirmationStep({
               <User className="w-5 h-5 text-blue-600" />
               {BOOKING_CONSTANTS.CONFIRMATION_STEP.CLIENT_INFORMATION}
             </h3>
-            
+
             <div className="space-y-3">
               <div>
-                <p className="font-medium text-gray-900">{clientInfo.fullName}</p>
+                <p className="font-medium text-gray-900">
+                  {clientInfo.fullName}
+                </p>
                 {clientInfo.company && (
                   <p className="text-sm text-gray-600">{clientInfo.company}</p>
                 )}
@@ -138,19 +164,20 @@ export function ConfirmationStep({
               <CreditCard className="w-5 h-5 text-blue-600" />
               {BOOKING_CONSTANTS.CONFIRMATION_STEP.PAYMENT_INFORMATION}
             </h3>
-            
+
             <div className="space-y-4">
               <div>
                 <p className="font-medium text-gray-900">
                   {getPaymentMethodDisplay(paymentInfo.paymentMethod)}
                 </p>
-                {paymentInfo.paymentMethod === 'credit-card' && paymentInfo.cardNumber && (
-                  <p className="text-sm text-gray-600">
-                    **** **** **** {paymentInfo.cardNumber.slice(-4)}
-                  </p>
-                )}
+                {paymentInfo.paymentMethod === "credit-card" &&
+                  paymentInfo.cardNumber && (
+                    <p className="text-sm text-gray-600">
+                      **** **** **** {paymentInfo.cardNumber.slice(-4)}
+                    </p>
+                  )}
               </div>
-              
+
               <div className="border-t pt-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -173,7 +200,9 @@ export function ConfirmationStep({
                   </div>
                   <div className="border-t pt-2">
                     <div className="flex justify-between text-base font-bold">
-                      <span>{BOOKING_CONSTANTS.PAYMENT_STEP.PRICING.TOTAL}</span>
+                      <span>
+                        {BOOKING_CONSTANTS.PAYMENT_STEP.PRICING.TOTAL}
+                      </span>
                       <span>${totalAmount}</span>
                     </div>
                   </div>
@@ -188,24 +217,30 @@ export function ConfirmationStep({
               <Shield className="w-5 h-5 text-blue-600" />
               {BOOKING_CONSTANTS.CONFIRMATION_STEP.TERMS_AND_CONDITIONS}
             </h3>
-            
+
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-gray-700">
-                    {BOOKING_CONSTANTS.CONFIRMATION_STEP.TERMS_TEXT}{' '}
-                    <a href="#" className="text-blue-600 hover:text-blue-700 underline">
+                    {BOOKING_CONSTANTS.CONFIRMATION_STEP.TERMS_TEXT}{" "}
+                    <a
+                      href="#"
+                      className="text-blue-600 hover:text-blue-700 underline"
+                    >
                       {BOOKING_CONSTANTS.CONFIRMATION_STEP.TERMS_LINK}
-                    </a>{' '}
-                    and{' '}
-                    <a href="#" className="text-blue-600 hover:text-blue-700 underline">
+                    </a>{" "}
+                    and{" "}
+                    <a
+                      href="#"
+                      className="text-blue-600 hover:text-blue-700 underline"
+                    >
                       {BOOKING_CONSTANTS.CONFIRMATION_STEP.PRIVACY_LINK}
                     </a>
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -229,7 +264,9 @@ export function ConfirmationStep({
                   Before your consultation
                 </p>
                 <p className="text-sm text-blue-700">
-                  Please prepare any relevant documents and questions. You&apos;ll receive a confirmation email with joining instructions.
+                  Please prepare any relevant documents and questions.
+                  You&apos;ll receive a confirmation email with joining
+                  instructions.
                 </p>
               </div>
             </div>

@@ -4,7 +4,15 @@ import { useState } from "react";
 import { Id } from "../../../convex/_generated/dataModel";
 import { AvailableSlot } from "@/types/availability";
 import { CALENDAR_CONSTANTS } from "./constants";
-import { X, Calendar, Clock, Video, DollarSign, Save, Loader } from "lucide-react";
+import {
+  X,
+  Calendar,
+  Clock,
+  Video,
+  DollarSign,
+  Save,
+  Loader,
+} from "lucide-react";
 
 interface BookingModalProps {
   slot: AvailableSlot;
@@ -14,28 +22,28 @@ interface BookingModalProps {
   onCancel: () => void;
 }
 
-export function BookingModal({ 
-  slot, 
-  clientId, 
-  onConfirm, 
-  onCancel 
+export function BookingModal({
+  slot,
+  clientId,
+  onConfirm,
+  onCancel,
 }: BookingModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    notes: '',
-    clientName: '',
-    clientEmail: '',
-    clientPhone: '',
+    notes: "",
+    clientName: "",
+    clientEmail: "",
+    clientPhone: "",
   });
 
   const formatDateTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
+    return new Date(timestamp).toLocaleString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
       hour12: true,
     });
   };
@@ -47,21 +55,21 @@ export function BookingModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       // TODO: Implement booking logic
       // This would call a mutation to create the consultation
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate API call
       onConfirm();
     } catch (err) {
-      console.error('Booking failed:', err);
+      console.error("Booking failed:", err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -85,7 +93,7 @@ export function BookingModal({
           <h3 className="font-semibold text-gray-900 mb-4">
             {CALENDAR_CONSTANTS.BOOKING_MODAL.CONSULTATION_DETAILS}
           </h3>
-          
+
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <Calendar className="w-5 h-5 text-blue-600" />
@@ -93,10 +101,12 @@ export function BookingModal({
                 <span className="text-sm font-medium text-gray-700">
                   {CALENDAR_CONSTANTS.BOOKING_MODAL.DATE_TIME_LABEL}
                 </span>
-                <p className="text-gray-900">{formatDateTime(slot.startTime)}</p>
+                <p className="text-gray-900">
+                  {formatDateTime(slot.startTime)}
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Clock className="w-5 h-5 text-green-600" />
               <div>
@@ -106,7 +116,7 @@ export function BookingModal({
                 <p className="text-gray-900">{calculateDuration()} minutes</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Video className="w-5 h-5 text-purple-600" />
               <div>
@@ -114,11 +124,12 @@ export function BookingModal({
                   {CALENDAR_CONSTANTS.BOOKING_MODAL.TYPE_LABEL}
                 </span>
                 <p className="text-gray-900">
-                  {CALENDAR_CONSTANTS.CONSULTATION_TYPES[slot.consultationType]?.label || slot.consultationType}
+                  {CALENDAR_CONSTANTS.CONSULTATION_TYPES[slot.consultationType]
+                    ?.label || slot.consultationType}
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <DollarSign className="w-5 h-5 text-green-600" />
               <div>
@@ -148,11 +159,13 @@ export function BookingModal({
                     type="text"
                     required
                     value={formData.clientName}
-                    onChange={(e) => handleInputChange('clientName', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("clientName", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {CALENDAR_CONSTANTS.BOOKING_MODAL.EMAIL_LABEL}
@@ -161,11 +174,13 @@ export function BookingModal({
                     type="email"
                     required
                     value={formData.clientEmail}
-                    onChange={(e) => handleInputChange('clientEmail', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("clientEmail", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {CALENDAR_CONSTANTS.BOOKING_MODAL.PHONE_LABEL}
@@ -173,7 +188,9 @@ export function BookingModal({
                   <input
                     type="tel"
                     value={formData.clientPhone}
-                    onChange={(e) => handleInputChange('clientPhone', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("clientPhone", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -189,7 +206,7 @@ export function BookingModal({
             <textarea
               rows={4}
               value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
+              onChange={(e) => handleInputChange("notes", e.target.value)}
               placeholder={CALENDAR_CONSTANTS.BOOKING_MODAL.NOTES_PLACEHOLDER}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -198,11 +215,11 @@ export function BookingModal({
           {/* Terms */}
           <div className="mb-6">
             <p className="text-xs text-gray-500">
-              {CALENDAR_CONSTANTS.BOOKING_MODAL.TERMS_TEXT}{' '}
+              {CALENDAR_CONSTANTS.BOOKING_MODAL.TERMS_TEXT}{" "}
               <a href="#" className="text-blue-600 hover:underline">
                 {CALENDAR_CONSTANTS.BOOKING_MODAL.TERMS_LINK}
-              </a>{' '}
-              and{' '}
+              </a>{" "}
+              and{" "}
               <a href="#" className="text-blue-600 hover:underline">
                 {CALENDAR_CONSTANTS.BOOKING_MODAL.PRIVACY_LINK}
               </a>

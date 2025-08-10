@@ -15,8 +15,12 @@ interface StepIndicatorProps {
   onStepClick: (step: BookingStep) => void;
 }
 
-export function StepIndicator({ steps, currentStep, onStepClick }: StepIndicatorProps) {
-  const currentStepIndex = steps.findIndex(s => s.step === currentStep);
+export function StepIndicator({
+  steps,
+  currentStep,
+  onStepClick,
+}: StepIndicatorProps) {
+  const currentStepIndex = steps.findIndex((s) => s.step === currentStep);
 
   const renderStep = (step: Step, index: number) => {
     const isCurrent = step.step === currentStep;
@@ -31,47 +35,43 @@ export function StepIndicator({ steps, currentStep, onStepClick }: StepIndicator
           disabled={!isClickable}
           className={`flex items-center justify-center w-8 h-8 rounded-full font-medium text-sm transition-colors ${
             isCurrent
-              ? 'bg-blue-600 text-white'
+              ? "bg-blue-600 text-white"
               : isCompleted
-              ? 'bg-green-600 text-white'
-              : 'bg-gray-200 text-gray-600'
-          } ${isClickable ? 'hover:opacity-80 cursor-pointer' : 'cursor-not-allowed'}`}
+                ? "bg-green-600 text-white"
+                : "bg-gray-200 text-gray-600"
+          } ${isClickable ? "hover:opacity-80 cursor-pointer" : "cursor-not-allowed"}`}
         >
-          {isCompleted ? (
-            <CheckCircle className="w-4 h-4" />
-          ) : (
-            index + 1
-          )}
+          {isCompleted ? <CheckCircle className="w-4 h-4" /> : index + 1}
         </button>
-        
+
         <div className="ml-3">
           <button
             onClick={() => isClickable && onStepClick(step.step)}
             disabled={!isClickable}
             className={`text-sm font-medium transition-colors ${
               isCurrent
-                ? 'text-blue-600'
+                ? "text-blue-600"
                 : isCompleted
-                ? 'text-green-600'
-                : 'text-gray-500'
-            } ${isClickable ? 'hover:opacity-80 cursor-pointer' : 'cursor-not-allowed'}`}
+                  ? "text-green-600"
+                  : "text-gray-500"
+            } ${isClickable ? "hover:opacity-80 cursor-pointer" : "cursor-not-allowed"}`}
           >
             {step.label}
           </button>
         </div>
-        
+
         {index < steps.length - 1 && (
-          <div className={`ml-4 w-8 h-px ${
-            index < currentStepIndex ? 'bg-green-600' : 'bg-gray-300'
-          }`} />
+          <div
+            className={`ml-4 w-8 h-px ${
+              index < currentStepIndex ? "bg-green-600" : "bg-gray-300"
+            }`}
+          />
         )}
       </div>
     );
   };
 
   return (
-    <div className="flex items-center space-x-4">
-      {steps.map(renderStep)}
-    </div>
+    <div className="flex items-center space-x-4">{steps.map(renderStep)}</div>
   );
 }

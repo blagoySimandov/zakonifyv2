@@ -27,7 +27,7 @@ export function useWeeklySchedule({
         [day]: schedule,
       });
     },
-    [workingHours, onChange]
+    [workingHours, onChange],
   );
 
   const toggleWorkingDay = useCallback(
@@ -38,7 +38,7 @@ export function useWeeklySchedule({
         updateDay(day, createDefaultDaySchedule());
       }
     },
-    [workingHours, updateDay]
+    [workingHours, updateDay],
   );
 
   const copyToAllDays = useCallback(
@@ -52,7 +52,7 @@ export function useWeeklySchedule({
       });
       onChange(newSchedule);
     },
-    [workingHours, onChange]
+    [workingHours, onChange],
   );
 
   return {

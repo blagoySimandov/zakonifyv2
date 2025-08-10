@@ -22,4 +22,3 @@ export function BreakTimeManager({}: BreakTimeManagerProps) {
     </div>
   );
 }
-

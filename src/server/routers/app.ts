@@ -31,7 +31,7 @@ const AttorneyRegistrationSchema = z.object({
         name: z.string().min(5).max(100),
         description: z.string().min(20).max(500),
         price: z.number().min(100).max(50000),
-      })
+      }),
     )
     .optional(),
   location: z.object({
@@ -140,7 +140,9 @@ export const appRouter = router({
         try {
           const result = await convex.mutation(api.attorneys.register, {
             ...input,
-            profileImageStorageId: input.profileImageStorageId as Id<"_storage"> | undefined,
+            profileImageStorageId: input.profileImageStorageId as
+              | Id<"_storage">
+              | undefined,
           });
           return result;
         } catch (error) {
@@ -180,7 +182,7 @@ export const appRouter = router({
           languages: z.array(z.string()).optional(),
           profileImage: z.string().optional(),
           profileImageStorageId: z.string().optional(),
-        })
+        }),
       )
       .mutation(async ({ input }) => {
         try {
@@ -198,7 +200,9 @@ export const appRouter = router({
             location: input.location,
             languages: input.languages,
             profileImage: input.profileImage,
-            profileImageStorageId: input.profileImageStorageId as Id<"_storage"> | undefined,
+            profileImageStorageId: input.profileImageStorageId as
+              | Id<"_storage">
+              | undefined,
           });
         } catch (error) {
           console.error("Update failed:", error);
@@ -251,7 +255,7 @@ export const appRouter = router({
           senderId: z.string(),
           content: z.string(),
           attachmentIds: z.array(z.string()).optional(),
-        })
+        }),
       )
       .mutation(async ({ input }) => {
         return await convex.mutation(api.messages.send, {
@@ -284,7 +288,7 @@ export const appRouter = router({
           fileName: z.string(),
           fileSize: z.number(),
           mimeType: z.string(),
-        })
+        }),
       )
       .mutation(async ({ input }) => {
         return await convex.mutation(api.files.upload, {
@@ -356,7 +360,7 @@ export const appRouter = router({
         z.object({
           attorneyId: z.string(),
           date: z.string(),
-        })
+        }),
       )
       .query(async ({ input }) => {
         try {
@@ -365,7 +369,7 @@ export const appRouter = router({
             {
               attorneyId: input.attorneyId as Id<"attorneys">,
               date: input.date,
-            }
+            },
           );
           return slots;
         } catch (error) {
@@ -413,7 +417,7 @@ export const appRouter = router({
         z.object({
           id: z.string(),
           status: z.enum(["pending", "confirmed", "completed", "cancelled"]),
-        })
+        }),
       )
       .mutation(async ({ input }) => {
         return await convex.mutation(api.consultations.updateStatus, {
@@ -429,7 +433,7 @@ export const appRouter = router({
           status: z
             .enum(["pending", "confirmed", "completed", "cancelled"])
             .optional(),
-        })
+        }),
       )
       .query(async ({ input }) => {
         try {
@@ -438,7 +442,7 @@ export const appRouter = router({
             {
               attorneyId: input.attorneyId as Id<"attorneys">,
               status: input.status,
-            }
+            },
           );
           return consultations;
         } catch (error) {

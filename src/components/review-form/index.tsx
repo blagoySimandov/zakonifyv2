@@ -51,7 +51,8 @@ export function ReviewForm({
             onClick={() => updateFormData("rating", star)}
             onMouseEnter={() => setHoveredRating(star)}
             onMouseLeave={() => setHoveredRating(0)}
-            className="p-1 transition-colors">
+            className="p-1 transition-colors"
+          >
             <Star
               className={`w-8 h-8 transition-colors ${
                 star <= (hoveredRating || formData.rating)
@@ -88,7 +89,8 @@ export function ReviewForm({
       </p>
       <button
         onClick={onClose}
-        className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+        className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+      >
         {REVIEW_FORM_CONSTANTS.BUTTONS.CLOSE}
       </button>
     </div>
@@ -114,7 +116,8 @@ export function ReviewForm({
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -203,13 +206,15 @@ export function ReviewForm({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50">
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50"
+              >
                 {REVIEW_FORM_CONSTANTS.BUTTONS.CANCEL}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-400 flex items-center gap-2">
+                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-400 flex items-center gap-2"
+              >
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

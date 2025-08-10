@@ -82,4 +82,3 @@ export const REGISTRATION_CONSTANTS = {
 } as const;
 
 export type RegistrationStep = keyof typeof REGISTRATION_CONSTANTS.STEP_TITLES;
-

@@ -32,7 +32,8 @@ export function ProfilePictureDisplay({
 
       <button
         onClick={onUploadClick}
-        className="absolute -bottom-1 -right-1 p-1.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg">
+        className="absolute -bottom-1 -right-1 p-1.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg"
+      >
         <Camera className="h-3 w-3" />
       </button>
     </div>
