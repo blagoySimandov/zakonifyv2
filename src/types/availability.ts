@@ -292,6 +292,17 @@ export interface ValidationErrors {
   [key: string]: string[];
 }
 
+// Next available slot response for UI
+export interface NextAvailableSlotResponse {
+  time: string; // formatted time like "14:30", "16:00"
+  day: string; // formatted day like "today", "tomorrow", "Monday", "January 15"
+  startTime: number; // raw timestamp
+  endTime: number; // raw timestamp
+  consultationType: ConsultationType;
+  price: number;
+  isEmergencySlot: boolean;
+}
+
 // Export utility type for partial updates
 export type PartialAvailabilityProfile = Partial<
   Omit<

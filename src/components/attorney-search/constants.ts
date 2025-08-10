@@ -151,11 +151,13 @@ export const SEARCH_CONSTANTS = {
   },
 
   AVAILABILITY: {
-    EARLIEST_SLOT: "Earliest available:",
-    TODAY: "today",
-    TOMORROW: "tomorrow",
-    THIS_WEEK: "this week",
-    NEXT_WEEK: "next week",
+    EARLIEST_SLOT: "Най-рано свободен:",
+    TODAY: "днес",
+    TOMORROW: "утре",
+    THIS_WEEK: "тази седмица",
+    NEXT_WEEK: "следващата седмица",
+    LOADING: "Зарежда се...",
+    NO_AVAILABILITY: "Няма свободни часове",
   },
 
   RESULTS: {

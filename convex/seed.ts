@@ -121,11 +121,64 @@ export const seedAttorneys = mutation({
       },
     ];
 
+    const attorneyIds = [];
     for (const attorney of attorneys) {
-      await ctx.db.insert("attorneys", attorney);
+      const id = await ctx.db.insert("attorneys", attorney);
+      attorneyIds.push(id);
     }
 
-    return { message: `Seeded ${attorneys.length} attorneys` };
+    // Create availability profiles for each attorney
+    for (const attorneyId of attorneyIds) {
+      await ctx.db.insert("attorneyAvailability", {
+        attorneyId,
+        timeZone: "Europe/Sofia",
+        workingHours: {
+          monday: { 
+            start: "09:00", 
+            end: "17:00",
+            breaks: [{ start: "12:00", end: "13:00" }]
+          },
+          tuesday: { 
+            start: "09:00", 
+            end: "17:00",
+            breaks: [{ start: "12:00", end: "13:00" }]
+          },
+          wednesday: { 
+            start: "09:00", 
+            end: "17:00",
+            breaks: [{ start: "12:00", end: "13:00" }]
+          },
+          thursday: { 
+            start: "09:00", 
+            end: "17:00",
+            breaks: [{ start: "12:00", end: "13:00" }]
+          },
+          friday: { 
+            start: "09:00", 
+            end: "17:00",
+            breaks: [{ start: "12:00", end: "13:00" }]
+          },
+        },
+        consultationSettings: {
+          defaultDuration: 60,
+          bufferTime: 15,
+          maxConsultationsPerDay: 8,
+          allowBackToBack: false,
+          minAdvanceBooking: 2, // 2 hours minimum advance booking
+          maxAdvanceBooking: 30, // 30 days max advance booking
+          consultationTypes: [
+            { type: "video", duration: 60, price: 200, isEnabled: true },
+            { type: "phone", duration: 30, price: 150, isEnabled: true },
+            { type: "in-person", duration: 90, price: 300, isEnabled: true },
+          ],
+        },
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    return { message: `Seeded ${attorneys.length} attorneys with availability profiles` };
   },
 });
 

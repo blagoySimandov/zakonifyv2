@@ -7,22 +7,30 @@ import { ATTORNEY_CARD_MESSAGES } from "./messages";
 import { DollarSign, User, Star, Video } from "lucide-react";
 import { SEARCH_CONSTANTS } from "../attorney-search/constants";
 import { ActionButtons } from "../action-buttons";
+import { trpc } from "@/utils/trpc";
+import { formatAvailabilitySlot } from "./hooks";
 
 interface AttorneyCardProps {
   attorney: Attorney;
 }
 
 export function AttorneyCard({ attorney }: AttorneyCardProps) {
-  const getNextAvailableSlot = () => {
-    // Mock logic - in real app this would come from API
-    const slots = ["11:00", "14:30", "16:00"];
-    const days = ["today", "tomorrow", "Monday"];
-    const randomSlot = slots[Math.floor(Math.random() * slots.length)];
-    const randomDay = days[Math.floor(Math.random() * days.length)];
-    return { time: randomSlot, day: randomDay };
-  };
-
-  const nextSlot = getNextAvailableSlot();
+  const {
+    data: nextSlot,
+    isLoading: isLoadingSlot,
+    error,
+  } = trpc.attorneys.getNextAvailableSlot.useQuery(
+    {
+      attorneyId: attorney._id,
+      consultationType: "video", // Default to video consultation
+      duration: 60,
+    },
+    {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+    },
+  );
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -56,7 +64,10 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
               <div className="flex items-center gap-2 mb-2">
                 {/* Star Rating */}
                 <div className="flex items-center">
-                  {Array.from({ length: ATTORNEY_CARD_CONSTANTS.STAR_RATING_COUNT }, (_, i) => i + 1).map((star) => (
+                  {Array.from(
+                    { length: ATTORNEY_CARD_CONSTANTS.STAR_RATING_COUNT },
+                    (_, i) => i + 1,
+                  ).map((star) => (
                     <Star
                       key={star}
                       className="w-4 h-4 fill-yellow-400 text-yellow-400"
@@ -64,12 +75,16 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
                   ))}
                   <Star className="w-4 h-4 text-gray-300" />
                 </div>
-                <span className="text-sm text-gray-600">2 {ATTORNEY_CARD_MESSAGES.REVIEWS_TEXT}</span>
+                <span className="text-sm text-gray-600">
+                  2 {ATTORNEY_CARD_MESSAGES.REVIEWS_TEXT}
+                </span>
               </div>
 
               <div className="text-sm text-gray-600 mb-1">
-                {attorney.practiceAreas.slice(0, ATTORNEY_CARD_CONSTANTS.MAX_PRACTICE_AREAS_DISPLAY).join(" • ")} •{" "}
-                {attorney.location.city}
+                {attorney.practiceAreas
+                  .slice(0, ATTORNEY_CARD_CONSTANTS.MAX_PRACTICE_AREAS_DISPLAY)
+                  .join(" • ")}{" "}
+                • {attorney.location.city}
               </div>
             </div>
 
@@ -99,7 +114,11 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
                 {SEARCH_CONSTANTS.AVAILABILITY.EARLIEST_SLOT}
               </span>{" "}
               <span className="font-medium">
-                {nextSlot.day} at {nextSlot.time}
+                {isLoadingSlot
+                  ? SEARCH_CONSTANTS.AVAILABILITY.LOADING
+                  : error
+                    ? SEARCH_CONSTANTS.AVAILABILITY.NO_AVAILABILITY
+                    : formatAvailabilitySlot(nextSlot)}
               </span>
             </div>
           </div>
@@ -109,11 +128,6 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
               {
                 text: ATTORNEY_CARD_MESSAGES.VIEW_PROFILE_TEXT,
                 href: `/attorneys/${attorney._id}`,
-                variant: "secondary",
-              },
-              {
-                text: SEARCH_CONSTANTS.ACTIONS.BOOK_CONSULTATION,
-                onClick: () => console.log("Book consultation clicked"),
                 variant: "primary",
               },
             ]}

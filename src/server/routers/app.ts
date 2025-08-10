@@ -212,6 +212,83 @@ export const appRouter = router({
           throw new Error("Update failed. Please try again.");
         }
       }),
+
+    getNextAvailableSlot: publicProcedure
+      .input(
+        z.object({
+          attorneyId: z.string(),
+          consultationType: z
+            .enum(["phone", "video", "in-person"])
+            .optional(),
+          duration: z.number().min(15).max(480).optional(),
+        }),
+      )
+      .query(async ({ input }) => {
+        try {
+          const slot = await convex.query(api.availability.getNextAvailableSlot, {
+            attorneyId: input.attorneyId as Id<"attorneys">,
+            consultationType: input.consultationType,
+            duration: input.duration,
+          });
+
+          if (!slot) {
+            return null;
+          }
+
+          // Format the response for UI consumption
+          const formatTimeSlot = (timestamp: number): string => {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+              timeZone: "UTC",
+            });
+          };
+
+          const formatDaySlot = (timestamp: number): string => {
+            const slotDate = new Date(timestamp);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+
+            // Reset time parts for date comparison
+            const slotDateOnly = new Date(slotDate.getFullYear(), slotDate.getMonth(), slotDate.getDate());
+            const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const tomorrowOnly = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate());
+
+            if (slotDateOnly.getTime() === todayOnly.getTime()) {
+              return "today";
+            } else if (slotDateOnly.getTime() === tomorrowOnly.getTime()) {
+              return "tomorrow";
+            } else {
+              // Check if it's within the current week
+              const daysDiff = Math.ceil((slotDateOnly.getTime() - todayOnly.getTime()) / (1000 * 60 * 60 * 24));
+              if (daysDiff <= 7) {
+                return slotDate.toLocaleDateString("en-US", { weekday: "long" });
+              } else {
+                return slotDate.toLocaleDateString("en-US", { 
+                  month: "long", 
+                  day: "numeric" 
+                });
+              }
+            }
+          };
+
+          return {
+            time: formatTimeSlot(slot.startTime),
+            day: formatDaySlot(slot.startTime),
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            consultationType: slot.consultationType,
+            price: slot.price,
+            isEmergencySlot: slot.isEmergencySlot,
+          };
+        } catch (error) {
+          console.error("Failed to get next available slot:", error);
+          return null;
+        }
+      }),
   }),
 
   matters: router({

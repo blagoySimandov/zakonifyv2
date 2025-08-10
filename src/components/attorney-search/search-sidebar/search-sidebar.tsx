@@ -1,6 +1,5 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
 import { useSearchSidebar } from "./hooks";
 import { SEARCH_SIDEBAR_CONSTANTS } from "./constants";
 import { SEARCH_SIDEBAR_MESSAGES } from "./messages";
@@ -15,15 +14,6 @@ export function SearchSidebar() {
 
   return (
     <div className={SEARCH_SIDEBAR_CONSTANTS.CONTAINER_CLASSES}>
-      <div className={SEARCH_SIDEBAR_CONSTANTS.MAP_HELP_CONTAINER_CLASSES}>
-        <div className={SEARCH_SIDEBAR_CONSTANTS.MAP_HELP_CONTENT_CLASSES}>
-          <AlertCircle
-            className={SEARCH_SIDEBAR_CONSTANTS.MAP_HELP_ICON_CLASSES}
-          />
-          <span>{SEARCH_SIDEBAR_MESSAGES.MAP_HELP_TEXT}</span>
-        </div>
-      </div>
-
       <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_CONTAINER_CLASSES}>
         <h3 className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_TITLE_CLASSES}>
           {SEARCH_SIDEBAR_MESSAGES.POPULAR_PRACTICE_AREAS_TITLE}

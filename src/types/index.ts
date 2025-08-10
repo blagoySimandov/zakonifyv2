@@ -59,5 +59,6 @@ export type {
   AvailabilityStats,
   AvailabilityError,
   AvailabilityDefaults,
+  NextAvailableSlotResponse,
   PartialAvailabilityProfile,
 } from "./availability";
