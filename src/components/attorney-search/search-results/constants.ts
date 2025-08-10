@@ -1,0 +1,18 @@
+export const SEARCH_RESULTS_CONSTANTS = {
+  LOADING_WRAPPER_CLASSES: "flex items-center justify-center py-12",
+  LOADING_CONTENT_CLASSES: "flex items-center gap-3",
+  LOADING_ICON_CLASSES: "w-6 h-6 text-teal-500 animate-spin",
+  LOADING_TEXT_CLASSES: "text-gray-600",
+  ERROR_WRAPPER_CLASSES: "text-center py-12",
+  ERROR_CONTAINER_CLASSES: "bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto",
+  ERROR_ICON_CLASSES: "w-12 h-12 text-red-500 mx-auto mb-4",
+  ERROR_TITLE_CLASSES: "text-red-700 font-medium",
+  ERROR_SUBTITLE_CLASSES: "text-red-600 text-sm mt-1",
+  NO_RESULTS_WRAPPER_CLASSES: "text-center py-16",
+  NO_RESULTS_CONTAINER_CLASSES: "max-w-md mx-auto",
+  NO_RESULTS_ICON_CLASSES: "w-16 h-16 text-gray-300 mx-auto mb-4",
+  NO_RESULTS_TITLE_CLASSES: "text-lg font-medium text-gray-900 mb-2",
+  NO_RESULTS_DESCRIPTION_CLASSES: "text-gray-500 mb-6",
+  CLEAR_BUTTON_CLASSES: "px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors",
+  RESULTS_LIST_CLASSES: "space-y-4",
+} as const;

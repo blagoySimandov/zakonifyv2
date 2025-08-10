@@ -8,9 +8,9 @@ export default async function AttorneyProfilePage({
 }) {
   const { id } = await params;
   return (
-    <div>
+    <>
       <Navbar />
       <AttorneyProfile attorneyId={id} />
-    </div>
+    </>
   );
 }

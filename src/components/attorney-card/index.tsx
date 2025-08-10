@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { Attorney } from "@/types";
 import { ATTORNEY_CARD_CONSTANTS } from "./constants";
+import { ATTORNEY_CARD_MESSAGES } from "./messages";
 import { DollarSign, User, Star, Video } from "lucide-react";
 import { SEARCH_CONSTANTS } from "../attorney-search/constants";
+import { ActionButtons } from "../action-buttons";
 
 interface AttorneyCardProps {
   attorney: Attorney;
@@ -32,8 +34,8 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
               <Image
                 src={attorney.profileImage}
                 alt={attorney.fullName}
-                width={96}
-                height={96}
+                width={ATTORNEY_CARD_CONSTANTS.PROFILE_IMAGE_SIZE}
+                height={ATTORNEY_CARD_CONSTANTS.PROFILE_IMAGE_SIZE}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -54,7 +56,7 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
               <div className="flex items-center gap-2 mb-2">
                 {/* Star Rating */}
                 <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
+                  {Array.from({ length: ATTORNEY_CARD_CONSTANTS.STAR_RATING_COUNT }, (_, i) => i + 1).map((star) => (
                     <Star
                       key={star}
                       className="w-4 h-4 fill-yellow-400 text-yellow-400"
@@ -62,18 +64,18 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
                   ))}
                   <Star className="w-4 h-4 text-gray-300" />
                 </div>
-                <span className="text-sm text-gray-600">2 reviews</span>
+                <span className="text-sm text-gray-600">2 {ATTORNEY_CARD_MESSAGES.REVIEWS_TEXT}</span>
               </div>
 
               <div className="text-sm text-gray-600 mb-1">
-                {attorney.practiceAreas.slice(0, 2).join(" • ")} •{" "}
+                {attorney.practiceAreas.slice(0, ATTORNEY_CARD_CONSTANTS.MAX_PRACTICE_AREAS_DISPLAY).join(" • ")} •{" "}
                 {attorney.location.city}
               </div>
             </div>
 
             {attorney.isVerified && (
               <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
-                {ATTORNEY_CARD_CONSTANTS.VERIFIED_TEXT}
+                {ATTORNEY_CARD_MESSAGES.VERIFIED_TEXT}
               </span>
             )}
           </div>
@@ -82,11 +84,11 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center gap-2 text-sm text-blue-600">
               <Video className="w-4 h-4" />
-              <span>Video consultations</span>
+              <span>{ATTORNEY_CARD_MESSAGES.VIDEO_CONSULTATIONS}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <DollarSign className="w-4 h-4" />
-              <span>Published prices</span>
+              <span>{ATTORNEY_CARD_MESSAGES.PUBLISHED_PRICES}</span>
             </div>
           </div>
 
@@ -102,10 +104,20 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
             </div>
           </div>
 
-          {/* Action Button */}
-          <button className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-            {SEARCH_CONSTANTS.ACTIONS.BOOK_CONSULTATION}
-          </button>
+          <ActionButtons
+            buttons={[
+              {
+                text: ATTORNEY_CARD_MESSAGES.VIEW_PROFILE_TEXT,
+                href: `/attorneys/${attorney._id}`,
+                variant: "secondary",
+              },
+              {
+                text: SEARCH_CONSTANTS.ACTIONS.BOOK_CONSULTATION,
+                onClick: () => console.log("Book consultation clicked"),
+                variant: "primary",
+              },
+            ]}
+          />
         </div>
       </div>
     </div>

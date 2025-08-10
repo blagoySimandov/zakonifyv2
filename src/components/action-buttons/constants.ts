@@ -1,0 +1,5 @@
+export const ACTION_BUTTONS_CONSTANTS = {
+  BUTTON_SPACING: 3,
+  BUTTON_PADDING_X: 6,
+  BUTTON_PADDING_Y: 2,
+} as const;
