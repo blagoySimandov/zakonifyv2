@@ -23,6 +23,7 @@ export function useAvailabilityCalendar(
   duration: number
 ): UseAvailabilityCalendarReturn {
   const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Calculate date range (current week)
   const startOfWeek = new Date(selectedDate);
@@ -103,7 +104,7 @@ export function useAvailabilityCalendar(
   }, []);
 
   const refreshAvailability = useCallback(() => {
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev: number) => prev + 1);
     setError(null);
   }, []);
 

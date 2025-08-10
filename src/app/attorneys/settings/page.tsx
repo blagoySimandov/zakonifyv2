@@ -19,7 +19,7 @@ import type { Doc } from "../../../../convex/_generated/dataModel";
 type SettingsTab = typeof SETTINGS_CONSTANTS.TABS.PROFILE | typeof SETTINGS_CONSTANTS.TABS.AVAILABILITY | typeof SETTINGS_CONSTANTS.TABS.TIME_OFF;
 
 export default function AttorneySettings() {
-  const [attorneyId] = useState<string>(MOCK_ATTORNEY_ID);
+  const [attorneyId] = useState<Doc<"attorneys">['_id']>(MOCK_ATTORNEY_ID);
   const [activeTab, setActiveTab] = useState<SettingsTab>(SETTINGS_CONSTANTS.TABS.PROFILE);
   const [isEditing, setIsEditing] = useState<Record<string, boolean>>({});
   const [formData, setFormData] = useState<Partial<Doc<"attorneys">>>();
@@ -59,13 +59,13 @@ export default function AttorneySettings() {
         await updateAttorney.mutateAsync({
           id: attorney._id,
           location: {
-            [locationField]: formData[field],
+            [locationField]: formData?.[field],
           },
         });
       } else {
         await updateAttorney.mutateAsync({
           id: attorney._id,
-          [field]: formData[field],
+          [field]: formData?.[field],
         });
       }
       setIsEditing({ ...isEditing, [field]: false });
@@ -120,7 +120,7 @@ export default function AttorneySettings() {
             <input
               autoFocus
               type={type}
-              value={formData[field] || ""}
+              value={formData?.[field] || ""}
               onChange={(e) => handleInputChange(field, type === "number" ? Number(e.target.value) : e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {

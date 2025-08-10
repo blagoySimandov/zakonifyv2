@@ -227,6 +227,9 @@ export interface AvailabilityStats {
   utilizationRate: number // percentage
   peakHours: TimeSlot[]
   leastBookedDays: DayOfWeek[]
+  consultationsToday: number
+  availableHoursToday: number
+  bookingsThisWeek: number
 }
 
 // Error types

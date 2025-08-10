@@ -1,3 +1,5 @@
+import type { Id } from "../../convex/_generated/dataModel";
+
 export const APP_NAME = "Zakonify V2";
 export const APP_DESCRIPTION =
   "Modern Next.js application with tRPC and Convex";
@@ -13,4 +15,4 @@ export const API_ROUTES = {
 } as const;
 
 // Mock current attorney id for dashboard development
-export const MOCK_ATTORNEY_ID = "j57ee1tx3k7xgaw35vyqptkybn7n49te" as const;
+export const MOCK_ATTORNEY_ID = "j57ee1tx3k7xgaw35vyqptkybn7n49te" as Id<"attorneys">;

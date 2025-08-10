@@ -1,7 +1,7 @@
 "use client";
 
 import { WeeklySchedule } from "@/types/availability";
-import { SCHEDULE_CONSTANTS } from "./constants";
+import { SCHEDULE_MESSAGES } from "./messages";
 
 interface ScheduleTemplatesProps {
   onApplyTemplate: (templateName: string) => void;
@@ -13,10 +13,10 @@ export function ScheduleTemplates({}: ScheduleTemplatesProps) {
     <div>
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {SCHEDULE_CONSTANTS.TEMPLATES.TITLE}
+          {SCHEDULE_MESSAGES.TEMPLATES.TITLE}
         </h3>
         <p className="text-sm text-gray-600">
-          {SCHEDULE_CONSTANTS.TEMPLATES.SUBTITLE}
+          {SCHEDULE_MESSAGES.TEMPLATES.SUBTITLE}
         </p>
       </div>
 
@@ -28,4 +28,3 @@ export function ScheduleTemplates({}: ScheduleTemplatesProps) {
     </div>
   );
 }
-

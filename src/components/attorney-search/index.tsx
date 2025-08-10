@@ -3,6 +3,7 @@
 import { useAttorneySearch } from "./hooks";
 import { SEARCH_CONSTANTS } from "./constants";
 import { AttorneyCard } from "../attorney-card";
+import { PRACTICE_AREAS, type PracticeArea } from "@/constants";
 import { Search, AlertCircle, Loader } from "lucide-react";
 
 export function AttorneySearch() {
@@ -58,7 +59,7 @@ export function AttorneySearch() {
               <div className="flex gap-3">
                 <select className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
                   <option>Practice Areas</option>
-                  {PRACTICE_AREAS.map((area) => (
+                  {PRACTICE_AREAS.map((area: PracticeArea) => (
                     <option key={area} value={area}>
                       {area}
                     </option>
@@ -171,7 +172,7 @@ export function AttorneySearch() {
               Popular Practice Areas
             </h3>
             <div className="space-y-2">
-              {PRACTICE_AREAS.slice(0, 5).map((area) => (
+              {PRACTICE_AREAS.slice(0, 5).map((area: PracticeArea) => (
                 <button
                   key={area}
                   className="block w-full text-left text-sm text-gray-600 hover:text-teal-600 hover:bg-teal-50 px-2 py-1 rounded transition-colors"

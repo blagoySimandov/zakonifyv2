@@ -5,23 +5,21 @@ import { Calendar, Clock, User, Video, Phone, MapPin, MoreVertical, DollarSign }
 import { Id } from "../../../convex/_generated/dataModel";
 
 interface ConsultationData {
-  _id: Id<"consultations">;
-  clientId: Id<"clients">;
-  scheduledAt: number;
-  duration: number;
+  id: string;
+  startTime: number;
+  endTime: number;
+  type: string;
+  clientName: string;
+  topic?: string;
+  status: "pending" | "confirmed" | "completed" | "cancelled";
   price: number;
-  status: string;
-  notes?: string;
-  client?: {
-    fullName: string;
-    email: string;
-  };
+  duration: number;
 }
 
 interface UpcomingConsultationsProps {
   consultations: ConsultationData[];
-  onReschedule: (consultationId: Id<"consultations">) => void;
-  onCancel: (consultationId: Id<"consultations">) => void;
+  onReschedule: (consultationId: string) => void;
+  onCancel: (consultationId: string) => void;
 }
 
 export function UpcomingConsultations({ 
@@ -88,12 +86,12 @@ export function UpcomingConsultations({
   };
 
   const upcomingConsultations = consultations
-    .filter(consultation => consultation.scheduledAt > Date.now())
-    .sort((a, b) => a.scheduledAt - b.scheduledAt)
+    .filter(consultation => consultation.startTime > Date.now())
+    .sort((a, b) => a.startTime - b.startTime)
     .slice(0, 5); // Show only next 5 consultations
 
   const renderConsultation = (consultation: ConsultationData) => (
-    <div key={consultation._id} className="p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+    <div key={consultation.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -101,10 +99,10 @@ export function UpcomingConsultations({
           </div>
           <div>
             <h4 className="font-medium text-gray-900">
-              {consultation.client?.fullName || 'Unknown Client'}
+              {consultation.clientName || 'Unknown Client'}
             </h4>
             <p className="text-sm text-gray-500">
-              {consultation.client?.email}
+              {consultation.topic || 'No topic specified'}
             </p>
           </div>
         </div>
@@ -122,7 +120,7 @@ export function UpcomingConsultations({
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div className="flex items-center gap-2 text-gray-600">
           <Calendar className="w-4 h-4" />
-          <span>{formatDateTime(consultation.scheduledAt)}</span>
+          <span>{formatDateTime(consultation.startTime)}</span>
         </div>
         
         <div className="flex items-center gap-2 text-gray-600">
@@ -131,8 +129,8 @@ export function UpcomingConsultations({
         </div>
         
         <div className="flex items-center gap-2 text-gray-600">
-          {getConsultationTypeIcon('video')} {/* TODO: Get actual type from consultation */}
-          <span>{DASHBOARD_CONSTANTS.CONSULTATION_TYPE['video']}</span>
+          {getConsultationTypeIcon(consultation.type as 'video' | 'phone' | 'in-person')}
+          <span>{DASHBOARD_CONSTANTS.CONSULTATION_TYPE[consultation.type as keyof typeof DASHBOARD_CONSTANTS.CONSULTATION_TYPE] || consultation.type}</span>
         </div>
         
         <div className="flex items-center gap-2 text-gray-600">
@@ -141,21 +139,21 @@ export function UpcomingConsultations({
         </div>
       </div>
 
-      {consultation.notes && (
+      {consultation.topic && (
         <div className="mt-3 p-2 bg-gray-50 rounded text-sm text-gray-700">
-          <strong>Notes:</strong> {consultation.notes}
+          <strong>Topic:</strong> {consultation.topic}
         </div>
       )}
 
       <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
         <button
-          onClick={() => onReschedule(consultation._id)}
+          onClick={() => onReschedule(consultation.id)}
           className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
         >
           {DASHBOARD_CONSTANTS.UPCOMING_CONSULTATIONS.RESCHEDULE}
         </button>
         <button
-          onClick={() => onCancel(consultation._id)}
+          onClick={() => onCancel(consultation.id)}
           className="flex-1 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
         >
           {DASHBOARD_CONSTANTS.UPCOMING_CONSULTATIONS.CANCEL}

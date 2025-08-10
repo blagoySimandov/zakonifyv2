@@ -19,12 +19,7 @@ export function ConsultationSettingsEditor({}: ConsultationSettingsEditorProps) 
           {SCHEDULE_CONSTANTS.CONSULTATION_SETTINGS.SUBTITLE}
         </p>
       </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <p className="text-gray-500 text-center py-8">
-          Consultation settings editor coming soon...
-        </p>
-      </div>
     </div>
   );
 }
+

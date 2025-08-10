@@ -231,7 +231,6 @@ export const register = mutation({
       }
     }
 
-    // Location validation
     if (!args.location.city || args.location.city.trim().length < 2) {
       throw new ConvexError("City must be at least 2 characters");
     }
@@ -386,8 +385,7 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const { id, ...rawUpdates } = args;
 
-    // Handle nested location updates
-    let processedUpdates: any = { ...rawUpdates };
+    const processedUpdates = { ...rawUpdates };
 
     if (rawUpdates.location) {
       const attorney = await ctx.db.get(id);
@@ -395,7 +393,6 @@ export const update = mutation({
         throw new ConvexError("Attorney not found");
       }
 
-      // Merge with existing location data, ensuring all required fields are present
       const mergedLocation = {
         city: rawUpdates.location.city ?? attorney.location.city,
         state: rawUpdates.location.state ?? attorney.location.state,
@@ -404,7 +401,6 @@ export const update = mutation({
         zipCode: rawUpdates.location.zipCode ?? attorney.location.zipCode,
       };
 
-      // Validate that all required location fields are present after merge
       if (
         !mergedLocation.city ||
         !mergedLocation.state ||

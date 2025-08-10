@@ -1,24 +1,5 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { ConvexError } from "convex/values";
-
-const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + minutes;
-};
-
-const minutesToTime = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
-};
-
-const isTimeInRange = (time: number, start: string, end: string): boolean => {
-  const timeInMinutes = timeToMinutes(minutesToTime(time / 60));
-  const startMinutes = timeToMinutes(start);
-  const endMinutes = timeToMinutes(end);
-  return timeInMinutes >= startMinutes && timeInMinutes < endMinutes;
-};
 
 const getDayOfWeek = (timestamp: number): string => {
   const date = new Date(timestamp);
@@ -32,6 +13,198 @@ const getDayOfWeek = (timestamp: number): string => {
     "saturday",
   ];
   return days[date.getDay()];
+};
+
+// Shared calculation logic that both calculateAvailability and getNextAvailableSlot use
+const calculateAvailabilityLogic = async (ctx: any, args: {
+  attorneyId: any;
+  startDate: number;
+  endDate: number;
+  consultationType?: "phone" | "video" | "in-person";
+  duration?: number;
+}) => {
+  // Get attorney availability profile
+  const profile = await ctx.db
+    .query("attorneyAvailability")
+    .withIndex("by_attorney", (q: any) => q.eq("attorneyId", args.attorneyId))
+    .first();
+
+  if (!profile || !profile.isActive) {
+    return { slots: [], totalCount: 0, calculatedAt: Date.now() };
+  }
+
+  // Get existing consultations in the date range
+  const consultations = await ctx.db
+    .query("consultations")
+    .withIndex("by_attorney", (q: any) => q.eq("attorneyId", args.attorneyId))
+    .filter((q: any) =>
+      q.and(
+        q.gte(q.field("scheduledAt"), args.startDate),
+        q.lte(q.field("scheduledAt"), args.endDate),
+        q.neq(q.field("status"), "cancelled"),
+      ),
+    )
+    .collect();
+
+  // Get time off periods in the date range
+  const timeOffPeriods = await ctx.db
+    .query("attorneyTimeOff")
+    .withIndex("by_attorney_date_range", (q: any) =>
+      q.eq("attorneyId", args.attorneyId),
+    )
+    .filter((q: any) =>
+      q.or(
+        q.and(
+          q.gte(q.field("startTime"), args.startDate),
+          q.lte(q.field("startTime"), args.endDate),
+        ),
+        q.and(
+          q.gte(q.field("endTime"), args.startDate),
+          q.lte(q.field("endTime"), args.endDate),
+        ),
+        q.and(
+          q.lte(q.field("startTime"), args.startDate),
+          q.gte(q.field("endTime"), args.endDate),
+        ),
+      ),
+    )
+    .collect();
+
+  // Get active slot reservations
+  const reservations = await ctx.db
+    .query("slotReservations")
+    .withIndex("by_attorney_time", (q: any) => q.eq("attorneyId", args.attorneyId))
+    .filter((q: any) =>
+      q.and(
+        q.gte(q.field("startTime"), args.startDate),
+        q.lte(q.field("startTime"), args.endDate),
+        q.gt(q.field("expiresAt"), Date.now()),
+      ),
+    )
+    .collect();
+
+  // Generate available slots
+  const availableSlots = [];
+  const slotDuration =
+    args.duration || profile.consultationSettings.defaultDuration;
+  const bufferTime = profile.consultationSettings.allowBackToBack
+    ? 0
+    : profile.consultationSettings.bufferTime;
+  const currentTime = Date.now();
+  const minAdvanceTime =
+    currentTime +
+    profile.consultationSettings.minAdvanceBooking * 60 * 60 * 1000;
+
+  // Iterate through each day in the range
+  for (
+    let date = new Date(args.startDate);
+    date <= new Date(args.endDate);
+    date.setDate(date.getDate() + 1)
+  ) {
+    const dayOfWeek = getDayOfWeek(
+      date.getTime(),
+    ) as keyof typeof profile.workingHours;
+    const daySchedule = profile.workingHours[dayOfWeek];
+
+    if (!daySchedule) continue; // No working hours for this day
+
+    // Check if this day has any time off
+    const hasTimeOff = timeOffPeriods.some((timeOff: any) => {
+      const timeOffStart = new Date(timeOff.startTime);
+      const timeOffEnd = new Date(timeOff.endTime);
+      return date >= timeOffStart && date <= timeOffEnd;
+    });
+
+    if (hasTimeOff) continue; // Skip this day if attorney has time off
+
+    // Generate time slots for this day
+    const dayStart = new Date(date);
+    const [startHour, startMinute] = daySchedule.start.split(":").map(Number);
+    dayStart.setHours(startHour, startMinute, 0, 0);
+
+    const dayEnd = new Date(date);
+    const [endHour, endMinute] = daySchedule.end.split(":").map(Number);
+    dayEnd.setHours(endHour, endMinute, 0, 0);
+
+    // Generate slots with the specified duration and buffer
+    for (
+      let slotStart = dayStart.getTime();
+      slotStart + slotDuration * 60 * 1000 <= dayEnd.getTime();
+      slotStart += (slotDuration + bufferTime) * 60 * 1000
+    ) {
+      const slotEnd = slotStart + slotDuration * 60 * 1000;
+
+      // Check if slot is in the future (meets minimum advance booking)
+      if (slotStart < minAdvanceTime) continue;
+
+      // Check if slot conflicts with breaks
+      const conflictsWithBreak = daySchedule.breaks?.some((breakPeriod: any) => {
+        const breakStart = new Date(date);
+        const [breakStartHour, breakStartMinute] = breakPeriod.start
+          .split(":")
+          .map(Number);
+        breakStart.setHours(breakStartHour, breakStartMinute, 0, 0);
+
+        const breakEnd = new Date(date);
+        const [breakEndHour, breakEndMinute] = breakPeriod.end
+          .split(":")
+          .map(Number);
+        breakEnd.setHours(breakEndHour, breakEndMinute, 0, 0);
+
+        return (
+          slotStart < breakEnd.getTime() && slotEnd > breakStart.getTime()
+        );
+      });
+
+      if (conflictsWithBreak) continue;
+
+      // Check if slot conflicts with existing consultations
+      const conflictsWithConsultation = consultations.some((consultation: any) => {
+        const consultationEnd =
+          consultation.scheduledAt + consultation.duration * 60 * 1000;
+        return (
+          slotStart < consultationEnd && slotEnd > consultation.scheduledAt
+        );
+      });
+
+      if (conflictsWithConsultation) continue;
+
+      // Check if slot conflicts with reservations
+      const conflictsWithReservation = reservations.some((reservation: any) => {
+        return (
+          slotStart < reservation.endTime && slotEnd > reservation.startTime
+        );
+      });
+
+      if (conflictsWithReservation) continue;
+
+      // Find appropriate consultation type and price
+      const consultationType = args.consultationType || "video";
+      const consultationTypeConfig =
+        profile.consultationSettings.consultationTypes.find(
+          (ct: any) => ct.type === consultationType && ct.isEnabled,
+        );
+
+      if (!consultationTypeConfig) continue;
+
+      // Add the available slot
+      availableSlots.push({
+        startTime: slotStart,
+        endTime: slotEnd,
+        consultationType: consultationType,
+        price: consultationTypeConfig.price,
+        isEmergencySlot: false,
+      });
+    }
+  }
+
+  return {
+    slots: availableSlots.sort((a, b) => a.startTime - b.startTime),
+    totalCount: availableSlots.length,
+    nextAvailable: availableSlots.length > 0 ? availableSlots[0] : undefined,
+    calculatedAt: Date.now(),
+    expiresAt: Date.now() + 60 * 60 * 1000, // Expires in 1 hour
+  };
 };
 
 export const createOrUpdateAvailabilityProfile = mutation({
@@ -262,7 +435,7 @@ export const getTimeOff = query({
           q
             .eq("attorneyId", args.attorneyId)
             .gte("startTime", args.startDate!)
-            .lte("endTime", args.endDate!),
+            .lte("startTime", args.endDate!),
         );
     }
 
@@ -270,7 +443,6 @@ export const getTimeOff = query({
   },
 });
 
-// Calculate availability for a date range
 export const calculateAvailability = query({
   args: {
     attorneyId: v.id("attorneys"),
@@ -282,188 +454,7 @@ export const calculateAvailability = query({
     duration: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Get attorney availability profile
-    const profile = await ctx.db
-      .query("attorneyAvailability")
-      .withIndex("by_attorney", (q) => q.eq("attorneyId", args.attorneyId))
-      .first();
-
-    if (!profile || !profile.isActive) {
-      return { slots: [], totalCount: 0, calculatedAt: Date.now() };
-    }
-
-    // Get existing consultations in the date range
-    const consultations = await ctx.db
-      .query("consultations")
-      .withIndex("by_attorney", (q) => q.eq("attorneyId", args.attorneyId))
-      .filter((q) =>
-        q.and(
-          q.gte(q.field("scheduledAt"), args.startDate),
-          q.lte(q.field("scheduledAt"), args.endDate),
-          q.neq(q.field("status"), "cancelled"),
-        ),
-      )
-      .collect();
-
-    // Get time off periods in the date range
-    const timeOffPeriods = await ctx.db
-      .query("attorneyTimeOff")
-      .withIndex("by_attorney_date_range", (q) =>
-        q.eq("attorneyId", args.attorneyId),
-      )
-      .filter((q) =>
-        q.or(
-          q.and(
-            q.gte(q.field("startTime"), args.startDate),
-            q.lte(q.field("startTime"), args.endDate),
-          ),
-          q.and(
-            q.gte(q.field("endTime"), args.startDate),
-            q.lte(q.field("endTime"), args.endDate),
-          ),
-          q.and(
-            q.lte(q.field("startTime"), args.startDate),
-            q.gte(q.field("endTime"), args.endDate),
-          ),
-        ),
-      )
-      .collect();
-
-    // Get active slot reservations
-    const reservations = await ctx.db
-      .query("slotReservations")
-      .withIndex("by_attorney_time", (q) => q.eq("attorneyId", args.attorneyId))
-      .filter((q) =>
-        q.and(
-          q.gte(q.field("startTime"), args.startDate),
-          q.lte(q.field("startTime"), args.endDate),
-          q.gt(q.field("expiresAt"), Date.now()),
-        ),
-      )
-      .collect();
-
-    // Generate available slots
-    const availableSlots = [];
-    const slotDuration =
-      args.duration || profile.consultationSettings.defaultDuration;
-    const bufferTime = profile.consultationSettings.allowBackToBack
-      ? 0
-      : profile.consultationSettings.bufferTime;
-    const currentTime = Date.now();
-    const minAdvanceTime =
-      currentTime +
-      profile.consultationSettings.minAdvanceBooking * 60 * 60 * 1000;
-
-    // Iterate through each day in the range
-    for (
-      let date = new Date(args.startDate);
-      date <= new Date(args.endDate);
-      date.setDate(date.getDate() + 1)
-    ) {
-      const dayOfWeek = getDayOfWeek(
-        date.getTime(),
-      ) as keyof typeof profile.workingHours;
-      const daySchedule = profile.workingHours[dayOfWeek];
-
-      if (!daySchedule) continue; // No working hours for this day
-
-      // Check if this day has any time off
-      const hasTimeOff = timeOffPeriods.some((timeOff) => {
-        const timeOffStart = new Date(timeOff.startTime);
-        const timeOffEnd = new Date(timeOff.endTime);
-        return date >= timeOffStart && date <= timeOffEnd;
-      });
-
-      if (hasTimeOff) continue; // Skip this day if attorney has time off
-
-      // Generate time slots for this day
-      const dayStart = new Date(date);
-      const [startHour, startMinute] = daySchedule.start.split(":").map(Number);
-      dayStart.setHours(startHour, startMinute, 0, 0);
-
-      const dayEnd = new Date(date);
-      const [endHour, endMinute] = daySchedule.end.split(":").map(Number);
-      dayEnd.setHours(endHour, endMinute, 0, 0);
-
-      // Generate slots with the specified duration and buffer
-      for (
-        let slotStart = dayStart.getTime();
-        slotStart + slotDuration * 60 * 1000 <= dayEnd.getTime();
-        slotStart += (slotDuration + bufferTime) * 60 * 1000
-      ) {
-        const slotEnd = slotStart + slotDuration * 60 * 1000;
-
-        // Check if slot is in the future (meets minimum advance booking)
-        if (slotStart < minAdvanceTime) continue;
-
-        // Check if slot conflicts with breaks
-        const conflictsWithBreak = daySchedule.breaks?.some((breakPeriod) => {
-          const breakStart = new Date(date);
-          const [breakStartHour, breakStartMinute] = breakPeriod.start
-            .split(":")
-            .map(Number);
-          breakStart.setHours(breakStartHour, breakStartMinute, 0, 0);
-
-          const breakEnd = new Date(date);
-          const [breakEndHour, breakEndMinute] = breakPeriod.end
-            .split(":")
-            .map(Number);
-          breakEnd.setHours(breakEndHour, breakEndMinute, 0, 0);
-
-          return (
-            slotStart < breakEnd.getTime() && slotEnd > breakStart.getTime()
-          );
-        });
-
-        if (conflictsWithBreak) continue;
-
-        // Check if slot conflicts with existing consultations
-        const conflictsWithConsultation = consultations.some((consultation) => {
-          const consultationEnd =
-            consultation.scheduledAt + consultation.duration * 60 * 1000;
-          return (
-            slotStart < consultationEnd && slotEnd > consultation.scheduledAt
-          );
-        });
-
-        if (conflictsWithConsultation) continue;
-
-        // Check if slot conflicts with reservations
-        const conflictsWithReservation = reservations.some((reservation) => {
-          return (
-            slotStart < reservation.endTime && slotEnd > reservation.startTime
-          );
-        });
-
-        if (conflictsWithReservation) continue;
-
-        // Find appropriate consultation type and price
-        const consultationType = args.consultationType || "video";
-        const consultationTypeConfig =
-          profile.consultationSettings.consultationTypes.find(
-            (ct) => ct.type === consultationType && ct.isEnabled,
-          );
-
-        if (!consultationTypeConfig) continue;
-
-        // Add the available slot
-        availableSlots.push({
-          startTime: slotStart,
-          endTime: slotEnd,
-          consultationType: consultationType,
-          price: consultationTypeConfig.price,
-          isEmergencySlot: false,
-        });
-      }
-    }
-
-    return {
-      slots: availableSlots.sort((a, b) => a.startTime - b.startTime),
-      totalCount: availableSlots.length,
-      nextAvailable: availableSlots.length > 0 ? availableSlots[0] : undefined,
-      calculatedAt: Date.now(),
-      expiresAt: Date.now() + 60 * 60 * 1000, // Expires in 1 hour
-    };
+    return await calculateAvailabilityLogic(ctx, args);
   },
 });
 
@@ -588,7 +579,8 @@ export const getNextAvailableSlot = query({
     const now = Date.now();
     const endDate = now + 7 * 24 * 60 * 60 * 1000; // Look ahead 7 days
 
-    const availability = await calculateAvailability(ctx, {
+    // Use the shared calculation logic
+    const availability = await calculateAvailabilityLogic(ctx, {
       attorneyId: args.attorneyId,
       startDate: now,
       endDate: endDate,

@@ -44,7 +44,7 @@ export function WorkingHoursOverview({
                     schedule.breaks.map((breakPeriod: { start: string; end: string }, index: number) => (
                       <span key={index}>
                         {formatTime(breakPeriod.start)}-{formatTime(breakPeriod.end)}
-                        {index < schedule.breaks.length - 1 ? ', ' : ''}
+                        {index < (schedule.breaks?.length || 0) - 1 ? ', ' : ''}
                       </span>
                     ))
                   }
