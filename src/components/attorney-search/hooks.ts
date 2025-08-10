@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { AttorneySearchFilters } from "@/types";
 import { trpc } from "@/utils";
+import { type PracticeArea } from "@/constants";
 
 interface ExtendedAttorneySearchFilters extends AttorneySearchFilters {
+  practiceArea?: PracticeArea;
   experienceLevel?: string;
   rateRange?: string;
   availability?: string;
@@ -23,14 +25,20 @@ export function useAttorneySearch({
   const [searchTerm, setSearchTerm] = useState("");
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
 
+  // Transform filters for the API
+  const transformedFilters = {
+    limit: 50,
+    practiceAreas: filters.practiceArea ? [filters.practiceArea] : filters.practiceAreas,
+    city: filters.location?.city,
+    state: filters.location?.state,
+    isVerified: filters.isVerified,
+  };
+
   const {
     data: attorneys,
     isLoading,
     error,
-  } = trpc.attorneys.getAll.useQuery({
-    ...filters,
-    limit: 50,
-  });
+  } = trpc.attorneys.getAll.useQuery(transformedFilters);
 
   const updateFilter = <K extends keyof ExtendedAttorneySearchFilters>(
     key: K,

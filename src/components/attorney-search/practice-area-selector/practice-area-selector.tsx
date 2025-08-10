@@ -5,12 +5,25 @@ import { PRACTICE_AREA_SELECTOR_CONSTANTS } from "./constants";
 import { PRACTICE_AREA_SELECTOR_MESSAGES } from "./messages";
 import { PRACTICE_AREAS, PRACTICE_AREA_LABELS, type PracticeArea } from "@/constants";
 
-export function PracticeAreaSelector() {
-  const { selectedPracticeArea, handlePracticeAreaChange } = usePracticeAreaSelector();
+interface PracticeAreaSelectorProps {
+  onPracticeAreaChange?: (practiceArea: PracticeArea | "") => void;
+  value?: PracticeArea | "";
+  className?: string;
+}
+
+export function PracticeAreaSelector({ 
+  onPracticeAreaChange, 
+  value,
+  className
+}: PracticeAreaSelectorProps = {}) {
+  const { selectedPracticeArea, handlePracticeAreaChange } = usePracticeAreaSelector({
+    onPracticeAreaChange,
+    value
+  });
 
   return (
     <select 
-      className={PRACTICE_AREA_SELECTOR_CONSTANTS.SELECT_CLASSES}
+      className={className || PRACTICE_AREA_SELECTOR_CONSTANTS.SELECT_CLASSES}
       value={selectedPracticeArea}
       onChange={handlePracticeAreaChange}
     >

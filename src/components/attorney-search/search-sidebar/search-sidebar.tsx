@@ -6,12 +6,23 @@ import { SEARCH_SIDEBAR_CONSTANTS } from "./constants";
 import { SEARCH_SIDEBAR_MESSAGES } from "./messages";
 import {
   PRACTICE_AREA_LABELS,
-  PRACTICE_AREAS,
+  POPULAR_PRACTICE_AREAS,
   type PracticeArea,
 } from "@/constants";
 
-export function SearchSidebar() {
-  const { handlePracticeAreaClick } = useSearchSidebar();
+interface SearchSidebarProps {
+  onPracticeAreaSelect?: (area: PracticeArea) => void;
+  selectedPracticeArea?: PracticeArea | "";
+}
+
+export function SearchSidebar({ 
+  onPracticeAreaSelect, 
+  selectedPracticeArea 
+}: SearchSidebarProps = {}) {
+  const { handlePracticeAreaClick, isAreaSelected } = useSearchSidebar({
+    onPracticeAreaSelect,
+    selectedPracticeArea
+  });
 
   return (
     <div className={SEARCH_SIDEBAR_CONSTANTS.CONTAINER_CLASSES}>
@@ -29,14 +40,15 @@ export function SearchSidebar() {
           {SEARCH_SIDEBAR_MESSAGES.POPULAR_PRACTICE_AREAS_TITLE}
         </h3>
         <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_LIST_CLASSES}>
-          {PRACTICE_AREAS.slice(
-            0,
-            SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_COUNT,
-          ).map((area: PracticeArea) => (
+          {POPULAR_PRACTICE_AREAS.map((area: PracticeArea) => (
             <button
               key={area}
               onClick={() => handlePracticeAreaClick(area)}
-              className={SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_CLASSES}
+              className={
+                isAreaSelected(area)
+                  ? SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_SELECTED_CLASSES
+                  : SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_CLASSES
+              }
             >
               {PRACTICE_AREA_LABELS[area]}
             </button>

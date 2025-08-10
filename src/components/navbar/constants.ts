@@ -1,13 +1,10 @@
 export const NAVBAR_CONSTANTS = {
-  BRAND_NAME: "Zakonify",
+  AVATAR_INITIAL: "B",
+  USER_AVATAR_COLOR: "bg-teal-500",
   NAVIGATION_ITEMS: [
-    { label: "Find Attorneys", href: "/attorneys" },
-    { label: "How it Works", href: "/how-it-works" },
-    { label: "About", href: "/about" },
+    { label: "FIND_ATTORNEYS", href: "/attorneys" },
+    { label: "ONLINE_CONSULTATIONS", href: "/consultations" },
+    { label: "PRACTICE_AREAS", href: "/practice-areas" },
+    { label: "HOW_IT_WORKS", href: "/how-it-works" },
   ],
-  ACTIONS: {
-    JOIN_AS_ATTORNEY: "Join as Attorney",
-    LOGIN: "Login",
-    SIGN_UP: "Sign Up",
-  },
 } as const;

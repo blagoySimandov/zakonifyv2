@@ -4,6 +4,7 @@ import { useAttorneySearch } from "./hooks";
 import { SearchHeader } from "./search-header";
 import { SearchResults } from "./search-results";
 import { SearchSidebar } from "./search-sidebar";
+import { type PracticeArea } from "@/constants";
 
 export function AttorneySearch() {
   const {
@@ -14,11 +15,22 @@ export function AttorneySearch() {
     hasActiveFilters,
     setSearchTerm,
     clearAllFilters,
+    updateFilter,
+    filters,
   } = useAttorneySearch();
 
+  const handlePracticeAreaChange = (practiceArea: PracticeArea | "") => {
+    updateFilter('practiceArea', practiceArea || undefined);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <SearchHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+    <div className="bg-gray-50">
+      <SearchHeader 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm}
+        onPracticeAreaChange={handlePracticeAreaChange}
+        selectedPracticeArea={filters.practiceArea || ""}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex gap-8">
@@ -31,7 +43,10 @@ export function AttorneySearch() {
               clearAllFilters={clearAllFilters}
             />
           </div>
-          <SearchSidebar />
+          <SearchSidebar 
+            onPracticeAreaSelect={handlePracticeAreaChange}
+            selectedPracticeArea={filters.practiceArea || ""}
+          />
         </div>
       </div>
     </div>
