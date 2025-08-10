@@ -16,17 +16,17 @@ interface ActionButtonsProps {
 
 export function ActionButtons({ buttons }: ActionButtonsProps) {
   const getButtonClasses = (variant: ActionButton["variant"]) => {
-    const baseClasses = ACTION_BUTTONS_CONSTANTS.BASE_CLASSES;
+    const baseClasses = "px-6 py-2 rounded-lg font-medium transition-colors";
 
     if (variant === "primary") {
-      return `${baseClasses} ${ACTION_BUTTONS_CONSTANTS.PRIMARY_CLASSES}`;
+      return `${baseClasses} bg-teal-500 hover:bg-teal-600 text-white`;
     }
 
-    return `${baseClasses} ${ACTION_BUTTONS_CONSTANTS.SECONDARY_CLASSES}`;
+    return `${baseClasses} bg-gray-100 hover:bg-gray-200 text-gray-700 border`;
   };
 
   return (
-    <div className={ACTION_BUTTONS_CONSTANTS.CONTAINER_CLASSES}>
+    <div className="flex gap-3">
       {buttons.map((button, index) => {
         if (button.href) {
           return (
