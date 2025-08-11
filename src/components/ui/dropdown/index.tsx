@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const dropdownVariants = cva(
@@ -103,6 +103,7 @@ export interface DropdownProps extends VariantProps<typeof dropdownVariants> {
   onChange?: (value: string) => void;
   className?: string;
   disabled?: boolean;
+  clearable?: boolean;
 }
 
 export function Dropdown({
@@ -114,6 +115,7 @@ export function Dropdown({
   disabled = false,
   size,
   width,
+  clearable = false,
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -144,6 +146,11 @@ export function Dropdown({
     setIsOpen(false);
   };
 
+  const handleClear = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    onChange?.("");
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (disabled) return;
 
@@ -170,29 +177,42 @@ export function Dropdown({
       ref={dropdownRef}
       className={cn(dropdownVariants({ size, width }), className)}
     >
-      <button
-        type="button"
-        onClick={handleToggle}
-        onKeyDown={handleKeyDown}
-        disabled={disabled}
+      <div
         className={cn(
           triggerVariants({
             size,
             state: isOpen ? "open" : isPlaceholder ? "placeholder" : "default",
           }),
-          disabled && "opacity-50 cursor-not-allowed"
+          disabled && "opacity-50 cursor-not-allowed",
+          "cursor-pointer"
         )}
+        onClick={handleToggle}
+        onKeyDown={handleKeyDown}
+        tabIndex={disabled ? -1 : 0}
+        role="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
         <span className="truncate">{displayText}</span>
-        <ChevronDown
-          className={cn(
-            "h-5 w-5 transition-transform duration-200 text-gray-400",
-            isOpen && "rotate-180"
+        <div className="flex items-center gap-1">
+          {clearable && selectedOption && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="p-1 hover:bg-gray-100 rounded-md transition-colors"
+              tabIndex={-1}
+            >
+              <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+            </button>
           )}
-        />
-      </button>
+          <ChevronDown
+            className={cn(
+              "h-5 w-5 transition-transform duration-200 text-gray-400",
+              isOpen && "rotate-180"
+            )}
+          />
+        </div>
+      </div>
 
       {isOpen && !disabled && (
         <div

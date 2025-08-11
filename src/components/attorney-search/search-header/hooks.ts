@@ -3,7 +3,7 @@ interface UseSearchHeaderProps {
   setSearchTerm: (term: string) => void;
 }
 
-export function useSearchHeader({ searchTerm, setSearchTerm }: UseSearchHeaderProps) {
+export function useSearchHeader(_: UseSearchHeaderProps) {
   const handleSearchSubmit = () => {
     // Search logic will be handled by parent component through searchTerm
   };

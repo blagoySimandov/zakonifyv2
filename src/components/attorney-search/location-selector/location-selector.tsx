@@ -23,6 +23,7 @@ export function LocationSelector() {
       value={selectedLocation}
       placeholder={LOCATION_SELECTOR_MESSAGES.PLACEHOLDER}
       onChange={handleDropdownChange}
+      clearable={true}
     />
   );
 }

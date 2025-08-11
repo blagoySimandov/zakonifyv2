@@ -47,6 +47,7 @@ export function PracticeAreaSelector({
       onChange={handleDropdownChange}
       className={className}
       width="md"
+      clearable={true}
     />
   );
 }
