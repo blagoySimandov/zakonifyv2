@@ -33,6 +33,7 @@ export function AttorneyCard({
               fullName={attorney.fullName}
               practiceAreas={attorney.practiceAreas}
               location={attorney.location}
+              attorneyId={attorney._id}
             />
             <VerificationBadge isVerified={attorney.isVerified} />
           </div>
