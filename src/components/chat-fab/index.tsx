@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { ChatDialog } from "../chat-dialog";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 interface ChatFabProps {
   attorneyId: string;
@@ -13,9 +15,9 @@ export function ChatFab({ attorneyId }: ChatFabProps) {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Fetch clients for chat
-  const { data: clients = [] } = trpc.clients.getByAttorneyId.useQuery({
-    attorneyId,
-  });
+  const clients = useQuery(api.clients.getByAttorneyId, {
+    attorneyId: attorneyId as Id<"attorneys">,
+  }) || [];
 
   const toggleOpen = () => {
     if (isChatOpen) {

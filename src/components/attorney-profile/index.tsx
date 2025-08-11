@@ -25,7 +25,7 @@ interface AttorneyProfileProps {
 }
 
 export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
-  const { attorney, reviews, ratingStats, isLoading, error, refetchAll } =
+  const { attorney, reviews, ratingStats, isLoading, error } =
     useAttorneyProfile(attorneyId);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -380,7 +380,7 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
           onClose={() => setIsReviewFormOpen(false)}
           onSubmitSuccess={() => {
             setIsReviewFormOpen(false);
-            refetchAll();
+            // Convex automatically refetches related queries after mutations
           }}
         />
       )}

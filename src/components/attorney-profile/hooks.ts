@@ -1,61 +1,34 @@
 "use client";
 
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export function useAttorneyProfile(attorneyId: string) {
-  const {
-    data: attorney,
-    isLoading: attorneyLoading,
-    error: attorneyError,
-    refetch: refetchProfile,
-  } = trpc.attorneys.getById.useQuery(
-    { id: attorneyId },
-    {
-      enabled: !!attorneyId,
-      retry: 1,
-    },
+  const attorney = useQuery(
+    api.attorneys.getById, 
+    !!attorneyId ? { id: attorneyId as Id<"attorneys"> } : "skip"
   );
 
-  const {
-    data: reviews,
-    isLoading: reviewsLoading,
-    error: reviewsError,
-    refetch: refetchReviews,
-  } = trpc.reviews.getByAttorneyId.useQuery(
-    { attorneyId },
-    {
-      enabled: !!attorneyId,
-      retry: 1,
-    },
+  const reviews = useQuery(
+    api.reviews.getByAttorneyId,
+    !!attorneyId ? { attorneyId: attorneyId as Id<"attorneys"> } : "skip"
   );
 
-  const {
-    data: ratingStats,
-    isLoading: ratingLoading,
-    refetch: refetchRating,
-  } = trpc.reviews.getAverageRating.useQuery(
-    { attorneyId },
-    {
-      enabled: !!attorneyId,
-      retry: 1,
-    },
+  const ratingStats = useQuery(
+    api.reviews.getAverageRating,
+    !!attorneyId ? { attorneyId: attorneyId as Id<"attorneys"> } : "skip"
   );
 
-  const refetchAll = () => {
-    refetchProfile();
-    refetchReviews();
-    refetchRating();
-  };
+  const attorneyLoading = attorney === undefined;
+  const reviewsLoading = reviews === undefined;
+  const ratingLoading = ratingStats === undefined;
 
   return {
     attorney: attorney || null,
     reviews: reviews || [],
     ratingStats: ratingStats || { averageRating: 0, totalReviews: 0 },
     isLoading: attorneyLoading || reviewsLoading || ratingLoading,
-    error: attorneyError?.message || reviewsError?.message || null,
-    refetchProfile,
-    refetchReviews,
-    refetchRating,
-    refetchAll,
+    error: null, // Convex handles errors differently, they throw
   };
 }

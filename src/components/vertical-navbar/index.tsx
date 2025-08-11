@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import {
   Settings,
   User,
@@ -33,10 +34,11 @@ export function VerticalNavbar({
   const [activeSection, setActiveSection] = useState(currentPage);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const profileImageUrl = trpc.getStorageUrl.useQuery(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    { storageId: attorney?.profileImageStorageId! }, //Safe due to enabled prop
-    { enabled: !!attorney?.profileImageStorageId },
+  const profileImageUrl = useQuery(
+    api.storage.getUrl,
+    attorney?.profileImageStorageId 
+      ? { storageId: attorney.profileImageStorageId }
+      : "skip"
   );
 
   const navigationItems = [
@@ -121,11 +123,11 @@ export function VerticalNavbar({
         className={`${isCollapsed ? "p-3" : "p-6"} border-b border-gray-100`}
       >
         <div className="text-center">
-          {profileImageUrl.data ? (
+          {profileImageUrl ? (
             <Image
               width={isCollapsed ? 100 : 160}
               height={isCollapsed ? 100 : 160}
-              src={profileImageUrl.data}
+              src={profileImageUrl}
               alt={attorney?.fullName || "Attorney Profile Image"}
               className={`${isCollapsed ? "w-10 h-10" : "w-16 h-16"} rounded-full mx-auto mb-4 object-cover border-2 border-blue-100 transition-all duration-300`}
             />

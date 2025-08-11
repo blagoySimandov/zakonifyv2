@@ -1,4 +1,4 @@
-export { TRPCProvider, ConvexClientProvider } from "./providers";
+export { ConvexClientProvider } from "./providers";
 export { ActionButtons } from "./action-buttons";
 export { AttorneyCard } from "./attorney-card";
 export { AttorneySearch } from "./attorney-search";

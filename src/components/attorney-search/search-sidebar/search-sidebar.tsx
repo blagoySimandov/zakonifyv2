@@ -1,6 +1,5 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
 import { useSearchSidebar } from "./hooks";
 import { SEARCH_SIDEBAR_CONSTANTS } from "./constants";
 import { SEARCH_SIDEBAR_MESSAGES } from "./messages";

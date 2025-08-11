@@ -7,7 +7,8 @@ import { REGISTRATION_CONSTANTS } from "./constants";
 import { REGISTRATION_MESSAGES } from "./messages";
 import { PRACTICE_AREAS, PRACTICE_AREA_LABELS } from "@/constants";
 import { Upload } from "lucide-react";
-import { trpc } from "@/utils";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 interface PracticeLocationStepProps {
   formData: Partial<AttorneyRegistrationFormData>;
@@ -22,7 +23,7 @@ export function PracticeLocationStep({
 }: PracticeLocationStepProps) {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const generateUploadUrlMutation = trpc.generateUploadUrl.useMutation();
+  const generateUploadUrlMutation = useMutation(api.storage.generateUploadUrl);
 
   const handleImageUpload = async (file: File) => {
     if (!file) return;
@@ -30,7 +31,7 @@ export function PracticeLocationStep({
     setIsUploadingImage(true);
     try {
       // Get upload URL from Convex
-      const uploadUrlResult = await generateUploadUrlMutation.mutateAsync();
+      const uploadUrlResult = await generateUploadUrlMutation();
 
       // Upload file to Convex storage
       const uploadResult = await fetch(uploadUrlResult, {

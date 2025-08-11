@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 import { AttorneyRegistrationFormData, STEP_SCHEMAS } from "./validation";
 import { RegistrationStep } from "./constants";
-import { trpc } from "@/utils";
 
 interface UseAttorneyRegistrationProps {
   initialData?: Partial<AttorneyRegistrationFormData>;
@@ -28,7 +30,7 @@ export function useAttorneyRegistration({
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const createAttorneyMutation = trpc.attorneys.register.useMutation();
+  const createAttorneyMutation = useMutation(api.attorneys.register);
 
   const steps: RegistrationStep[] = [
     "personal",
@@ -194,7 +196,13 @@ export function useAttorneyRegistration({
         return false;
       }
 
-      await createAttorneyMutation.mutateAsync(result.data);
+      const formDataWithTypedIds = {
+        ...result.data,
+        profileImageStorageId: result.data.profileImageStorageId 
+          ? result.data.profileImageStorageId as Id<"_storage">
+          : undefined,
+      };
+      await createAttorneyMutation(formDataWithTypedIds);
       return true;
     } catch (error: unknown) {
       console.error("Registration failed:", error);

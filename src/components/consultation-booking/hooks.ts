@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { trpc } from "@/utils";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 interface BookingFormData {
   clientName: string;
@@ -46,21 +48,18 @@ export function useConsultationBooking(attorneyId: string) {
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
-  const createBookingMutation = trpc.consultations.create.useMutation();
+  const createBookingMutation = useMutation(api.consultations.create);
 
-  const {
-    data: slotsData,
-    refetch: refetchSlots,
-    isFetching: isFetchingSlots,
-    error: slotsError,
-  } = trpc.consultations.getAvailableSlots.useQuery(
-    { attorneyId, date: selectedDate },
-    {
-      enabled: !!attorneyId && !!selectedDate,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
+  const slotsData = useQuery(
+    api.consultations.getAvailableSlots,
+    !!attorneyId && !!selectedDate ? { 
+      attorneyId: attorneyId as Id<"attorneys">, 
+      date: selectedDate 
+    } : "skip"
   );
+
+  const isFetchingSlots = slotsData === undefined;
+  const slotsError = null;
 
   // Update available slots when query data changes
   useEffect(() => {
@@ -98,7 +97,7 @@ export function useConsultationBooking(attorneyId: string) {
         "attorneyId:",
         attorneyId,
       );
-      await refetchSlots();
+      // Convex queries will refetch automatically when dependencies change
       console.log("Refetch completed");
     } catch (error) {
       console.error("Failed to load available slots:", error);
@@ -174,8 +173,8 @@ export function useConsultationBooking(attorneyId: string) {
     setErrors({});
 
     try {
-      await createBookingMutation.mutateAsync({
-        attorneyId,
+      await createBookingMutation({
+        attorneyId: attorneyId as Id<"attorneys">,
         clientName: updatedFormData.clientName.trim(),
         clientEmail: updatedFormData.clientEmail.trim(),
         clientPhone: updatedFormData.clientPhone?.trim(),
@@ -186,9 +185,7 @@ export function useConsultationBooking(attorneyId: string) {
         notes: updatedFormData.notes?.trim(),
       });
 
-      // Refetch available slots to update the UI
-      await refetchSlots();
-
+      // Convex will automatically refetch queries when data changes
       setIsSubmitted(true);
       return true;
     } catch (error) {

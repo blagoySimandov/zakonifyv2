@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { trpc } from "@/utils";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 import {
   AttorneyLayout,
   ProfilePictureUpload,
@@ -9,7 +10,11 @@ import {
   ScheduleManager,
   TimeOffManager,
 } from "@/components";
-import { MOCK_ATTORNEY_ID, PRACTICE_AREA_LABELS, PracticeArea } from "@/constants";
+import {
+  MOCK_ATTORNEY_ID,
+  PRACTICE_AREA_LABELS,
+  PracticeArea,
+} from "@/constants";
 import { SETTINGS_CONSTANTS } from "./constants";
 import { SETTINGS_MESSAGES } from "./messages";
 import {
@@ -47,16 +52,10 @@ export default function AttorneySettings() {
   const [formData, setFormData] = useState<Partial<Doc<"attorneys">>>();
 
   // Fetch attorney data
-  const attorneyQuery = trpc.attorneys.getById.useQuery({ id: attorneyId });
-  const attorney = attorneyQuery.data as Doc<"attorneys"> | null;
+  const attorney = useQuery(api.attorneys.getById, { id: attorneyId });
 
   // Update attorney mutation
-  const updateAttorney = trpc.attorneys.update.useMutation({
-    onSuccess: () => {
-      attorneyQuery.refetch();
-      setIsEditing({});
-    },
-  });
+  const updateAttorney = useMutation(api.attorneys.update);
 
   const handleEdit = (field: string) => {
     setIsEditing({ ...isEditing, [field]: true });
@@ -87,14 +86,14 @@ export default function AttorneySettings() {
       // Handle nested location fields
       if (field.startsWith("location.")) {
         const locationField = field.split(".")[1];
-        await updateAttorney.mutateAsync({
+        await updateAttorney({
           id: attorney._id,
           location: {
             [locationField]: formData?.[field as keyof typeof formData],
           },
         });
       } else {
-        await updateAttorney.mutateAsync({
+        await updateAttorney({
           id: attorney._id,
           [field]: formData?.[field as keyof typeof formData],
         });
@@ -177,10 +176,10 @@ export default function AttorneySettings() {
                 onMouseDown={(e) => e.preventDefault()} // Prevent input from losing focus
                 onClick={() => handleSave(field)}
                 className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
-                disabled={updateAttorney.isPending}
+                disabled={false}
               >
                 <Save className="h-3 w-3" />
-                {updateAttorney.isPending ? "Saving..." : "Save"}
+                Save
               </button>
               <button
                 onMouseDown={(e) => e.preventDefault()} // Prevent input from losing focus
@@ -281,8 +280,7 @@ export default function AttorneySettings() {
             <ProfilePictureUpload
               attorney={attorney}
               onUploadSuccess={() => {
-                // Refetch attorney data to get the new profile picture
-                attorneyQuery.refetch();
+                // Convex automatically refetches queries when data changes
               }}
             />
             <div>

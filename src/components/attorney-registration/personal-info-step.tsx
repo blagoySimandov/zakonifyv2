@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AttorneyRegistrationFormData } from "./validation";
 import { REGISTRATION_CONSTANTS } from "./constants";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { AlertCircle, CheckCircle } from "lucide-react";
 
 interface PersonalInfoStepProps {
@@ -22,9 +23,11 @@ export function PersonalInfoStep({
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [emailTaken, setEmailTaken] = useState(false);
 
-  const checkEmailQuery = trpc.attorneys.checkEmailExists.useQuery(
-    { email: formData.email || "" },
-    { enabled: false },
+  const emailExists = useQuery(
+    api.attorneys.checkEmailExists,
+    formData.email && formData.email.includes("@") && isCheckingEmail
+      ? { email: formData.email }
+      : "skip"
   );
 
   const handleEmailChange = (email: string) => {
@@ -39,24 +42,21 @@ export function PersonalInfoStep({
 
     // Set new timeout to check email after user stops typing
     if (email.length > 0 && email.includes("@")) {
-      setIsCheckingEmail(true);
       const timeout = setTimeout(() => {
-        checkEmailQuery
-          .refetch()
-          .then((res) => {
-            if (!res.error) {
-              setEmailTaken(Boolean(res.data));
-            } else {
-              console.error("Email check failed:", res.error);
-              setEmailTaken(false);
-            }
-          })
-          .finally(() => setIsCheckingEmail(false));
+        setIsCheckingEmail(true);
       }, 500); // Check after 500ms of no typing
 
       setEmailCheckTimeout(timeout);
     }
   };
+
+  // Handle email check result
+  useEffect(() => {
+    if (emailExists !== undefined && isCheckingEmail) {
+      setEmailTaken(Boolean(emailExists));
+      setIsCheckingEmail(false);
+    }
+  }, [emailExists, isCheckingEmail]);
 
   return (
     <div className="space-y-8">
