@@ -2,9 +2,10 @@
 
 import { useState, ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 import { VerticalNavbar, ChatFab } from "@/components";
-import type { Doc } from "../../../convex/_generated/dataModel";
 import { MOCK_ATTORNEY_ID } from "@/constants";
 
 interface AttorneyLayoutProps {
@@ -33,15 +34,16 @@ export function AttorneyLayout({
   };
 
   // Fetch attorney data
-  const attorneyQuery = trpc.attorneys.getById.useQuery({ id: attorneyId });
-  const attorney = attorneyQuery.data as Doc<"attorneys"> | null;
-  const isAttorneyLoaded = !!attorneyQuery.data || attorneyQuery.isFetched;
+  const attorney = useQuery(api.attorneys.getById, {
+    id: attorneyId as Id<"attorneys">,
+  });
+  const isAttorneyLoaded = attorney !== undefined;
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Vertical Navbar */}
       <VerticalNavbar
-        attorney={attorney}
+        attorney={attorney || null}
         isLoading={!isAttorneyLoaded}
         onCollapseChange={setIsSidebarCollapsed}
         currentPage={getCurrentPage()}

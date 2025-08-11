@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { trpc } from "@/utils";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 import { REVIEW_FORM_CONSTANTS } from "./constants";
 
 interface ReviewFormData {
@@ -28,7 +30,7 @@ export function useReviewForm(attorneyId: string) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const createReviewMutation = trpc.reviews.create.useMutation();
+  const createReviewMutation = useMutation(api.reviews.create);
 
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
@@ -95,8 +97,8 @@ export function useReviewForm(attorneyId: string) {
     setErrors({});
 
     try {
-      await createReviewMutation.mutateAsync({
-        attorneyId,
+      await createReviewMutation({
+        attorneyId: attorneyId as Id<"attorneys">,
         clientName: formData.clientName.trim(),
         clientEmail: formData.clientEmail.trim(),
         rating: formData.rating,

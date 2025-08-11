@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { X, Send, MessageSquare, Users, User } from "lucide-react";
-import { trpc } from "@/utils";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 type ClientWithDetails = Doc<"clients"> & {
@@ -33,27 +35,25 @@ export function ChatDialog({
   // Get messages for the selected client's matter
   const activeMatterId = selectedClient?.activeMatter?._id;
 
-  const messagesQuery = trpc.messages.listByMatter.useQuery(
-    activeMatterId
-      ? { matterId: String(activeMatterId) }
-      : (undefined as never),
-    { enabled: Boolean(activeMatterId) },
+  const messages = useQuery(
+    api.messages.listByMatter,
+    activeMatterId ? { matterId: activeMatterId } : "skip"
   );
 
-  const sendMessage = trpc.messages.send.useMutation();
+  const sendMessage = useMutation(api.messages.send);
 
   const handleSend = async () => {
     if (!activeMatterId || !messageText.trim()) return;
 
-    await sendMessage.mutateAsync({
-      matterId: String(activeMatterId),
+    await sendMessage({
+      matterId: activeMatterId,
       senderRole: "attorney",
-      senderId: attorneyId,
+      senderId: attorneyId as Id<"attorneys">,
       content: messageText.trim(),
     });
 
     setMessageText("");
-    messagesQuery.refetch();
+    // Convex automatically refetches queries when mutations complete
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -166,7 +166,7 @@ export function ChatDialog({
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {((messagesQuery.data || []) as MessageDoc[]).map((message) => (
+                {((messages || []) as MessageDoc[]).map((message) => (
                   <div
                     key={String(message._id)}
                     className={`flex ${
@@ -199,7 +199,7 @@ export function ChatDialog({
                   </div>
                 ))}
 
-                {messagesQuery.data?.length === 0 && (
+                {messages?.length === 0 && (
                   <div className="text-center py-8">
                     <p className="text-gray-500 text-sm">
                       No messages yet. Start the conversation!

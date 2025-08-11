@@ -1,7 +1,9 @@
 "use client";
 
 import { ElementType, useState } from "react";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 import { AttorneyLayout } from "@/components";
 import { MOCK_ATTORNEY_ID } from "@/constants";
 import {
@@ -96,11 +98,10 @@ export default function AttorneyDashboard() {
   const [attorneyId] = useState<string>(MOCK_ATTORNEY_ID);
 
   // Fetch attorney data
-  const { data: consultations = [] } =
-    trpc.consultations.getByAttorneyId.useQuery({
-      attorneyId,
-      status: undefined as never,
-    });
+  const consultations = useQuery(api.consultations.getByAttorneyId, {
+    attorneyId: attorneyId as Id<"attorneys">,
+    status: undefined,
+  }) || [];
 
   // Calculate stats
   const totalEarnings = earningsData.reduce(

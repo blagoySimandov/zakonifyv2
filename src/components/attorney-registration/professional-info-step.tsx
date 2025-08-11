@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AttorneyRegistrationFormData } from "./validation";
 import { REGISTRATION_CONSTANTS } from "./constants";
 import { REGISTRATION_MESSAGES } from "./messages";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { AlertCircle, CheckCircle } from "lucide-react";
 
 interface ProfessionalInfoStepProps {
@@ -23,9 +24,11 @@ export function ProfessionalInfoStep({
   const [isCheckingBarId, setIsCheckingBarId] = useState(false);
   const [barIdTaken, setBarIdTaken] = useState(false);
 
-  const checkBarIdQuery = trpc.attorneys.checkBarIdExists.useQuery(
-    { barAssociationId: formData.barAssociationId || "" },
-    { enabled: false },
+  const barIdExists = useQuery(
+    api.attorneys.checkBarIdExists,
+    formData.barAssociationId && formData.barAssociationId.length >= 5 && isCheckingBarId
+      ? { barAssociationId: formData.barAssociationId }
+      : "skip"
   );
 
   const handleBarIdChange = (barId: string) => {
@@ -40,24 +43,21 @@ export function ProfessionalInfoStep({
 
     // Set new timeout to check bar ID after user stops typing
     if (barId.length >= 5) {
-      setIsCheckingBarId(true);
       const timeout = setTimeout(() => {
-        checkBarIdQuery
-          .refetch()
-          .then((res) => {
-            if (!res.error) {
-              setBarIdTaken(Boolean(res.data));
-            } else {
-              console.error("Bar ID check failed:", res.error);
-              setBarIdTaken(false);
-            }
-          })
-          .finally(() => setIsCheckingBarId(false));
+        setIsCheckingBarId(true);
       }, 500); // Check after 500ms of no typing
 
       setBarIdCheckTimeout(timeout);
     }
   };
+
+  // Handle bar ID check result
+  useEffect(() => {
+    if (barIdExists !== undefined && isCheckingBarId) {
+      setBarIdTaken(Boolean(barIdExists));
+      setIsCheckingBarId(false);
+    }
+  }, [barIdExists, isCheckingBarId]);
   return (
     <div className="space-y-6">
       <div>

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 import { AttorneyLayout, ClientsSection } from "@/components";
 import { MOCK_ATTORNEY_ID } from "@/constants";
 
@@ -10,9 +12,9 @@ export default function AttorneyClients() {
   const [attorneyId] = useState<string>(MOCK_ATTORNEY_ID);
 
   // Fetch clients for this attorney
-  const { data: clients = [] } = trpc.clients.getByAttorneyId.useQuery({
-    attorneyId,
-  });
+  const clients = useQuery(api.clients.getByAttorneyId, {
+    attorneyId: attorneyId as Id<"attorneys">,
+  }) || [];
 
   return (
     <AttorneyLayout title="Clients" attorneyId={attorneyId}>

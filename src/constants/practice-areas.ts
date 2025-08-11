@@ -69,3 +69,11 @@ export const PRACTICE_AREA_DESCRIPTIONS = {
   [PracticeAreaEnum.CIVIL_RIGHTS]:
     "Конституционни права и случаи на дискриминация",
 } as const;
+
+export const POPULAR_PRACTICE_AREAS = [
+  PracticeAreaEnum.FAMILY_LAW,
+  PracticeAreaEnum.CRIMINAL_LAW,
+  PracticeAreaEnum.COMMERCIAL_LAW,
+  PracticeAreaEnum.PERSONAL_INJURY,
+  PracticeAreaEnum.REAL_ESTATE,
+] as const;

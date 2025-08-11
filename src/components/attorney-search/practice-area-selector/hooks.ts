@@ -1,15 +1,21 @@
-import { useState } from "react";
 import { type PracticeArea } from "@/constants";
 
-export function usePracticeAreaSelector() {
-  const [selectedPracticeArea, setSelectedPracticeArea] = useState<PracticeArea | "">("");
+interface UsePracticeAreaSelectorProps {
+  onPracticeAreaChange?: (practiceArea: PracticeArea | "") => void;
+  value?: PracticeArea | "";
+}
 
+export function usePracticeAreaSelector({ 
+  onPracticeAreaChange, 
+  value = ""
+}: UsePracticeAreaSelectorProps = {}) {
   const handlePracticeAreaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPracticeArea(event.target.value as PracticeArea);
+    const newValue = event.target.value as PracticeArea;
+    onPracticeAreaChange?.(newValue);
   };
 
   return {
-    selectedPracticeArea,
+    selectedPracticeArea: value,
     handlePracticeAreaChange,
   };
 }

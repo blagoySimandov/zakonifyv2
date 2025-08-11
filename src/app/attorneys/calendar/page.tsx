@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 import { Calendar, AttorneyLayout } from "@/components";
 import type { Doc } from "../../../../convex/_generated/dataModel";
 import { MOCK_ATTORNEY_ID } from "@/constants";
@@ -15,11 +17,10 @@ export default function AttorneyCalendar() {
   const [attorneyId] = useState<string>(MOCK_ATTORNEY_ID);
 
   // Fetch consultations for calendar
-  const { data: consultations = [] } =
-    trpc.consultations.getByAttorneyId.useQuery({
-      attorneyId,
-      status: undefined as never,
-    });
+  const consultations = useQuery(api.consultations.getByAttorneyId, {
+    attorneyId: attorneyId as Id<"attorneys">,
+    status: undefined,
+  }) || [];
 
   return (
     <AttorneyLayout title="Calendar" attorneyId={attorneyId}>

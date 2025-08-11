@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { trpc } from "@/utils";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 interface UseProfileUploadProps {
@@ -20,15 +21,8 @@ export function useProfileUpload({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const generateUploadUrl = trpc.generateUploadUrl.useMutation();
-  const updateAttorney = trpc.attorneys.update.useMutation({
-    onSuccess: () => {
-      setShowUploadModal(false);
-      setPreviewUrl(null);
-      setSelectedFile(null);
-      onUploadSuccess?.(previewUrl || "");
-    },
-  });
+  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const updateAttorney = useMutation(api.attorneys.update);
 
   const handleFileSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +59,7 @@ export function useProfileUpload({
     setUploadProgress(0);
 
     try {
-      const uploadUrl = await generateUploadUrl.mutateAsync();
+      const uploadUrl = await generateUploadUrl();
 
       const result = await fetch(uploadUrl, {
         method: "POST",
@@ -79,19 +73,23 @@ export function useProfileUpload({
 
       const { storageId } = await result.json();
 
-      await updateAttorney.mutateAsync({
+      await updateAttorney({
         id: attorney._id,
         profileImageStorageId: storageId,
       });
 
       setUploadProgress(100);
+      setShowUploadModal(false);
+      setPreviewUrl(null);
+      setSelectedFile(null);
+      onUploadSuccess?.(previewUrl || "");
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Upload failed. Please try again.");
     } finally {
       setIsUploading(false);
     }
-  }, [selectedFile, generateUploadUrl, updateAttorney, attorney._id]);
+  }, [selectedFile, generateUploadUrl, updateAttorney, attorney._id, onUploadSuccess, previewUrl]);
 
   const handleCancel = useCallback(() => {
     setShowUploadModal(false);

@@ -1,13 +1,24 @@
 import { type PracticeArea } from "@/constants";
 
-export function useSearchSidebar() {
+interface UseSearchSidebarProps {
+  onPracticeAreaSelect?: (area: PracticeArea) => void;
+  selectedPracticeArea?: PracticeArea | "";
+}
+
+export function useSearchSidebar({ 
+  onPracticeAreaSelect, 
+  selectedPracticeArea 
+}: UseSearchSidebarProps = {}) {
   const handlePracticeAreaClick = (area: PracticeArea) => {
-    // This would typically trigger a search filter update
-    // For now, we'll keep it as a placeholder
-    console.log("Practice area clicked:", area);
+    onPracticeAreaSelect?.(area);
+  };
+
+  const isAreaSelected = (area: PracticeArea) => {
+    return selectedPracticeArea === area;
   };
 
   return {
     handlePracticeAreaClick,
+    isAreaSelected,
   };
 }

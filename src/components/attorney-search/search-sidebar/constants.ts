@@ -7,5 +7,6 @@ export const SEARCH_SIDEBAR_CONSTANTS = {
   POPULAR_AREAS_TITLE_CLASSES: "font-semibold text-gray-900 mb-3",
   POPULAR_AREAS_LIST_CLASSES: "space-y-2",
   PRACTICE_AREA_BUTTON_CLASSES: "block w-full text-left text-sm text-gray-600 hover:text-teal-600 hover:bg-teal-50 px-2 py-1 rounded transition-colors",
+  PRACTICE_AREA_BUTTON_SELECTED_CLASSES: "block w-full text-left text-sm text-teal-600 bg-teal-50 px-2 py-1 rounded font-medium",
   POPULAR_AREAS_COUNT: 5,
 } as const;

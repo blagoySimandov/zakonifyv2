@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ACTION_BUTTONS_CONSTANTS } from "./constants";
 
 interface ActionButton {
   text: string;
@@ -53,4 +52,3 @@ export function ActionButtons({ buttons }: ActionButtonsProps) {
     </div>
   );
 }
-

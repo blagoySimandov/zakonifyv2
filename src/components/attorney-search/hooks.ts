@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { AttorneySearchFilters } from "@/types";
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { type PracticeArea } from "@/constants";
 
 interface ExtendedAttorneySearchFilters extends AttorneySearchFilters {
+  practiceArea?: PracticeArea;
   experienceLevel?: string;
   rateRange?: string;
   availability?: string;
@@ -23,14 +26,18 @@ export function useAttorneySearch({
   const [searchTerm, setSearchTerm] = useState("");
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
 
-  const {
-    data: attorneys,
-    isLoading,
-    error,
-  } = trpc.attorneys.getAll.useQuery({
-    ...filters,
+  // Transform filters for the API
+  const transformedFilters = {
     limit: 50,
-  });
+    practiceAreas: filters.practiceArea ? [filters.practiceArea] : filters.practiceAreas,
+    city: filters.location?.city,
+    state: filters.location?.state,
+    isVerified: filters.isVerified,
+  };
+
+  const attorneys = useQuery(api.attorneys.getAll, transformedFilters);
+  const isLoading = attorneys === undefined;
+  const error = null;
 
   const updateFilter = <K extends keyof ExtendedAttorneySearchFilters>(
     key: K,

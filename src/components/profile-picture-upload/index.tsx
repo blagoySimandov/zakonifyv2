@@ -1,6 +1,7 @@
 "use client";
 
-import { trpc } from "@/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { ProfilePictureDisplay } from "./profile-picture-display";
 import { UploadModal } from "./upload-modal";
@@ -15,9 +16,11 @@ export function ProfilePictureUpload({
   attorney,
   onUploadSuccess,
 }: ProfilePictureUploadProps) {
-  const profileImageUrl = trpc.getStorageUrl.useQuery(
-    { storageId: attorney.profileImageStorageId! },
-    { enabled: !!attorney.profileImageStorageId },
+  const profileImageUrl = useQuery(
+    api.storage.getUrl,
+    attorney.profileImageStorageId 
+      ? { storageId: attorney.profileImageStorageId }
+      : "skip"
   );
 
   const {
@@ -36,7 +39,7 @@ export function ProfilePictureUpload({
   return (
     <>
       <ProfilePictureDisplay
-        imageUrl={profileImageUrl.data ?? undefined}
+        imageUrl={profileImageUrl ?? undefined}
         fullName={attorney.fullName}
         onUploadClick={triggerFileSelect}
       />
