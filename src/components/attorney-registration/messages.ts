@@ -1,4 +1,9 @@
 export const REGISTRATION_MESSAGES = {
+  HEADER: {
+    TITLE: "Присъединете се към Zakonify",
+    SUBTITLE: "Създайте вашия адвокатски профил за няколко лесни стъпки",
+  },
+  
   SUCCESS: {
     SUBMITTED: "Регистрацията беше изпратена успешно!",
     STEP_COMPLETED: "Стъпката беше завършена успешно",
@@ -20,6 +25,8 @@ export const REGISTRATION_MESSAGES = {
     STEP_PROGRESS: "Стъпка {current} от {total}",
     UNSAVED_CHANGES:
       "Имате незапазени промени. Сигурни ли сте, че искате да напуснете?",
+    EMAIL_VERIFICATION:
+      "Ще ви изпратим имейл потвърждение и актуализации относно статуса на верификацията.",
   },
 
   HELP: {

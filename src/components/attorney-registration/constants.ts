@@ -61,24 +61,6 @@ export const REGISTRATION_CONSTANTS = {
     HOURLY_RATE: "Часова ставка (лв.)",
     FIXED_PACKAGES: "Пакети с фиксирана цена (по избор)",
   },
-
-  COMMON_LANGUAGES: [
-    "Български",
-    "Английски",
-    "Немски",
-    "Френски",
-    "Руски",
-    "Испански",
-    "Италиански",
-    "Турски",
-    "Гръцки",
-    "Румънски",
-    "Сръбски",
-    "Македонски",
-    "Албански",
-    "Арабски",
-    "Китайски",
-  ],
 } as const;
 
 export type RegistrationStep = keyof typeof REGISTRATION_CONSTANTS.STEP_TITLES;

@@ -235,8 +235,7 @@ export function PricingStep({
                         </div>
                         <input
                           type="number"
-                          min="100"
-                          max="50000"
+                          min="0"
                           value={pkg.price || ""}
                           onChange={(e) =>
                             updateFixedFeePackage(index, {

@@ -222,11 +222,8 @@ export const register = mutation({
             "Package description must be less than 500 characters",
           );
         }
-        if (pkg.price < 100) {
-          throw new ConvexError("Package price must be at least $100");
-        }
-        if (pkg.price > 50000) {
-          throw new ConvexError("Package price must be less than $50,000");
+        if (pkg.price < 0) {
+          throw new ConvexError("Package price cannot be negative");
         }
       }
     }
