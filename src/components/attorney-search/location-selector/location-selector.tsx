@@ -3,24 +3,26 @@
 import { useLocationSelector } from "./hooks";
 import { LOCATION_SELECTOR_CONSTANTS } from "./constants";
 import { LOCATION_SELECTOR_MESSAGES } from "./messages";
+import { Dropdown, type DropdownOption } from "@/components/ui";
 
 export function LocationSelector() {
   const { selectedLocation, handleLocationChange } = useLocationSelector();
 
+  const locationOptions: DropdownOption[] = LOCATION_SELECTOR_CONSTANTS.BULGARIAN_CITIES.map((city) => ({
+    value: city,
+    label: city,
+  }));
+
+  const handleDropdownChange = (value: string) => {
+    handleLocationChange({ target: { value } } as React.ChangeEvent<HTMLSelectElement>);
+  };
+
   return (
-    <select 
-      className={LOCATION_SELECTOR_CONSTANTS.SELECT_CLASSES}
+    <Dropdown
+      options={locationOptions}
       value={selectedLocation}
-      onChange={handleLocationChange}
-    >
-      <option value="">
-        {LOCATION_SELECTOR_MESSAGES.PLACEHOLDER}
-      </option>
-      {LOCATION_SELECTOR_CONSTANTS.BULGARIAN_CITIES.map((city) => (
-        <option key={city} value={city}>
-          {city}
-        </option>
-      ))}
-    </select>
+      placeholder={LOCATION_SELECTOR_MESSAGES.PLACEHOLDER}
+      onChange={handleDropdownChange}
+    />
   );
 }
