@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Attorney } from "@/types";
 import { ATTORNEY_CARD_CONSTANTS } from "./constants";
-import { ATTORNEY_CARD_MESSAGES } from "./messages";
+import { ATTORNEY_CARD_MESSAGES, PRACTICE_AREA_LABELS } from "./messages";
 import { DollarSign, User, Star, Video } from "lucide-react";
 import { SEARCH_CONSTANTS } from "../attorney-search/constants";
 import { ActionButtons } from "../action-buttons";
@@ -68,7 +68,10 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
               </div>
 
               <div className="text-sm text-gray-600 mb-1">
-                {attorney.practiceAreas.slice(0, ATTORNEY_CARD_CONSTANTS.MAX_PRACTICE_AREAS_DISPLAY).join(" • ")} •{" "}
+                {attorney.practiceAreas
+                  .slice(0, ATTORNEY_CARD_CONSTANTS.MAX_PRACTICE_AREAS_DISPLAY)
+                  .map(area => PRACTICE_AREA_LABELS[area as keyof typeof PRACTICE_AREA_LABELS])
+                  .join(" • ")} •{" "}
                 {attorney.location.city}
               </div>
             </div>
@@ -107,12 +110,7 @@ export function AttorneyCard({ attorney }: AttorneyCardProps) {
           <ActionButtons
             buttons={[
               {
-                text: ATTORNEY_CARD_MESSAGES.VIEW_PROFILE_TEXT,
-                href: `/attorneys/${attorney._id}`,
-                variant: "secondary",
-              },
-              {
-                text: SEARCH_CONSTANTS.ACTIONS.BOOK_CONSULTATION,
+                text: ATTORNEY_CARD_MESSAGES.BOOK_CONSULTATION,
                 onClick: () => console.log("Book consultation clicked"),
                 variant: "primary",
               },
