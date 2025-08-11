@@ -1,6 +1,12 @@
 export { ConvexClientProvider } from "./providers";
 export { ActionButtons } from "./action-buttons";
 export { AttorneyCard } from "./attorney-card";
+export { AttorneyProfileImage } from "./attorney-profile-image";
+export { StarRating } from "./star-rating";
+export { AttorneyHeader } from "./attorney-header";
+export { VerificationBadge } from "./verification-badge";
+export { ConsultationFeatures } from "./consultation-features";
+export { AvailabilityDisplay } from "./availability-display";
 export { AttorneySearch } from "./attorney-search";
 export { AttorneyRegistration } from "./attorney-registration";
 export { Navbar } from "./navbar";

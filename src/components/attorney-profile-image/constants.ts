@@ -1,0 +1,6 @@
+export const ATTORNEY_PROFILE_IMAGE_CONSTANTS = {
+  SIZE: 96,
+  WIDTH_HEIGHT_CLASS: "w-24 h-24",
+  BORDER_RADIUS_CLASS: "rounded-lg",
+  FALLBACK_ICON_SIZE: "w-12 h-12",
+} as const;
