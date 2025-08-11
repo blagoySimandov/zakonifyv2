@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, Check, X } from "lucide-react";
+import { ChevronDown, Check, X, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Fuse from "fuse.js";
 
 const dropdownVariants = cva(
   "relative w-full min-w-0",
@@ -42,8 +43,8 @@ const triggerVariants = cva(
       },
       state: {
         default: "text-gray-700",
-        placeholder: "text-gray-400",
-        open: "border-blue-500 ring-2 ring-blue-500",
+        placeholder: "text-gray-500",
+        open: "border-blue-500 ring-2 ring-blue-500 text-gray-700",
       },
     },
     defaultVariants: {
@@ -104,6 +105,8 @@ export interface DropdownProps extends VariantProps<typeof dropdownVariants> {
   className?: string;
   disabled?: boolean;
   clearable?: boolean;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 }
 
 export function Dropdown({
@@ -116,13 +119,38 @@ export function Dropdown({
   size,
   width,
   clearable = false,
+  searchable = false,
+  searchPlaceholder = "Търсене...",
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const selectedOption = options.find((option) => option.value === value);
   const displayText = selectedOption?.label || placeholder;
   const isPlaceholder = !selectedOption;
+
+  // Configure Fuse.js for fuzzy search
+  const fuse = useMemo(
+    () =>
+      new Fuse(options, {
+        keys: ["label", "value"],
+        threshold: 0.3, // Lower = more strict matching
+        includeScore: true,
+      }),
+    [options]
+  );
+
+  // Filter options based on search term
+  const filteredOptions = useMemo(() => {
+    if (!searchable || !searchTerm) {
+      return options;
+    }
+    
+    const results = fuse.search(searchTerm);
+    return results.map((result) => result.item);
+  }, [searchable, searchTerm, fuse, options]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -137,13 +165,31 @@ export function Dropdown({
 
   const handleToggle = () => {
     if (!disabled) {
-      setIsOpen(!isOpen);
+      const newIsOpen = !isOpen;
+      setIsOpen(newIsOpen);
+      
+      if (newIsOpen && searchable) {
+        // Focus search input when opening searchable dropdown
+        setTimeout(() => {
+          searchInputRef.current?.focus();
+        }, 0);
+      }
+      
+      if (!newIsOpen) {
+        // Clear search when closing
+        setSearchTerm("");
+      }
     }
   };
 
   const handleOptionSelect = (optionValue: string) => {
     onChange?.(optionValue);
     setIsOpen(false);
+    setSearchTerm("");
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
   const handleClear = (event: React.MouseEvent) => {
@@ -184,7 +230,9 @@ export function Dropdown({
             state: isOpen ? "open" : isPlaceholder ? "placeholder" : "default",
           }),
           disabled && "opacity-50 cursor-not-allowed",
-          "cursor-pointer"
+          "cursor-pointer",
+          // Override text color when open and showing placeholder
+          isOpen && isPlaceholder && "text-gray-500"
         )}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
@@ -219,29 +267,54 @@ export function Dropdown({
           className={dropdownMenuVariants({ size })}
           role="listbox"
         >
-          {options.map((option) => {
-            const isSelected = option.value === value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => handleOptionSelect(option.value)}
-                className={cn(
-                  optionVariants({
-                    size,
-                    state: isSelected ? "selected" : "default",
-                  })
-                )}
-                role="option"
-                aria-selected={isSelected}
-              >
-                <span className="truncate">{option.label}</span>
-                {isSelected && (
-                  <Check className="h-4 w-4 text-blue-600" />
-                )}
-              </button>
-            );
-          })}
+          {searchable && (
+            <div className="p-2 border-b border-gray-200">
+              <div className="relative">
+                <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </div>
+          )}
+          
+          <div className="max-h-48 overflow-auto">
+            {filteredOptions.length === 0 ? (
+              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                Няма намерени резултати
+              </div>
+            ) : (
+              filteredOptions.map((option) => {
+                const isSelected = option.value === value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleOptionSelect(option.value)}
+                    className={cn(
+                      optionVariants({
+                        size,
+                        state: isSelected ? "selected" : "default",
+                      })
+                    )}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <span className="truncate">{option.label}</span>
+                    {isSelected && (
+                      <Check className="h-4 w-4 text-blue-600" />
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -48,6 +48,8 @@ export function PracticeAreaSelector({
       className={className}
       width="md"
       clearable={true}
+      searchable={true}
+      searchPlaceholder="Търсете правна област..."
     />
   );
 }
