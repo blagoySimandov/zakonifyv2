@@ -23,7 +23,6 @@ export function AttorneyCard({
       <div className="flex gap-6">
         <AttorneyProfileImage
           profileImageStorageId={attorney.profileImageStorageId}
-          profileImage={attorney.profileImage}
           fullName={attorney.fullName}
         />
 

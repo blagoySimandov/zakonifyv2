@@ -22,3 +22,4 @@ export { AvailabilityDashboard } from "./availability-dashboard";
 export { ScheduleManager } from "./schedule-manager";
 export { TimeOffManager } from "./time-off-manager";
 export { AvailabilityCalendar } from "./availability-calendar";
+export { LoginPage } from "./login-page";

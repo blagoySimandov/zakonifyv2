@@ -6,6 +6,8 @@ import { useAttorneyProfile } from "./hooks";
 import { ReviewForm } from "../review-form";
 import { ConsultationBooking } from "../consultation-booking";
 import { PRACTICE_AREA_LABELS, PracticeArea } from "@/constants";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import {
   Star,
   MapPin,
@@ -29,6 +31,13 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
     useAttorneyProfile(attorneyId);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  
+  const profileImageUrl = useQuery(
+    api.storage.getUrl,
+    attorney?.profileImageStorageId 
+      ? { storageId: attorney.profileImageStorageId }
+      : "skip"
+  );
 
   const renderLoadingState = () => (
     <div className="flex items-center justify-center min-h-screen">
@@ -58,10 +67,10 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-shrink-0">
             <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
-              {attorney?.profileImage ? (
+              {profileImageUrl ? (
                 <Image
-                  src={attorney.profileImage}
-                  alt={attorney.fullName}
+                  src={profileImageUrl}
+                  alt={attorney?.fullName || "Profile"}
                   width={128}
                   height={128}
                   className="w-full h-full object-cover"

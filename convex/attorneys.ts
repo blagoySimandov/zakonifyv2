@@ -125,7 +125,6 @@ export const register = mutation({
       zipCode: v.optional(v.string()),
     }),
     languages: v.optional(v.array(v.string())),
-    profileImage: v.optional(v.string()),
     profileImageStorageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
@@ -288,7 +287,6 @@ export const register = mutation({
       },
       languages: args.languages,
       isVerified: false, // Will be verified by admin
-      profileImage: args.profileImage,
       profileImageStorageId: args.profileImageStorageId,
       createdAt: now,
       updatedAt: now,
@@ -330,7 +328,6 @@ export const create = mutation({
       zipCode: v.optional(v.string()),
     }),
     languages: v.optional(v.array(v.string())),
-    profileImage: v.optional(v.string()),
     profileImageStorageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
@@ -376,7 +373,6 @@ export const update = mutation({
       }),
     ),
     languages: v.optional(v.array(v.string())),
-    profileImage: v.optional(v.string()),
     profileImageStorageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {

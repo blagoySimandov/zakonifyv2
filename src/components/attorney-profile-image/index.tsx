@@ -7,26 +7,22 @@ import { useAttorneyProfileImage } from "./hooks";
 
 interface AttorneyProfileImageProps {
   profileImageStorageId?: Id<"_storage">;
-  profileImage?: string;
   fullName: string;
 }
 
 export function AttorneyProfileImage({
   profileImageStorageId,
-  profileImage,
   fullName,
 }: AttorneyProfileImageProps) {
   const profileImageUrl = useAttorneyProfileImage(profileImageStorageId);
-
-  const imageSource = profileImageUrl || profileImage;
   const altText = `${fullName} ${ATTORNEY_PROFILE_IMAGE_MESSAGES.ALT_TEXT_SUFFIX}`;
 
   return (
     <div className="relative flex-shrink-0">
       <div className={`${ATTORNEY_PROFILE_IMAGE_CONSTANTS.WIDTH_HEIGHT_CLASS} ${ATTORNEY_PROFILE_IMAGE_CONSTANTS.BORDER_RADIUS_CLASS} overflow-hidden bg-gray-100`}>
-        {imageSource ? (
+        {profileImageUrl ? (
           <Image
-            src={imageSource}
+            src={profileImageUrl}
             alt={altText}
             width={ATTORNEY_PROFILE_IMAGE_CONSTANTS.SIZE}
             height={ATTORNEY_PROFILE_IMAGE_CONSTANTS.SIZE}
