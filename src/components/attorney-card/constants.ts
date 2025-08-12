@@ -1,7 +1,3 @@
-export const ATTORNEY_CARD_CONSTANTS = {
-  DEFAULT_RATING: 0,
-  MAX_RATING: 5,
-  MAX_PRACTICE_AREAS_DISPLAY: 2,
-  STAR_RATING_COUNT: 5,
-  PROFILE_IMAGE_SIZE: 96,
-} as const;
+// Constants have been moved to individual component files
+// This file is kept for consistency with project structure
+export const ATTORNEY_CARD_CONSTANTS = {} as const;

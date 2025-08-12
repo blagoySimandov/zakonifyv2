@@ -1,0 +1,3 @@
+export const ATTORNEY_HEADER_CONSTANTS = {
+  MAX_PRACTICE_AREAS_DISPLAY: 2,
+} as const;

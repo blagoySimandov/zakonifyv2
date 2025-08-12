@@ -7,8 +7,9 @@ import { REGISTRATION_CONSTANTS } from "./constants";
 import { REGISTRATION_MESSAGES } from "./messages";
 import { PRACTICE_AREAS, PRACTICE_AREA_LABELS } from "@/constants";
 import { Upload } from "lucide-react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 interface PracticeLocationStepProps {
   formData: Partial<AttorneyRegistrationFormData>;
@@ -24,6 +25,13 @@ export function PracticeLocationStep({
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const generateUploadUrlMutation = useMutation(api.storage.generateUploadUrl);
+  
+  const profileImageUrl = useQuery(
+    api.storage.getUrl,
+    formData.profileImageStorageId 
+      ? { storageId: formData.profileImageStorageId as Id<"_storage"> }
+      : "skip"
+  );
 
   const handleImageUpload = async (file: File) => {
     if (!file) return;
@@ -46,13 +54,11 @@ export function PracticeLocationStep({
 
       const { storageId } = await uploadResult.json();
 
-      // Create preview URL for immediate display
-      const previewUrl = URL.createObjectURL(file);
+      // Create preview URL for immediate display (not used in form data)
 
-      // Update form data with both storage ID and preview URL
+      // Update form data with storage ID
       updateFormData({
         profileImageStorageId: storageId,
-        profileImage: previewUrl,
       });
     } catch (error) {
       console.error("Image upload failed:", error);
@@ -277,9 +283,9 @@ export function PracticeLocationStep({
           </label>
           <div className="flex items-center gap-6">
             <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
-              {formData.profileImage ? (
+              {profileImageUrl ? (
                 <Image
-                  src={formData.profileImage}
+                  src={profileImageUrl}
                   alt="Преглед на профила"
                   width={96}
                   height={96}

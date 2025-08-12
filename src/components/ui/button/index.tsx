@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: 
-          "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg",
+          "bg-legal-600 text-white hover:bg-legal-700 shadow-md hover:shadow-lg",
         secondary: 
           "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400",
         success: 
-          "bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg",
+          "bg-success-600 text-white hover:bg-success-700 shadow-md hover:shadow-lg",
         danger: 
-          "bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg",
+          "bg-danger-600 text-white hover:bg-danger-700 shadow-md hover:shadow-lg",
         ghost: 
           "text-gray-600 hover:bg-gray-100",
       },

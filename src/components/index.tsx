@@ -1,6 +1,12 @@
 export { ConvexClientProvider } from "./providers";
 export { ActionButtons } from "./action-buttons";
 export { AttorneyCard } from "./attorney-card";
+export { AttorneyProfileImage } from "./attorney-profile-image";
+export { StarRating } from "./star-rating";
+export { AttorneyHeader } from "./attorney-header";
+export { VerificationBadge } from "./verification-badge";
+export { ConsultationFeatures } from "./consultation-features";
+export { AvailabilityDisplay } from "./availability-display";
 export { AttorneySearch } from "./attorney-search";
 export { AttorneyRegistration } from "./attorney-registration";
 export { Navbar } from "./navbar";
@@ -16,3 +22,4 @@ export { AvailabilityDashboard } from "./availability-dashboard";
 export { ScheduleManager } from "./schedule-manager";
 export { TimeOffManager } from "./time-off-manager";
 export { AvailabilityCalendar } from "./availability-calendar";
+export { LoginPage } from "./login-page";

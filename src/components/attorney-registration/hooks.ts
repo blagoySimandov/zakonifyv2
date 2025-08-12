@@ -198,8 +198,8 @@ export function useAttorneyRegistration({
 
       const formDataWithTypedIds = {
         ...result.data,
-        profileImageStorageId: result.data.profileImageStorageId 
-          ? result.data.profileImageStorageId as Id<"_storage">
+        profileImageStorageId: result.data.profileImageStorageId
+          ? (result.data.profileImageStorageId as Id<"_storage">)
           : undefined,
       };
       await createAttorneyMutation(formDataWithTypedIds);

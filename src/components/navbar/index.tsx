@@ -4,26 +4,83 @@ import Link from "next/link";
 import { useNavbarState } from "./hooks";
 import { NAVBAR_CONSTANTS } from "./constants";
 import { NAVBAR_MESSAGES } from "./messages";
-import { Menu, X, Bell } from "lucide-react";
+import { Menu, X, Bell, Scale } from "lucide-react";
 
-export function Navbar() {
+interface NavbarProps {
+  variant?: "default" | "transparent" | "minimal";
+  showNavigation?: boolean;
+  showUserSection?: boolean;
+  className?: string;
+}
+
+export function Navbar({ 
+  variant = "default", 
+  showNavigation = true, 
+  showUserSection = true,
+  className = ""
+}: NavbarProps) {
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } =
     useNavbarState();
+
+  // Variant-specific styling
+  const getNavbarClasses = () => {
+    const baseClasses = "border-gray-100";
+    
+    switch (variant) {
+      case "transparent":
+        return `absolute top-0 left-0 right-0 z-20 bg-transparent ${baseClasses}`;
+      case "minimal":
+        return `bg-white border-b ${baseClasses}`;
+      case "default":
+      default:
+        return `bg-white border-b ${baseClasses}`;
+    }
+  };
+
+  const getTextClasses = () => {
+    switch (variant) {
+      case "transparent":
+        return {
+          brand: "text-white hover:text-white/80",
+          nav: "text-white/90 hover:text-white",
+          mobile: "text-gray-600 hover:text-gray-900" // Mobile menu is always on white background
+        };
+      case "minimal":
+      case "default":
+      default:
+        return {
+          brand: "text-gray-900 hover:text-legal-600",
+          nav: "text-gray-600 hover:text-gray-900",
+          mobile: "text-gray-600 hover:text-gray-900"
+        };
+    }
+  };
+
+  const textClasses = getTextClasses();
 
   const renderBrandLogo = () => (
     <Link
       href="/"
-      className="text-2xl font-bold text-gray-900 hover:text-teal-600 transition-colors"
+      className={`flex items-center gap-2 transition-colors ${textClasses.brand}`}
       onClick={closeMobileMenu}
     >
-      {NAVBAR_MESSAGES.BRAND_NAME}
+      {variant === "transparent" && (
+        <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+          <Scale className="w-5 h-5 text-white" />
+        </div>
+      )}
+      <span className="text-xl font-bold">
+        {NAVBAR_MESSAGES.BRAND_NAME}
+      </span>
     </Link>
   );
 
   const renderMobileMenuToggle = () => (
     <button
       onClick={toggleMobileMenu}
-      className="md:hidden p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+      className={`md:hidden p-2 focus:outline-none transition-colors ${
+        variant === "transparent" ? "text-white/80 hover:text-white" : "text-gray-600 hover:text-gray-900"
+      }`}
       aria-label="Toggle mobile menu"
     >
       {isMobileMenuOpen ? (
@@ -34,64 +91,104 @@ export function Navbar() {
     </button>
   );
 
-  const renderNavigationLinks = () => (
-    <nav className="hidden md:flex items-center space-x-6">
-      {NAVBAR_CONSTANTS.NAVIGATION_ITEMS.map((navigationItem) => (
-        <Link
-          key={navigationItem.href}
-          href={navigationItem.href}
-          className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
-        >
-          {NAVBAR_MESSAGES.NAVIGATION[navigationItem.label as keyof typeof NAVBAR_MESSAGES.NAVIGATION]}
-        </Link>
-      ))}
-    </nav>
-  );
-
-  const renderUserSection = () => (
-    <div className="hidden md:flex items-center space-x-4">
-      <button 
-        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-        aria-label={NAVBAR_MESSAGES.ACTIONS.NOTIFICATIONS}
-      >
-        <Bell className="w-5 h-5" />
-      </button>
-      <div className={`w-8 h-8 ${NAVBAR_CONSTANTS.USER_AVATAR_COLOR} rounded-full flex items-center justify-center text-white font-semibold text-sm cursor-pointer hover:opacity-80 transition-opacity`}>
-        {NAVBAR_CONSTANTS.AVATAR_INITIAL}
-      </div>
-    </div>
-  );
-
-  const renderMobileMenu = () => (
-    <div
-      className={`md:hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}
-    >
-      <div className="px-6 py-4 space-y-4 bg-gray-50 border-t border-gray-100">
+  const renderNavigationLinks = () => {
+    if (!showNavigation) return null;
+    
+    return (
+      <nav className="hidden md:flex items-center space-x-6">
         {NAVBAR_CONSTANTS.NAVIGATION_ITEMS.map((navigationItem) => (
           <Link
             key={navigationItem.href}
             href={navigationItem.href}
-            className="block text-gray-600 hover:text-gray-900 transition-colors"
-            onClick={closeMobileMenu}
+            className={`text-sm font-medium transition-colors ${textClasses.nav}`}
           >
             {NAVBAR_MESSAGES.NAVIGATION[navigationItem.label as keyof typeof NAVBAR_MESSAGES.NAVIGATION]}
           </Link>
         ))}
+      </nav>
+    );
+  };
 
-        <div className="pt-4 border-t border-gray-200 space-y-3">
-          <div className="flex items-center space-x-3">
-            <div className={`w-8 h-8 ${NAVBAR_CONSTANTS.USER_AVATAR_COLOR} rounded-full flex items-center justify-center text-white font-semibold text-sm`}>
-              {NAVBAR_CONSTANTS.AVATAR_INITIAL}
-            </div>
-            <span className="text-gray-900 font-medium">{NAVBAR_MESSAGES.ACTIONS.PROFILE}</span>
-          </div>
+  const renderUserSection = () => {
+    if (!showUserSection) return null;
+
+    // For transparent variant, show auth links instead of user section
+    if (variant === "transparent") {
+      return (
+        <div className="flex items-center gap-4">
+          <Link
+            href="/signup"
+            className="text-white/80 hover:text-white text-sm font-medium transition-colors"
+          >
+            Регистрация
+          </Link>
+        </div>
+      );
+    }
+
+    return (
+      <div className="hidden md:flex items-center space-x-4">
+        <button 
+          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          aria-label={NAVBAR_MESSAGES.ACTIONS.NOTIFICATIONS}
+        >
+          <Bell className="w-5 h-5" />
+        </button>
+        <div className={`w-8 h-8 ${NAVBAR_CONSTANTS.USER_AVATAR_COLOR} rounded-full flex items-center justify-center text-white font-semibold text-sm cursor-pointer hover:opacity-80 transition-opacity`}>
+          {NAVBAR_CONSTANTS.AVATAR_INITIAL}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  const renderMobileMenu = () => {
+    if (!showNavigation && !showUserSection) return null;
+
+    return (
+      <div
+        className={`md:hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}
+      >
+        <div className="px-6 py-4 space-y-4 bg-gray-50 border-t border-gray-100">
+          {showNavigation && NAVBAR_CONSTANTS.NAVIGATION_ITEMS.map((navigationItem) => (
+            <Link
+              key={navigationItem.href}
+              href={navigationItem.href}
+              className={`block transition-colors ${textClasses.mobile}`}
+              onClick={closeMobileMenu}
+            >
+              {NAVBAR_MESSAGES.NAVIGATION[navigationItem.label as keyof typeof NAVBAR_MESSAGES.NAVIGATION]}
+            </Link>
+          ))}
+
+          {showUserSection && variant !== "transparent" && (
+            <div className="pt-4 border-t border-gray-200 space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className={`w-8 h-8 ${NAVBAR_CONSTANTS.USER_AVATAR_COLOR} rounded-full flex items-center justify-center text-white font-semibold text-sm`}>
+                  {NAVBAR_CONSTANTS.AVATAR_INITIAL}
+                </div>
+                <span className="text-gray-900 font-medium">{NAVBAR_MESSAGES.ACTIONS.PROFILE}</span>
+              </div>
+            </div>
+          )}
+
+          {variant === "transparent" && (
+            <div className="pt-4 border-t border-gray-200">
+              <Link
+                href="/signup"
+                className="block text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                Регистрация
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <nav className="bg-white border-b border-gray-100">
+    <nav className={`${getNavbarClasses()} ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {renderBrandLogo()}

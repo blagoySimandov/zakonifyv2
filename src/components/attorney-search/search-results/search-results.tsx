@@ -99,7 +99,11 @@ export function SearchResults({
     return (
       <div className={SEARCH_RESULTS_CONSTANTS.RESULTS_LIST_CLASSES}>
         {attorneys.map((attorney) => (
-          <AttorneyCard key={attorney._id} attorney={attorney} />
+          <AttorneyCard
+            key={attorney._id}
+            attorney={attorney}
+            attorneyProfileHref={`/attorneys/${attorney._id}`}
+          />
         ))}
       </div>
     );
@@ -107,4 +111,3 @@ export function SearchResults({
 
   return null;
 }
-

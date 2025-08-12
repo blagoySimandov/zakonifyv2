@@ -94,7 +94,6 @@ export const AttorneyRegistrationSchema = z.object({
   languages: z.array(z.string()).optional(),
 
   // Media
-  profileImage: z.string().optional(),
   profileImageStorageId: z.string().optional(),
 });
 
@@ -119,7 +118,6 @@ export const STEP_SCHEMAS = {
     practiceAreas: true,
     location: true,
     languages: true,
-    profileImage: true,
     profileImageStorageId: true,
   }),
 

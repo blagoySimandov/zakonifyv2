@@ -45,5 +45,4 @@ export interface AttorneyCreateData {
   fixedFeePackages?: FixedFeePackage[];
   location: AttorneyLocation;
   languages: string[];
-  profileImage?: string;
 }

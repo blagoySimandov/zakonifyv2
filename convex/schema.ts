@@ -66,7 +66,6 @@ export default defineSchema({
     }),
     languages: v.optional(v.array(v.string())),
     isVerified: v.boolean(),
-    profileImage: v.optional(v.string()),
     profileImageStorageId: v.optional(v.id("_storage")),
     createdAt: v.number(),
     updatedAt: v.number(),
