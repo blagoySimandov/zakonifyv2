@@ -417,6 +417,7 @@ export const update = mutation({
     const { location, ...otherUpdates } = processedUpdates;
 
     const updateData: any = {
+      //TODO: Fix this
       ...otherUpdates,
       updatedAt: Date.now(),
     };

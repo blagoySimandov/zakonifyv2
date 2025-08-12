@@ -31,12 +31,12 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
     useAttorneyProfile(attorneyId);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  
+
   const profileImageUrl = useQuery(
     api.storage.getUrl,
-    attorney?.profileImageStorageId 
+    attorney?.profileImageStorageId
       ? { storageId: attorney.profileImageStorageId }
-      : "skip"
+      : "skip",
   );
 
   const renderLoadingState = () => (

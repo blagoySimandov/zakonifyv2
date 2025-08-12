@@ -10,3 +10,4 @@ export const SEARCH_RESULTS_MESSAGES = {
     CLEAR_FILTERS: "Изчистване на всички филтри",
   },
 } as const;
+

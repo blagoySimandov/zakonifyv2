@@ -2,7 +2,7 @@
 
 import { Search, AlertCircle, Loader } from "lucide-react";
 import { useSearchResults } from "./hooks";
-import { SEARCH_RESULTS_CONSTANTS } from "./constants";
+import { SEARCH_RESULTS_CONSTANTS } from "./constants"; //TODO: MOve to inline classes
 import { SEARCH_RESULTS_MESSAGES } from "./messages";
 import { AttorneyCard } from "../../attorney-card";
 import { Attorney } from "../../../types/attorney";

@@ -20,13 +20,13 @@ export function AttorneySearch() {
   } = useAttorneySearch();
 
   const handlePracticeAreaChange = (practiceArea: PracticeArea | "") => {
-    updateFilter('practiceArea', practiceArea || undefined);
+    updateFilter("practiceArea", practiceArea || undefined);
   };
 
   return (
     <div className="bg-gray-50">
-      <SearchHeader 
-        searchTerm={searchTerm} 
+      <SearchHeader
+        searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onPracticeAreaChange={handlePracticeAreaChange}
         selectedPracticeArea={filters.practiceArea || ""}
@@ -43,7 +43,7 @@ export function AttorneySearch() {
               clearAllFilters={clearAllFilters}
             />
           </div>
-          <SearchSidebar 
+          <SearchSidebar
             onPracticeAreaSelect={handlePracticeAreaChange}
             selectedPracticeArea={filters.practiceArea || ""}
           />
