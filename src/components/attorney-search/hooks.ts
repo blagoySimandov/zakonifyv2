@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AttorneySearchFilters } from "@/types";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { type PracticeArea } from "@/constants";
+import Fuse from "fuse.js";
 
 interface ExtendedAttorneySearchFilters extends AttorneySearchFilters {
   practiceArea?: PracticeArea;
@@ -26,18 +27,53 @@ export function useAttorneySearch({
   const [searchTerm, setSearchTerm] = useState("");
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
 
-  // Transform filters for the API
-  const transformedFilters = {
-    limit: 50,
-    practiceAreas: filters.practiceArea ? [filters.practiceArea] : filters.practiceAreas,
-    city: filters.location?.city,
-    state: filters.location?.state,
-    isVerified: filters.isVerified,
+  const allAttorneys = useQuery(api.attorneys.getAll, { limit: 1000 });
+  const isLoading = allAttorneys === undefined;
+  const error = null;
+
+  const fuseOptions = {
+    keys: ['fullName'],
+    threshold: 0.3,
+    distance: 100,
+    includeScore: true,
+    minMatchCharLength: 1,
   };
 
-  const attorneys = useQuery(api.attorneys.getAll, transformedFilters);
-  const isLoading = attorneys === undefined;
-  const error = null;
+  const fuse = useMemo(() => {
+    if (!allAttorneys) return null;
+    return new Fuse(allAttorneys, fuseOptions);
+  }, [allAttorneys]);
+
+  const attorneys = useMemo(() => {
+    if (!allAttorneys) return [];
+
+    let filteredAttorneys = allAttorneys;
+
+    if (searchTerm.trim() && fuse) {
+      const searchResults = fuse.search(searchTerm.trim());
+      filteredAttorneys = searchResults.map(result => result.item);
+    }
+
+    if (filters.practiceArea) {
+      filteredAttorneys = filteredAttorneys.filter(attorney =>
+        attorney.practiceAreas.includes(filters.practiceArea!)
+      );
+    }
+
+    if (filters.location?.city) {
+      filteredAttorneys = filteredAttorneys.filter(attorney =>
+        attorney.location.city === filters.location!.city
+      );
+    }
+
+    if (filters.isVerified !== undefined) {
+      filteredAttorneys = filteredAttorneys.filter(attorney =>
+        attorney.isVerified === filters.isVerified
+      );
+    }
+
+    return filteredAttorneys.slice(0, 50);
+  }, [allAttorneys, searchTerm, filters, fuse]);
 
   const updateFilter = <K extends keyof ExtendedAttorneySearchFilters>(
     key: K,
@@ -100,7 +136,7 @@ export function useAttorneySearch({
   };
 
   return {
-    attorneys: attorneys || [],
+    attorneys,
     isLoading,
     error,
     filters,

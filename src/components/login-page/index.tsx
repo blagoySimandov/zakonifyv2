@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Users, Scale, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui";
+import { Navbar } from "@/components";
 import { LOGIN_MESSAGES } from "./messages";
 import { USER_TYPES } from "./constants";
 import { useLoginPage } from "./hooks";
-import { LoginNavbar } from "./login-navbar";
 
 export function LoginPage() {
   const { handleLogin } = useLoginPage();
@@ -28,8 +28,12 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Login Navbar */}
-      <LoginNavbar />
+      {/* Unified Navbar in transparent mode */}
+      <Navbar 
+        variant="transparent" 
+        showNavigation={false} 
+        showUserSection={true}
+      />
       
       {/* Solid background */}
       <div className="absolute inset-0 bg-legal-700">

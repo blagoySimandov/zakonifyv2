@@ -24,6 +24,18 @@
   --color-legal-800: #1e40af;
   --color-legal-900: #1e3a8a;
   
+  /* Generate all necessary utility classes for legal colors */
+  --color-border-legal-50: #f0f7ff;
+  --color-border-legal-100: #e0f0fe;
+  --color-border-legal-200: #bae1fd;
+  --color-border-legal-300: #7cc8fc;
+  --color-border-legal-400: #36adf8;
+  --color-border-legal-500: #0c95e9;
+  --color-border-legal-600: #2563eb;
+  --color-border-legal-700: #1d4ed8;
+  --color-border-legal-800: #1e40af;
+  --color-border-legal-900: #1e3a8a;
+  
   /* Success colors */
   --color-success-50: #f0fdf4;
   --color-success-100: #dcfce7;
