@@ -11,7 +11,7 @@ export const useNextAvailableSlot = (attorneyId: Id<"attorneys">) => {
   });
 };
 
-export const useFormatAvailabilityDisplay = (nextAvailableSlot: any) => {
+export const useFormatAvailabilityDisplay = (nextAvailableSlot: { startTime: number } | null | undefined) => {
   if (nextAvailableSlot === undefined) {
     return AVAILABILITY_DISPLAY_MESSAGES.LOADING_AVAILABILITY;
   }

@@ -31,16 +31,15 @@ export function useAttorneySearch({
   const isLoading = allAttorneys === undefined;
   const error = null;
 
-  const fuseOptions = {
-    keys: ['fullName'],
-    threshold: 0.3,
-    distance: 100,
-    includeScore: true,
-    minMatchCharLength: 1,
-  };
-
   const fuse = useMemo(() => {
     if (!allAttorneys) return null;
+    const fuseOptions = {
+      keys: ['fullName'],
+      threshold: 0.3,
+      distance: 100,
+      includeScore: true,
+      minMatchCharLength: 1,
+    };
     return new Fuse(allAttorneys, fuseOptions);
   }, [allAttorneys]);
 

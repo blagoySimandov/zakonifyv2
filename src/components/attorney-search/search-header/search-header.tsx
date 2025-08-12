@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchHeader } from "./hooks";
 import { SEARCH_HEADER_MESSAGES } from "./messages";
 import { PracticeAreaSelector } from "../practice-area-selector";
 import { LocationSelector } from "../location-selector";
@@ -20,11 +19,6 @@ export function SearchHeader({
   onPracticeAreaChange,
   selectedPracticeArea 
 }: SearchHeaderProps) {
-  const { handleSearchSubmit } = useSearchHeader({
-    searchTerm,
-    setSearchTerm,
-  });
-
   return (
     <div className="bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -48,12 +42,6 @@ export function SearchHeader({
             />
           </div>
 
-          <button 
-            onClick={handleSearchSubmit}
-            className="px-6 py-3 bg-teal-500 text-white rounded-xl hover:bg-teal-600 transition-colors font-medium flex-shrink-0 shadow-sm"
-          >
-            {SEARCH_HEADER_MESSAGES.SEARCH.SEARCH_BUTTON}
-          </button>
         </div>
       </div>
     </div>

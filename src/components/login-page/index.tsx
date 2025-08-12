@@ -10,7 +10,7 @@ import { useLoginPage } from "./hooks";
 
 export function LoginPage() {
   const { handleLogin } = useLoginPage();
-  const [selectedUserType, setSelectedUserType] = useState<keyof typeof USER_TYPES | string>(USER_TYPES.ATTORNEY);
+  const [selectedUserType, setSelectedUserType] = useState<typeof USER_TYPES.ATTORNEY | typeof USER_TYPES.CLIENT>(USER_TYPES.ATTORNEY);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,7 +23,7 @@ export function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleLogin(selectedUserType as any);
+    handleLogin(selectedUserType);
   };
 
   return (
