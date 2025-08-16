@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Navbar } from "@/components";
 import { Dropdown } from "@/components/ui/dropdown";
 import { LANDING_PAGE_MESSAGES } from "./messages";
 
 export default function Home() {
+  const router = useRouter();
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
+  const [searchName, setSearchName] = useState("");
 
   const specialtyOptions = LANDING_PAGE_MESSAGES.SPECIALTIES.map(specialty => ({
     value: specialty,
@@ -19,6 +22,27 @@ export default function Home() {
     value: city,
     label: city
   }));
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    
+    if (selectedSpecialty) {
+      params.set('practiceArea', selectedSpecialty);
+    }
+    
+    if (selectedLocation) {
+      params.set('location', selectedLocation);
+    }
+    
+    if (searchName.trim()) {
+      params.set('search', searchName.trim());
+    }
+    
+    const queryString = params.toString();
+    const url = queryString ? `/attorneys?${queryString}` : '/attorneys';
+    
+    router.push(url);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -60,14 +84,18 @@ export default function Home() {
               <input
                 type="text"
                 placeholder={LANDING_PAGE_MESSAGES.SEARCH_FORM.NAME_PLACEHOLDER}
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               
-              <Link href="/attorneys">
-                <button className="w-full h-12 bg-primary-500 hover:bg-primary-600 text-white rounded-xl border-0 text-base font-semibold cursor-pointer transition-colors">
-                  {LANDING_PAGE_MESSAGES.SEARCH_FORM.SEARCH_BUTTON}
-                </button>
-              </Link>
+              <button 
+                onClick={handleSearch}
+                className="w-full h-12 bg-primary-500 hover:bg-primary-600 text-white rounded-xl border-0 text-base font-semibold cursor-pointer transition-colors"
+              >
+                {LANDING_PAGE_MESSAGES.SEARCH_FORM.SEARCH_BUTTON}
+              </button>
             </div>
 
             <p className="text-primary-500 text-sm">
