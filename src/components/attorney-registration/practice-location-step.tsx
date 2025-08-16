@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { AttorneyRegistrationFormData } from "./validation";
 import { REGISTRATION_CONSTANTS } from "./constants";
-import { REGISTRATION_MESSAGES } from "./messages";
+import { REGISTRATION_MESSAGES } from "@/messages";
 import { PRACTICE_AREAS, PRACTICE_AREA_LABELS } from "@/constants";
 import { Upload } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
@@ -110,7 +110,7 @@ export function PracticeLocationStep({
                   onChange={(e) =>
                     handlePracticeAreaChange(area, e.target.checked)
                   }
-                  className="rounded text-blue-500"
+                  className="rounded text-primary-500"
                 />
                 <span className="text-sm text-gray-700">
                   {PRACTICE_AREA_LABELS[area]}
@@ -119,7 +119,7 @@ export function PracticeLocationStep({
             ))}
           </div>
           {errors.practiceAreas && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-danger-500 text-sm mt-1">
               {errors.practiceAreas[0]}
             </p>
           )}
@@ -153,14 +153,14 @@ export function PracticeLocationStep({
                     })
                   }
                   placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.CITY}
-                  className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                     errors["location.city"]
-                      ? "border-red-300 bg-red-50 focus:ring-red-500"
+                      ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                       : "border-gray-200 hover:border-gray-300 focus:bg-white"
                   }`}
                 />
                 {errors["location.city"] && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-danger-500 text-sm mt-1">
                     {errors["location.city"][0]}
                   </p>
                 )}
@@ -183,14 +183,14 @@ export function PracticeLocationStep({
                     })
                   }
                   placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.STATE}
-                  className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                     errors["location.state"]
-                      ? "border-red-300 bg-red-50 focus:ring-red-500"
+                      ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                       : "border-gray-200 hover:border-gray-300 focus:bg-white"
                   }`}
                 />
                 {errors["location.state"] && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-danger-500 text-sm mt-1">
                     {errors["location.state"][0]}
                   </p>
                 )}
@@ -227,14 +227,14 @@ export function PracticeLocationStep({
                   })
                 }
                 placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.ADDRESS}
-                className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                   errors["location.address"]
-                    ? "border-red-300 bg-red-50 focus:ring-red-500"
+                    ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                     : "border-gray-200 hover:border-gray-300 focus:bg-white"
                 }`}
               />
               {errors["location.address"] && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-danger-500 text-sm mt-1">
                   {errors["location.address"][0]}
                 </p>
               )}
@@ -261,14 +261,14 @@ export function PracticeLocationStep({
                   })
                 }
                 placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.ZIP_CODE}
-                className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                   errors["location.zipCode"]
-                    ? "border-red-300 bg-red-50 focus:ring-red-500"
+                    ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                     : "border-gray-200 hover:border-gray-300 focus:bg-white"
                 }`}
               />
               {errors["location.zipCode"] && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-danger-500 text-sm mt-1">
                   {errors["location.zipCode"][0]}
                 </p>
               )}
@@ -323,7 +323,7 @@ export function PracticeLocationStep({
                 JPG, PNG или GIF (макс 5MB)
               </p>
               {isUploadingImage && (
-                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mt-2"></div>
+                <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mt-2"></div>
               )}
             </div>
           </div>

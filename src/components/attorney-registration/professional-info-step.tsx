@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { AttorneyRegistrationFormData } from "./validation";
 import { REGISTRATION_CONSTANTS } from "./constants";
-import { REGISTRATION_MESSAGES } from "./messages";
+import { REGISTRATION_MESSAGES } from "@/messages";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { AlertCircle, CheckCircle } from "lucide-react";
@@ -80,15 +80,15 @@ export function ProfessionalInfoStep({
               value={formData.barAssociationId || ""}
               onChange={(e) => handleBarIdChange(e.target.value)}
               placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.BAR_ID}
-              className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                 errors.barAssociationId || barIdTaken
-                  ? "border-red-300 bg-red-50 focus:ring-red-500"
+                  ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                   : "border-gray-200 hover:border-gray-300 focus:bg-white"
               }`}
             />
             {isCheckingBarId && (
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
             {!isCheckingBarId &&
@@ -97,20 +97,20 @@ export function ProfessionalInfoStep({
               formData.barAssociationId.length >= 5 &&
               !errors.barAssociationId && (
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-success-500" />
                 </div>
               )}
           </div>
 
           {errors.barAssociationId && (
-            <p className="text-red-500 text-sm mt-2 flex items-center">
+            <p className="text-danger-500 text-sm mt-2 flex items-center">
               <AlertCircle className="w-4 h-4 mr-1" />
               {errors.barAssociationId[0]}
             </p>
           )}
 
           {barIdTaken && !errors.barAssociationId && (
-            <p className="text-red-500 text-sm mt-2 flex items-center">
+            <p className="text-danger-500 text-sm mt-2 flex items-center">
               <AlertCircle className="w-4 h-4 mr-1" />
               Този номер в адвокатската колегия вече е регистриран
             </p>
@@ -121,7 +121,7 @@ export function ProfessionalInfoStep({
             formData.barAssociationId.length >= 5 &&
             !isCheckingBarId &&
             !errors.barAssociationId && (
-              <p className="text-green-500 text-sm mt-2 flex items-center">
+              <p className="text-success-500 text-sm mt-2 flex items-center">
                 <CheckCircle className="w-4 h-4 mr-1" />
                 Номерът е свободен
               </p>
@@ -145,14 +145,14 @@ export function ProfessionalInfoStep({
               updateFormData({ yearsOfExperience: Number(e.target.value) })
             }
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.YEARS_EXPERIENCE}
-            className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+            className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
               errors.yearsOfExperience
-                ? "border-red-300 bg-red-50 focus:ring-red-500"
+                ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                 : "border-gray-200 hover:border-gray-300 focus:bg-white"
             }`}
           />
           {errors.yearsOfExperience && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-danger-500 text-sm mt-1">
               {errors.yearsOfExperience[0]}
             </p>
           )}
@@ -167,14 +167,14 @@ export function ProfessionalInfoStep({
             value={formData.education || ""}
             onChange={(e) => updateFormData({ education: e.target.value })}
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.EDUCATION}
-            className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+            className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
               errors.education
-                ? "border-red-300 bg-red-50 focus:ring-red-500"
+                ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                 : "border-gray-200 hover:border-gray-300 focus:bg-white"
             }`}
           />
           {errors.education && (
-            <p className="text-red-500 text-sm mt-1">{errors.education[0]}</p>
+            <p className="text-danger-500 text-sm mt-1">{errors.education[0]}</p>
           )}
         </div>
 
@@ -187,14 +187,14 @@ export function ProfessionalInfoStep({
             value={formData.bio || ""}
             onChange={(e) => updateFormData({ bio: e.target.value })}
             placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.BIO}
-            className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
+            className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none ${
               errors.bio
-                ? "border-red-300 bg-red-50 focus:ring-red-500"
+                ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                 : "border-gray-200 hover:border-gray-300 focus:bg-white"
             }`}
           />
           {errors.bio && (
-            <p className="text-red-500 text-sm mt-1">{errors.bio[0]}</p>
+            <p className="text-danger-500 text-sm mt-1">{errors.bio[0]}</p>
           )}
           <p className="text-gray-500 text-sm mt-2">
             {REGISTRATION_MESSAGES.HELP.BIO_TIPS}

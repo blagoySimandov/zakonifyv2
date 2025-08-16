@@ -1,6 +1,6 @@
 export const NAVBAR_CONSTANTS = {
   AVATAR_INITIAL: "B",
-  USER_AVATAR_COLOR: "bg-teal-500",
+  USER_AVATAR_COLOR: "bg-primary-500",
   NAVIGATION_ITEMS: [
     { label: "FIND_ATTORNEYS", href: "/attorneys" },
     { label: "ONLINE_CONSULTATIONS", href: "/consultations" },

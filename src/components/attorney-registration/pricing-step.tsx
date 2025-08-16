@@ -2,7 +2,7 @@
 
 import { AttorneyRegistrationFormData } from "./validation";
 import { REGISTRATION_CONSTANTS } from "./constants";
-import { REGISTRATION_MESSAGES } from "./messages";
+import { REGISTRATION_MESSAGES } from "@/messages";
 import { Plus, Package, Trash2 } from "lucide-react";
 
 type FixedFeePackage = NonNullable<
@@ -61,9 +61,9 @@ export function PricingStep({
                 updateFormData({ hourlyRate: Number(e.target.value) })
               }
               placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.HOURLY_RATE}
-              className={`w-full pl-12 pr-16 py-4 border rounded-xl text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+              className={`w-full pl-12 pr-16 py-4 border rounded-xl text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 ${
                 errors.hourlyRate
-                  ? "border-red-300 bg-red-50 focus:ring-red-500"
+                  ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                   : "border-gray-200 hover:border-gray-300"
               }`}
             />
@@ -72,7 +72,7 @@ export function PricingStep({
             </div>
           </div>
           {errors.hourlyRate && (
-            <p className="text-red-500 text-sm mt-2 flex items-center gap-2">
+            <p className="text-danger-500 text-sm mt-2 flex items-center gap-2">
               <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center">
                 <span className="w-2 h-2 bg-red-500 rounded-full"></span>
               </span>
@@ -98,7 +98,7 @@ export function PricingStep({
             <button
               type="button"
               onClick={addFixedFeePackage}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-medium rounded-xl hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <Plus className="w-4 h-4" />
               {REGISTRATION_CONSTANTS.BUTTONS.ADD_PACKAGE}
@@ -121,7 +121,7 @@ export function PricingStep({
                 <button
                   type="button"
                   onClick={addFixedFeePackage}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Добави първия пакет
@@ -139,7 +139,7 @@ export function PricingStep({
                     <button
                       type="button"
                       onClick={() => removeFixedFeePackage(index)}
-                      className="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 group-hover:opacity-100 opacity-0"
+                      className="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-danger-500 hover:bg-red-50 rounded-lg transition-all duration-200 group-hover:opacity-100 opacity-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -147,7 +147,7 @@ export function PricingStep({
 
                   <div className="mb-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
                         <Package className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -177,12 +177,12 @@ export function PricingStep({
                         }
                         className={`w-full px-4 py-3 border rounded-xl text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 hover:border-gray-300 ${
                           errors[`fixedFeePackages.${index}.name`]
-                            ? "border-red-300 bg-red-50 focus:ring-red-500"
-                            : "border-gray-200 focus:ring-blue-500"
+                            ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
+                            : "border-gray-200 focus:ring-primary-500"
                         }`}
                       />
                       {errors[`fixedFeePackages.${index}.name`] && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center gap-2">
+                        <p className="text-danger-500 text-sm mt-1 flex items-center gap-2">
                           <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center">
                             <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                           </span>
@@ -209,12 +209,12 @@ export function PricingStep({
                         }
                         className={`w-full px-4 py-3 border rounded-xl text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 resize-none hover:border-gray-300 ${
                           errors[`fixedFeePackages.${index}.description`]
-                            ? "border-red-300 bg-red-50 focus:ring-red-500"
-                            : "border-gray-200 focus:ring-blue-500"
+                            ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
+                            : "border-gray-200 focus:ring-primary-500"
                         }`}
                       />
                       {errors[`fixedFeePackages.${index}.description`] && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center gap-2">
+                        <p className="text-danger-500 text-sm mt-1 flex items-center gap-2">
                           <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center">
                             <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                           </span>
@@ -247,13 +247,13 @@ export function PricingStep({
                           }
                           className={`w-full pl-12 pr-4 py-3 border rounded-xl text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 hover:border-gray-300 ${
                             errors[`fixedFeePackages.${index}.price`]
-                              ? "border-red-300 bg-red-50 focus:ring-red-500"
-                              : "border-gray-200 focus:ring-blue-500"
+                              ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
+                              : "border-gray-200 focus:ring-primary-500"
                           }`}
                         />
                       </div>
                       {errors[`fixedFeePackages.${index}.price`] && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center gap-2">
+                        <p className="text-danger-500 text-sm mt-1 flex items-center gap-2">
                           <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center">
                             <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                           </span>
@@ -268,7 +268,7 @@ export function PricingStep({
           )}
 
           {errors.fixedFeePackages && (
-            <p className="text-red-500 text-sm mt-3 flex items-center gap-2">
+            <p className="text-danger-500 text-sm mt-3 flex items-center gap-2">
               <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center">
                 <span className="w-2 h-2 bg-red-500 rounded-full"></span>
               </span>

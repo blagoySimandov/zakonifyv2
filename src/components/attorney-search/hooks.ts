@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { AttorneySearchFilters } from "@/types";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -17,19 +18,43 @@ interface ExtendedAttorneySearchFilters extends AttorneySearchFilters {
 
 interface UseAttorneySearchProps {
   initialFilters?: ExtendedAttorneySearchFilters;
+  initialSearchTerm?: string;
 }
 
 export function useAttorneySearch({
   initialFilters = {},
+  initialSearchTerm = "",
 }: UseAttorneySearchProps = {}) {
+  const router = useRouter();
   const [filters, setFilters] =
     useState<ExtendedAttorneySearchFilters>(initialFilters);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
 
   const allAttorneys = useQuery(api.attorneys.getAll, { limit: 1000 });
   const isLoading = allAttorneys === undefined;
   const error = null;
+
+  const updateURLParams = (newFilters: ExtendedAttorneySearchFilters, newSearchTerm: string) => {
+    const params = new URLSearchParams();
+    
+    if (newSearchTerm.trim()) {
+      params.set('search', newSearchTerm.trim());
+    }
+    
+    if (newFilters.practiceArea) {
+      params.set('practiceArea', newFilters.practiceArea);
+    }
+    
+    if (newFilters.location?.city) {
+      params.set('location', newFilters.location.city);
+    }
+    
+    const queryString = params.toString();
+    const url = queryString ? `/search?${queryString}` : '/search';
+    
+    router.replace(url);
+  };
 
   const fuse = useMemo(() => {
     if (!allAttorneys) return null;
@@ -78,15 +103,18 @@ export function useAttorneySearch({
     key: K,
     value: ExtendedAttorneySearchFilters[K],
   ) => {
-    setFilters((previousFilters) => ({
-      ...previousFilters,
+    const newFilters = {
+      ...filters,
       [key]: value,
-    }));
+    };
+    setFilters(newFilters);
+    updateURLParams(newFilters, searchTerm);
   };
 
   const clearAllFilters = () => {
     setFilters({});
     setSearchTerm("");
+    updateURLParams({}, "");
   };
 
   const toggleFiltersVisibility = () => {
@@ -134,6 +162,11 @@ export function useAttorneySearch({
     return { min, max };
   };
 
+  const setSearchTermWithURL = (term: string) => {
+    setSearchTerm(term);
+    updateURLParams(filters, term);
+  };
+
   return {
     attorneys,
     isLoading,
@@ -143,7 +176,7 @@ export function useAttorneySearch({
     areFiltersVisible,
     activeFiltersCount: getActiveFiltersCount(),
     hasActiveFilters,
-    setSearchTerm,
+    setSearchTerm: setSearchTermWithURL,
     updateFilter,
     clearAllFilters,
     toggleFiltersVisibility,

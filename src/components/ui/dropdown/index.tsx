@@ -6,34 +6,31 @@ import { ChevronDown, Check, X, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Fuse from "fuse.js";
 
-const dropdownVariants = cva(
-  "relative w-full min-w-0",
-  {
-    variants: {
-      size: {
-        sm: "text-sm",
-        md: "text-base",
-        lg: "text-lg",
-      },
-      width: {
-        auto: "w-auto min-w-[180px]",
-        full: "w-full",
-        compact: "w-48",
-        xs: "w-32",
-        sm: "w-40",
-        md: "w-56",
-        lg: "w-72",
-      },
+const dropdownVariants = cva("relative w-full min-w-0", {
+  variants: {
+    size: {
+      sm: "text-sm",
+      md: "text-base",
+      lg: "text-lg",
     },
-    defaultVariants: {
-      size: "md",
-      width: "full",
+    width: {
+      auto: "w-auto min-w-[180px]",
+      full: "w-full",
+      compact: "w-48",
+      xs: "w-32",
+      sm: "w-40",
+      md: "w-56",
+      lg: "w-72",
     },
-  }
-);
+  },
+  defaultVariants: {
+    size: "md",
+    width: "full",
+  },
+});
 
 const triggerVariants = cva(
-  "w-full flex items-center justify-between px-4 py-3 text-left bg-white border border-gray-300 rounded-xl shadow-sm transition-all duration-200 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+  "w-full flex items-center justify-between px-4 py-3 text-left bg-white border border-gray-300 rounded-xl shadow-sm transition-all duration-200 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
   {
     variants: {
       size: {
@@ -44,18 +41,18 @@ const triggerVariants = cva(
       state: {
         default: "text-gray-700",
         placeholder: "text-gray-500",
-        open: "border-blue-500 ring-2 ring-blue-500 text-gray-700",
+        open: "border-primary-500 ring-2 ring-primary-500 text-gray-700",
       },
     },
     defaultVariants: {
       size: "md",
       state: "default",
     },
-  }
+  },
 );
 
 const dropdownMenuVariants = cva(
-  "absolute top-full left-0 right-0 z-50 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-auto",
+  "absolute top-full left-0 right-0 z-50 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-62 overflow-hidden",
   {
     variants: {
       size: {
@@ -67,7 +64,7 @@ const dropdownMenuVariants = cva(
     defaultVariants: {
       size: "md",
     },
-  }
+  },
 );
 
 const optionVariants = cva(
@@ -81,7 +78,7 @@ const optionVariants = cva(
       },
       state: {
         default: "text-gray-700",
-        selected: "text-blue-600 bg-blue-50",
+        selected: "text-primary-600 bg-primary-50",
         hover: "bg-gray-50",
       },
     },
@@ -89,7 +86,7 @@ const optionVariants = cva(
       size: "md",
       state: "default",
     },
-  }
+  },
 );
 
 export interface DropdownOption {
@@ -131,30 +128,31 @@ export function Dropdown({
   const displayText = selectedOption?.label || placeholder;
   const isPlaceholder = !selectedOption;
 
-  // Configure Fuse.js for fuzzy search
   const fuse = useMemo(
     () =>
       new Fuse(options, {
         keys: ["label", "value"],
-        threshold: 0.3, // Lower = more strict matching
+        threshold: 0.3,
         includeScore: true,
       }),
-    [options]
+    [options],
   );
 
-  // Filter options based on search term
   const filteredOptions = useMemo(() => {
     if (!searchable || !searchTerm) {
       return options;
     }
-    
+
     const results = fuse.search(searchTerm);
     return results.map((result) => result.item);
   }, [searchable, searchTerm, fuse, options]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -167,16 +165,14 @@ export function Dropdown({
     if (!disabled) {
       const newIsOpen = !isOpen;
       setIsOpen(newIsOpen);
-      
+
       if (newIsOpen && searchable) {
-        // Focus search input when opening searchable dropdown
         setTimeout(() => {
           searchInputRef.current?.focus();
         }, 0);
       }
-      
+
       if (!newIsOpen) {
-        // Clear search when closing
         setSearchTerm("");
       }
     }
@@ -231,8 +227,7 @@ export function Dropdown({
           }),
           disabled && "opacity-50 cursor-not-allowed",
           "cursor-pointer",
-          // Override text color when open and showing placeholder
-          isOpen && isPlaceholder && "text-gray-500"
+          isOpen && isPlaceholder && "text-gray-500",
         )}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
@@ -256,17 +251,14 @@ export function Dropdown({
           <ChevronDown
             className={cn(
               "h-5 w-5 transition-transform duration-200 text-gray-400",
-              isOpen && "rotate-180"
+              isOpen && "rotate-180",
             )}
           />
         </div>
       </div>
 
       {isOpen && !disabled && (
-        <div
-          className={dropdownMenuVariants({ size })}
-          role="listbox"
-        >
+        <div className={dropdownMenuVariants({ size })} role="listbox">
           {searchable && (
             <div className="p-2 border-b border-gray-200">
               <div className="relative">
@@ -277,13 +269,13 @@ export function Dropdown({
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
             </div>
           )}
-          
+
           <div className="max-h-48 overflow-auto">
             {filteredOptions.length === 0 ? (
               <div className="px-4 py-3 text-sm text-gray-500 text-center">
@@ -301,14 +293,14 @@ export function Dropdown({
                       optionVariants({
                         size,
                         state: isSelected ? "selected" : "default",
-                      })
+                      }),
                     )}
                     role="option"
                     aria-selected={isSelected}
                   >
                     <span className="truncate">{option.label}</span>
                     {isSelected && (
-                      <Check className="h-4 w-4 text-blue-600" />
+                      <Check className="h-4 w-4 text-primary-600" />
                     )}
                   </button>
                 );
@@ -320,3 +312,4 @@ export function Dropdown({
     </div>
   );
 }
+

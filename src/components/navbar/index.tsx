@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useNavbarState } from "./hooks";
 import { NAVBAR_CONSTANTS } from "./constants";
-import { NAVBAR_MESSAGES } from "./messages";
-import { Menu, X, Bell, Scale } from "lucide-react";
+import { NAVBAR_MESSAGES } from "@/messages";
+import { Menu, X, Bell } from "lucide-react";
 
 interface NavbarProps {
   variant?: "default" | "transparent" | "minimal";
@@ -64,11 +65,14 @@ export function Navbar({
       className={`flex items-center gap-2 transition-colors ${textClasses.brand}`}
       onClick={closeMobileMenu}
     >
-      {variant === "transparent" && (
-        <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-          <Scale className="w-5 h-5 text-white" />
-        </div>
-      )}
+      <Image 
+        src="/logo.png" 
+        alt="Zakonify Logo" 
+        width={32} 
+        height={32} 
+        className="w-8 h-8"
+        priority
+      />
       <span className="text-xl font-bold">
         {NAVBAR_MESSAGES.BRAND_NAME}
       </span>
@@ -128,6 +132,12 @@ export function Navbar({
 
     return (
       <div className="hidden md:flex items-center space-x-4">
+        <Link
+          href="/register"
+          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          {NAVBAR_MESSAGES.ACTIONS.JOIN_AS_ATTORNEY}
+        </Link>
         <button 
           className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
           aria-label={NAVBAR_MESSAGES.ACTIONS.NOTIFICATIONS}

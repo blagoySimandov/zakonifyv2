@@ -1,8 +1,7 @@
 "use client";
 
 import { useSearchBar } from "./hooks";
-import { SEARCH_BAR_CONSTANTS } from "./constants";
-import { SEARCH_BAR_MESSAGES } from "./messages";
+import { SEARCH_BAR_MESSAGES } from "@/messages";
 
 interface SearchBarProps {
   searchTerm: string;
@@ -23,13 +22,13 @@ export function SearchBar({
   });
 
   return (
-    <div className={className || SEARCH_BAR_CONSTANTS.CONTAINER_CLASSES}>
+    <div className={className || "w-full"}>
       <input
         type="text"
         placeholder={placeholder}
         value={searchTerm}
         onChange={handleSearchInputChange}
-        className={SEARCH_BAR_CONSTANTS.INPUT_CLASSES}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-500 shadow-sm"
       />
     </div>
   );

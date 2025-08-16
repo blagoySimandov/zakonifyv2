@@ -4,7 +4,7 @@ import { AttorneySearch, Navbar } from "@/components";
 import { useSearchParams } from "next/navigation";
 import { type PracticeArea } from "@/constants";
 
-export default function AttorneysPage() {
+export default function SearchPage() {
   const searchParams = useSearchParams();
   
   const initialFilters = {

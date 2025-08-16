@@ -5,8 +5,17 @@ import { SearchHeader } from "./search-header";
 import { SearchResults } from "./search-results";
 import { SearchSidebar } from "./search-sidebar";
 import { type PracticeArea } from "@/constants";
+import { type AttorneySearchFilters } from "@/types";
 
-export function AttorneySearch() {
+interface AttorneySearchProps {
+  initialFilters?: AttorneySearchFilters & { practiceArea?: PracticeArea };
+  initialSearchTerm?: string;
+}
+
+export function AttorneySearch({ 
+  initialFilters = {},
+  initialSearchTerm = ""
+}: AttorneySearchProps = {}) {
   const {
     attorneys,
     isLoading,
@@ -17,7 +26,10 @@ export function AttorneySearch() {
     clearAllFilters,
     updateFilter,
     filters,
-  } = useAttorneySearch();
+  } = useAttorneySearch({
+    initialFilters,
+    initialSearchTerm,
+  });
 
   const handlePracticeAreaChange = (practiceArea: PracticeArea | "") => {
     updateFilter('practiceArea', practiceArea || undefined);

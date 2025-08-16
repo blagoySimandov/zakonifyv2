@@ -2,8 +2,7 @@
 
 import { Search, AlertCircle, Loader } from "lucide-react";
 import { useSearchResults } from "./hooks";
-import { SEARCH_RESULTS_CONSTANTS } from "./constants";
-import { SEARCH_RESULTS_MESSAGES } from "./messages";
+import { SEARCH_RESULTS_MESSAGES } from "@/messages";
 import { AttorneyCard } from "../../attorney-card";
 import { Attorney } from "../../../types/attorney";
 
@@ -38,10 +37,10 @@ export function SearchResults({
 
   if (showLoadingState) {
     return (
-      <div className={SEARCH_RESULTS_CONSTANTS.LOADING_WRAPPER_CLASSES}>
-        <div className={SEARCH_RESULTS_CONSTANTS.LOADING_CONTENT_CLASSES}>
-          <Loader className={SEARCH_RESULTS_CONSTANTS.LOADING_ICON_CLASSES} />
-          <span className={SEARCH_RESULTS_CONSTANTS.LOADING_TEXT_CLASSES}>
+      <div className="flex items-center justify-center py-12">
+        <div className="flex items-center gap-3">
+          <Loader className="w-6 h-6 text-primary-500 animate-spin" />
+          <span className="text-gray-600">
             {SEARCH_RESULTS_MESSAGES.LOADING}
           </span>
         </div>
@@ -51,15 +50,15 @@ export function SearchResults({
 
   if (showErrorState) {
     return (
-      <div className={SEARCH_RESULTS_CONSTANTS.ERROR_WRAPPER_CLASSES}>
-        <div className={SEARCH_RESULTS_CONSTANTS.ERROR_CONTAINER_CLASSES}>
+      <div className="text-center py-12">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
           <AlertCircle
-            className={SEARCH_RESULTS_CONSTANTS.ERROR_ICON_CLASSES}
+            className="w-12 h-12 text-red-500 mx-auto mb-4"
           />
-          <p className={SEARCH_RESULTS_CONSTANTS.ERROR_TITLE_CLASSES}>
+          <p className="text-red-700 font-medium">
             {SEARCH_RESULTS_MESSAGES.ERROR.TITLE}
           </p>
-          <p className={SEARCH_RESULTS_CONSTANTS.ERROR_SUBTITLE_CLASSES}>
+          <p className="text-red-600 text-sm mt-1">
             {SEARCH_RESULTS_MESSAGES.ERROR.SUBTITLE}
           </p>
         </div>
@@ -69,23 +68,23 @@ export function SearchResults({
 
   if (showNoResultsState) {
     return (
-      <div className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_WRAPPER_CLASSES}>
-        <div className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_CONTAINER_CLASSES}>
+      <div className="text-center py-16">
+        <div className="max-w-md mx-auto">
           <Search
-            className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_ICON_CLASSES}
+            className="w-16 h-16 text-gray-300 mx-auto mb-4"
           />
-          <h3 className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_TITLE_CLASSES}>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
             {SEARCH_RESULTS_MESSAGES.NO_RESULTS.TITLE}
           </h3>
           <p
-            className={SEARCH_RESULTS_CONSTANTS.NO_RESULTS_DESCRIPTION_CLASSES}
+            className="text-gray-500 mb-6"
           >
             {SEARCH_RESULTS_MESSAGES.NO_RESULTS.DESCRIPTION}
           </p>
           {hasActiveFilters && (
             <button
               onClick={handleClearFilters}
-              className={SEARCH_RESULTS_CONSTANTS.CLEAR_BUTTON_CLASSES}
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
             >
               {SEARCH_RESULTS_MESSAGES.NO_RESULTS.CLEAR_FILTERS}
             </button>
@@ -97,7 +96,7 @@ export function SearchResults({
 
   if (showResultsList) {
     return (
-      <div className={SEARCH_RESULTS_CONSTANTS.RESULTS_LIST_CLASSES}>
+      <div className="space-y-4">
         {attorneys.map((attorney) => (
           <AttorneyCard
             key={attorney._id}

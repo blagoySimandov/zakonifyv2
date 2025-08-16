@@ -6,6 +6,7 @@ import { REGISTRATION_CONSTANTS } from "./constants";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { AlertCircle, CheckCircle } from "lucide-react";
+import { Input } from "@/components/ui";
 
 interface PersonalInfoStepProps {
   formData: Partial<AttorneyRegistrationFormData>;
@@ -70,36 +71,18 @@ export function PersonalInfoStep({
       </div>
 
       <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-3">
-            {REGISTRATION_CONSTANTS.LABELS.FULL_NAME} *
-          </label>
-          <input
-            type="text"
-            autoComplete="name"
-            name="fullName"
-            id="fullName"
-            aria-label="Full legal name"
-            aria-describedby={errors.fullName ? "fullName-error" : undefined}
-            value={formData.fullName || ""}
-            onChange={(e) => updateFormData({ fullName: e.target.value })}
-            placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.FULL_NAME}
-            className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-              errors.fullName
-                ? "border-red-300 bg-red-50 focus:ring-red-500"
-                : "border-gray-200 hover:border-gray-300 focus:bg-white"
-            }`}
-          />
-          {errors.fullName && (
-            <p
-              id="fullName-error"
-              className="text-red-500 text-sm mt-2 flex items-center"
-            >
-              <AlertCircle className="w-4 h-4 mr-1" />
-              {errors.fullName[0]}
-            </p>
-          )}
-        </div>
+        <Input
+          type="text"
+          autoComplete="name"
+          name="fullName"
+          id="fullName"
+          label={REGISTRATION_CONSTANTS.LABELS.FULL_NAME}
+          required
+          value={formData.fullName || ""}
+          onChange={(e) => updateFormData({ fullName: e.target.value })}
+          placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.FULL_NAME}
+          error={errors.fullName?.[0]}
+        />
 
         <div>
           <label className="block text-sm font-semibold text-gray-900 mb-3">
@@ -116,15 +99,15 @@ export function PersonalInfoStep({
               value={formData.email || ""}
               onChange={(e) => handleEmailChange(e.target.value)}
               placeholder={REGISTRATION_CONSTANTS.PLACEHOLDERS.EMAIL}
-              className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              className={`w-full px-4 py-4 border rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                 errors.email || emailTaken
-                  ? "border-red-300 bg-red-50 focus:ring-red-500"
+                  ? "border-danger-300 bg-danger-50 focus:ring-danger-500"
                   : "border-gray-200 hover:border-gray-300 focus:bg-white"
               }`}
             />
             {isCheckingEmail && (
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
             {!isCheckingEmail &&
@@ -133,7 +116,7 @@ export function PersonalInfoStep({
               formData.email.includes("@") &&
               !errors.email && (
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-success-500" />
                 </div>
               )}
           </div>
@@ -141,7 +124,7 @@ export function PersonalInfoStep({
           {errors.email && (
             <p
               id="email-error"
-              className="text-red-500 text-sm mt-2 flex items-center"
+              className="text-danger-500 text-sm mt-2 flex items-center"
             >
               <AlertCircle className="w-4 h-4 mr-1" />
               {errors.email[0]}
@@ -151,7 +134,7 @@ export function PersonalInfoStep({
           {emailTaken && !errors.email && (
             <p
               id="email-error"
-              className="text-red-500 text-sm mt-2 flex items-center"
+              className="text-danger-500 text-sm mt-2 flex items-center"
             >
               <AlertCircle className="w-4 h-4 mr-1" />
               Този имейл вече е регистриран
@@ -163,7 +146,7 @@ export function PersonalInfoStep({
             formData.email.includes("@") &&
             !isCheckingEmail &&
             !errors.email && (
-              <p className="text-green-500 text-sm mt-2 flex items-center">
+              <p className="text-success-500 text-sm mt-2 flex items-center">
                 <CheckCircle className="w-4 h-4 mr-1" />
                 Имейлът е свободен
               </p>
