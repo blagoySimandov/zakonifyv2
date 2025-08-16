@@ -64,11 +64,7 @@ export function Navbar({
       className={`flex items-center gap-2 transition-colors ${textClasses.brand}`}
       onClick={closeMobileMenu}
     >
-      {variant === "transparent" && (
-        <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-          <Scale className="w-5 h-5 text-white" />
-        </div>
-      )}
+      <Scale className="w-6 h-6 text-primary-500" />
       <span className="text-xl font-bold">
         {NAVBAR_MESSAGES.BRAND_NAME}
       </span>
@@ -128,6 +124,12 @@ export function Navbar({
 
     return (
       <div className="hidden md:flex items-center space-x-4">
+        <Link
+          href="/register"
+          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          {NAVBAR_MESSAGES.ACTIONS.JOIN_AS_ATTORNEY}
+        </Link>
         <button 
           className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
           aria-label={NAVBAR_MESSAGES.ACTIONS.NOTIFICATIONS}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useSearchSidebar } from "./hooks";
-import { SEARCH_SIDEBAR_CONSTANTS } from "./constants";
 import { SEARCH_SIDEBAR_MESSAGES } from "./messages";
 import {
   PRACTICE_AREA_LABELS,
@@ -24,19 +23,19 @@ export function SearchSidebar({
   });
 
   return (
-    <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_CONTAINER_CLASSES}>
-      <h3 className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_TITLE_CLASSES}>
+    <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <h3 className="font-semibold text-gray-900 mb-3">
         {SEARCH_SIDEBAR_MESSAGES.POPULAR_PRACTICE_AREAS_TITLE}
       </h3>
-      <div className={SEARCH_SIDEBAR_CONSTANTS.POPULAR_AREAS_LIST_CLASSES}>
+      <div className="space-y-2">
         {POPULAR_PRACTICE_AREAS.map((area: PracticeArea) => (
           <button
             key={area}
             onClick={() => handlePracticeAreaClick(area)}
             className={
               isAreaSelected(area)
-                ? SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_SELECTED_CLASSES
-                : SEARCH_SIDEBAR_CONSTANTS.PRACTICE_AREA_BUTTON_CLASSES
+                ? "block w-full text-left text-sm text-primary-600 bg-primary-50 px-2 py-1 rounded font-medium"
+                : "block w-full text-left text-sm text-gray-600 hover:text-primary-600 hover:bg-primary-50 px-2 py-1 rounded transition-colors"
             }
           >
             {PRACTICE_AREA_LABELS[area]}

@@ -1,5 +1,5 @@
 export const NAVBAR_MESSAGES = {
-  BRAND_NAME: "zakonify.bg",
+  BRAND_NAME: "Zakonify",
   NAVIGATION: {
     FIND_ATTORNEYS: "Намери адвокати",
     ONLINE_CONSULTATIONS: "Онлайн консултации",
@@ -7,7 +7,7 @@ export const NAVBAR_MESSAGES = {
     HOW_IT_WORKS: "Как работи",
   },
   ACTIONS: {
-    JOIN_AS_ATTORNEY: "Присъединете се като адвокат",
+    JOIN_AS_ATTORNEY: "За адвокати",
     LOGIN: "Влизане",
     SIGN_UP: "Регистрация",
     PROFILE: "Профил",
