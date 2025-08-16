@@ -2,7 +2,7 @@
 
 import { useLocationSelector } from "./hooks";
 import { LOCATION_SELECTOR_CONSTANTS } from "./constants";
-import { LOCATION_SELECTOR_MESSAGES } from "./messages";
+import { LOCATION_SELECTOR_MESSAGES } from "@/messages";
 import { Dropdown, type DropdownOption } from "@/components/ui";
 
 export function LocationSelector() {

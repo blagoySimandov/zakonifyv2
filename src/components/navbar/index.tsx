@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useNavbarState } from "./hooks";
 import { NAVBAR_CONSTANTS } from "./constants";
-import { NAVBAR_MESSAGES } from "./messages";
-import { Menu, X, Bell, Scale } from "lucide-react";
+import { NAVBAR_MESSAGES } from "@/messages";
+import { Menu, X, Bell } from "lucide-react";
 
 interface NavbarProps {
   variant?: "default" | "transparent" | "minimal";
@@ -64,7 +65,14 @@ export function Navbar({
       className={`flex items-center gap-2 transition-colors ${textClasses.brand}`}
       onClick={closeMobileMenu}
     >
-      <Scale className="w-6 h-6 text-primary-500" />
+      <Image 
+        src="/logo.png" 
+        alt="Zakonify Logo" 
+        width={32} 
+        height={32} 
+        className="w-8 h-8"
+        priority
+      />
       <span className="text-xl font-bold">
         {NAVBAR_MESSAGES.BRAND_NAME}
       </span>

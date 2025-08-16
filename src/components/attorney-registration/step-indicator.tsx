@@ -17,7 +17,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
               index < currentStep - 1
                 ? "bg-green-500 text-white"
                 : index === currentStep - 1
-                  ? "bg-blue-500 text-white"
+                  ? "bg-primary-500 text-white"
                   : "bg-gray-200 text-gray-400"
             }`}
           >
@@ -26,7 +26,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
           <span
             className={`text-xs mt-1 text-center max-w-20 ${
               index === currentStep - 1
-                ? "text-blue-600 font-medium"
+                ? "text-primary-600 font-medium"
                 : "text-gray-400"
             }`}
           >

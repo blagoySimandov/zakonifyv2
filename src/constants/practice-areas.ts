@@ -1,42 +1,11 @@
-export enum PracticeAreaEnum {
-  FAMILY_LAW = "FAMILY_LAW",
-  CRIMINAL_LAW = "CRIMINAL_LAW",
-  COMMERCIAL_LAW = "COMMERCIAL_LAW",
-  IMMIGRATION_LAW = "IMMIGRATION_LAW",
-  PERSONAL_INJURY = "PERSONAL_INJURY",
-  REAL_ESTATE = "REAL_ESTATE",
-  LABOR_LAW = "LABOR_LAW",
-  BANKRUPTCY = "BANKRUPTCY",
-  TAX_LAW = "TAX_LAW",
-  INTELLECTUAL_PROPERTY = "INTELLECTUAL_PROPERTY",
-  INHERITANCE_LAW = "INHERITANCE_LAW",
-  ENVIRONMENTAL_LAW = "ENVIRONMENTAL_LAW",
-  MEDICAL_LIABILITY = "MEDICAL_LIABILITY",
-  CONTRACT_LAW = "CONTRACT_LAW",
-  CIVIL_RIGHTS = "CIVIL_RIGHTS",
-}
+import { PRACTICE_AREA_MESSAGES } from "../messages/practice-areas";
+import { PracticeAreaEnum } from "./practice-area-enum";
 
 export const PRACTICE_AREAS = Object.values(PracticeAreaEnum);
 
 export type PracticeArea = PracticeAreaEnum;
 
-export const PRACTICE_AREA_LABELS = {
-  [PracticeAreaEnum.FAMILY_LAW]: "Семейно право",
-  [PracticeAreaEnum.CRIMINAL_LAW]: "Наказателно право",
-  [PracticeAreaEnum.COMMERCIAL_LAW]: "Търговско право",
-  [PracticeAreaEnum.IMMIGRATION_LAW]: "Имиграционно право",
-  [PracticeAreaEnum.PERSONAL_INJURY]: "Обезщетения за вреди",
-  [PracticeAreaEnum.REAL_ESTATE]: "Недвижими имоти",
-  [PracticeAreaEnum.LABOR_LAW]: "Трудово право",
-  [PracticeAreaEnum.BANKRUPTCY]: "Несъстоятелност",
-  [PracticeAreaEnum.TAX_LAW]: "Данъчно право",
-  [PracticeAreaEnum.INTELLECTUAL_PROPERTY]: "Интелектуална собственост",
-  [PracticeAreaEnum.INHERITANCE_LAW]: "Наследствено право",
-  [PracticeAreaEnum.ENVIRONMENTAL_LAW]: "Екологично право",
-  [PracticeAreaEnum.MEDICAL_LIABILITY]: "Медицинска отговорност",
-  [PracticeAreaEnum.CONTRACT_LAW]: "Облигационно право",
-  [PracticeAreaEnum.CIVIL_RIGHTS]: "Граждански права",
-} as const;
+export const PRACTICE_AREA_LABELS = PRACTICE_AREA_MESSAGES;
 
 export const PRACTICE_AREA_DESCRIPTIONS = {
   [PracticeAreaEnum.FAMILY_LAW]:
@@ -77,3 +46,23 @@ export const POPULAR_PRACTICE_AREAS = [
   PracticeAreaEnum.PERSONAL_INJURY,
   PracticeAreaEnum.REAL_ESTATE,
 ] as const;
+
+type PracticeAreaLabel = (typeof PRACTICE_AREA_LABELS)[keyof typeof PRACTICE_AREA_LABELS];
+
+export const PRACTICE_AREA_LABEL_TO_ENUM: Record<PracticeAreaLabel, PracticeAreaEnum> = {
+  "Семейно право": PracticeAreaEnum.FAMILY_LAW,
+  "Наказателно право": PracticeAreaEnum.CRIMINAL_LAW,
+  "Търговско право": PracticeAreaEnum.COMMERCIAL_LAW,
+  "Имиграционно право": PracticeAreaEnum.IMMIGRATION_LAW,
+  "Обезщетения за вреди": PracticeAreaEnum.PERSONAL_INJURY,
+  "Недвижими имоти": PracticeAreaEnum.REAL_ESTATE,
+  "Трудово право": PracticeAreaEnum.LABOR_LAW,
+  "Несъстоятелност": PracticeAreaEnum.BANKRUPTCY,
+  "Данъчно право": PracticeAreaEnum.TAX_LAW,
+  "Интелектуална собственост": PracticeAreaEnum.INTELLECTUAL_PROPERTY,
+  "Наследствено право": PracticeAreaEnum.INHERITANCE_LAW,
+  "Екологично право": PracticeAreaEnum.ENVIRONMENTAL_LAW,
+  "Медицинска отговорност": PracticeAreaEnum.MEDICAL_LIABILITY,
+  "Облигационно право": PracticeAreaEnum.CONTRACT_LAW,
+  "Граждански права": PracticeAreaEnum.CIVIL_RIGHTS,
+};

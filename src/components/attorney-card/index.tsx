@@ -1,7 +1,7 @@
 "use client";
 
 import { Attorney } from "@/types";
-import { ATTORNEY_CARD_MESSAGES } from "./messages";
+import { ATTORNEY_CARD_MESSAGES } from "@/messages";
 import { ActionButtons } from "../action-buttons";
 import { AttorneyProfileImage } from "../attorney-profile-image";
 import { AttorneyHeader } from "../attorney-header";

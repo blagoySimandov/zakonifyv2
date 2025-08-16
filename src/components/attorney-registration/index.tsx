@@ -2,7 +2,7 @@
 
 import { useAttorneyRegistration } from "./hooks";
 import { useRegistrationUI } from "./use-registration-ui";
-import { REGISTRATION_MESSAGES } from "./messages";
+import { REGISTRATION_MESSAGES } from "@/messages";
 import { PersonalInfoStep } from "./personal-info-step";
 import { ProfessionalInfoStep } from "./professional-info-step";
 import { PracticeLocationStep } from "./practice-location-step";
@@ -48,7 +48,7 @@ export function AttorneyRegistration() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-primary-50/30 py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <RegistrationHeader />
         

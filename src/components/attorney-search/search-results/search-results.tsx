@@ -2,7 +2,7 @@
 
 import { Search, AlertCircle, Loader } from "lucide-react";
 import { useSearchResults } from "./hooks";
-import { SEARCH_RESULTS_MESSAGES } from "./messages";
+import { SEARCH_RESULTS_MESSAGES } from "@/messages";
 import { AttorneyCard } from "../../attorney-card";
 import { Attorney } from "../../../types/attorney";
 

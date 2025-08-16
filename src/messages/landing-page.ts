@@ -34,13 +34,6 @@ export const LANDING_PAGE_MESSAGES = {
     "Бургас",
     "Русе",
   ],
-  SUBSCRIPTION: {
-    TITLE: "Абонирай се за Zakonify",
-    PLUS_BADGE: "плюс",
-    DESCRIPTION: "Известия за по-ранен час, по-големи лимити за резервации, любими адвокати и др.",
-    SUBSCRIBE_BUTTON: "Абонирай се",
-    LEARN_MORE_BUTTON: "Научи повече",
-  },
   ABOUT: {
     TITLE: "Какво е Zakonify?",
     DESCRIPTION: "Zakonify Ви помага да намерите различни адвокати, да прочетете мнения на други клиенти и да резервирате час за консултация онлайн - в удобно за Вас време и място.",

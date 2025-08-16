@@ -51,7 +51,7 @@ export function useAttorneySearch({
     }
     
     const queryString = params.toString();
-    const url = queryString ? `/attorneys?${queryString}` : '/attorneys';
+    const url = queryString ? `/search?${queryString}` : '/search';
     
     router.replace(url);
   };

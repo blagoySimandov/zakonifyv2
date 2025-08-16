@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchBar } from "./hooks";
-import { SEARCH_BAR_MESSAGES } from "./messages";
+import { SEARCH_BAR_MESSAGES } from "@/messages";
 
 interface SearchBarProps {
   searchTerm: string;
