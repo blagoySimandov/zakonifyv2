@@ -6,6 +6,13 @@ import { useNavbarState } from "./hooks";
 import { NAVBAR_CONSTANTS } from "./constants";
 import { NAVBAR_MESSAGES } from "@/messages";
 import { Menu, X, Bell } from "lucide-react";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 interface NavbarProps {
   variant?: "default" | "transparent" | "minimal";
@@ -120,33 +127,44 @@ export function Navbar({
     if (variant === "transparent") {
       return (
         <div className="flex items-center gap-4">
-          <Link
-            href="/signup"
-            className="text-white/80 hover:text-white text-sm font-medium transition-colors"
-          >
-            Регистрация
-          </Link>
+          <SignedOut>
+            <SignUpButton mode="modal">
+              <button className="text-white/80 hover:text-white text-sm font-medium transition-colors">
+                Регистрация
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       );
     }
 
     return (
       <div className="hidden md:flex items-center space-x-4">
-        <Link
-          href="/register"
-          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-        >
-          {NAVBAR_MESSAGES.ACTIONS.JOIN_AS_ATTORNEY}
-        </Link>
-        <button 
-          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label={NAVBAR_MESSAGES.ACTIONS.NOTIFICATIONS}
-        >
-          <Bell className="w-5 h-5" />
-        </button>
-        <div className={`w-8 h-8 ${NAVBAR_CONSTANTS.USER_AVATAR_COLOR} rounded-full flex items-center justify-center text-white font-semibold text-sm cursor-pointer hover:opacity-80 transition-opacity`}>
-          {NAVBAR_CONSTANTS.AVATAR_INITIAL}
-        </div>
+        <SignedOut>
+          <Link
+            href="/register"
+            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            {NAVBAR_MESSAGES.ACTIONS.JOIN_AS_ATTORNEY}
+          </Link>
+          <SignInButton mode="modal">
+            <button className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+              Вход
+            </button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <button 
+            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label={NAVBAR_MESSAGES.ACTIONS.NOTIFICATIONS}
+          >
+            <Bell className="w-5 h-5" />
+          </button>
+          <UserButton />
+        </SignedIn>
       </div>
     );
   };
@@ -172,24 +190,45 @@ export function Navbar({
 
           {showUserSection && variant !== "transparent" && (
             <div className="pt-4 border-t border-gray-200 space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 ${NAVBAR_CONSTANTS.USER_AVATAR_COLOR} rounded-full flex items-center justify-center text-white font-semibold text-sm`}>
-                  {NAVBAR_CONSTANTS.AVATAR_INITIAL}
+              <SignedOut>
+                <div className="space-y-2">
+                  <SignInButton mode="modal">
+                    <button className="block text-gray-600 hover:text-gray-900 transition-colors w-full text-left">
+                      Вход
+                    </button>
+                  </SignInButton>
+                  <Link
+                    href="/register"
+                    className="block text-gray-600 hover:text-gray-900 transition-colors"
+                    onClick={closeMobileMenu}
+                  >
+                    {NAVBAR_MESSAGES.ACTIONS.JOIN_AS_ATTORNEY}
+                  </Link>
                 </div>
-                <span className="text-gray-900 font-medium">{NAVBAR_MESSAGES.ACTIONS.PROFILE}</span>
-              </div>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex items-center space-x-3">
+                  <UserButton />
+                  <span className="text-gray-900 font-medium">{NAVBAR_MESSAGES.ACTIONS.PROFILE}</span>
+                </div>
+              </SignedIn>
             </div>
           )}
 
           {variant === "transparent" && (
             <div className="pt-4 border-t border-gray-200">
-              <Link
-                href="/signup"
-                className="block text-gray-600 hover:text-gray-900 transition-colors"
-                onClick={closeMobileMenu}
-              >
-                Регистрация
-              </Link>
+              <SignedOut>
+                <SignUpButton mode="modal">
+                  <button className="block text-gray-600 hover:text-gray-900 transition-colors w-full text-left">
+                    Регистрация
+                  </button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex items-center space-x-3">
+                  <UserButton />
+                </div>
+              </SignedIn>
             </div>
           )}
         </div>
