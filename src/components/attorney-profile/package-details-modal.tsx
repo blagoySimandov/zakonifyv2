@@ -28,7 +28,7 @@ export function PackageDetailsModal({ package: pkg, onClose }: PackageDetailsMod
                 {pkg.name}
               </h2>
               <div className="text-3xl font-bold text-primary-600">
-                ${pkg.price}
+                €{pkg.price}
               </div>
               <div className="text-sm text-gray-600 font-medium">
                 {ATTORNEY_PROFILE_MESSAGES.INFO.FIXED_FEE}

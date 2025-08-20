@@ -254,7 +254,7 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
               </div>
               <div className="text-right ml-6">
                 <div className="text-3xl font-bold text-gray-900">
-                  ${attorney?.hourlyRate}
+                  €{attorney?.hourlyRate}
                 </div>
                 <div className="text-sm text-gray-600 font-medium">{ATTORNEY_PROFILE_MESSAGES.INFO.PER_HOUR}</div>
               </div>
@@ -290,7 +290,7 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
                       </div>
                       <div className="text-right flex-shrink-0">
                         <div className="text-2xl font-bold text-gray-900">
-                          ${pkg.price}
+                          €{pkg.price}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">{ATTORNEY_PROFILE_MESSAGES.INFO.FIXED_FEE}</div>
                       </div>
