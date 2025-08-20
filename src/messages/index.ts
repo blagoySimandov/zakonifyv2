@@ -17,3 +17,4 @@ export {
   ATTORNEY_HEADER_MESSAGES
 } from "./attorney-components";
 export { LOGIN_MESSAGES } from "./authentication";
+export { ATTORNEY_PROFILE_MESSAGES } from "./attorney-profile";

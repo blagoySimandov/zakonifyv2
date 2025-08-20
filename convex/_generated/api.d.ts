@@ -21,7 +21,6 @@ import type * as example from "../example.js";
 import type * as files from "../files.js";
 import type * as messages from "../messages.js";
 import type * as reviews from "../reviews.js";
-import type * as seed from "../seed.js";
 import type * as storage from "../storage.js";
 
 /**
@@ -41,7 +40,6 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   messages: typeof messages;
   reviews: typeof reviews;
-  seed: typeof seed;
   storage: typeof storage;
 }>;
 export declare const api: FilterApi<
