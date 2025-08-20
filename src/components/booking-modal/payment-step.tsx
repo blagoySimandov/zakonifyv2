@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
 import { ATTORNEY_PROFILE_MESSAGES } from "@/messages";
 import { CreditCard, Shield, Lock, AlertCircle } from "lucide-react";
 import { ConsultationType, TimeSlot, PaymentData } from "./hooks";
@@ -22,7 +22,23 @@ export function PaymentStep({
   onUpdate,
   isProcessing,
 }: PaymentStepProps) {
-  const [selectedMethod, setSelectedMethod] = useState<"stripe" | "paypal" | "bank-transfer">("stripe");
+  // Automatically set up Stripe payment data when component loads
+  React.useEffect(() => {
+    if (!paymentData) {
+      const stripePaymentData: PaymentData = {
+        method: "stripe",
+        cardLast4: "4242", // Mock data for now
+        billingAddress: {
+          name: "",
+          street: "",
+          city: "",
+          postalCode: "",
+          country: "BG",
+        },
+      };
+      onUpdate(stripePaymentData);
+    }
+  }, [paymentData, onUpdate]);
 
   const formatTime = (timestamp: number) => {
     return new Intl.DateTimeFormat('bg-BG', {
@@ -34,26 +50,6 @@ export function PaymentStep({
     }).format(new Date(timestamp));
   };
 
-  const handlePaymentMethodChange = (method: "stripe" | "paypal" | "bank-transfer") => {
-    setSelectedMethod(method);
-    
-    // Create payment data based on method
-    const newPaymentData: PaymentData = {
-      method,
-      // For now, we'll create a mock payment data
-      // In real implementation, this would integrate with Stripe Elements
-      cardLast4: method === "stripe" ? "4242" : undefined,
-      billingAddress: {
-        name: "John Doe",
-        street: "123 Main St",
-        city: "Sofia",
-        postalCode: "1000",
-        country: "Bulgaria",
-      },
-    };
-
-    onUpdate(newPaymentData);
-  };
 
   // Stripe Elements placeholder
   const StripeElementsPlaceholder = () => (
@@ -205,102 +201,19 @@ export function PaymentStep({
             <Lock className="w-4 h-4 text-green-600" />
           </div>
 
-          {/* Payment Method Selection */}
+          {/* Stripe Payment Method Header */}
           <div className="mb-6">
-            <h4 className="text-base font-semibold text-gray-900 mb-4">
-              {ATTORNEY_PROFILE_MESSAGES.BOOKING.PAYMENT.PAYMENT_METHOD}
-            </h4>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => handlePaymentMethodChange("stripe")}
-                className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
-                  selectedMethod === "stripe"
-                    ? "border-primary-600 bg-primary-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full border-2 ${
-                    selectedMethod === "stripe"
-                      ? "border-primary-600 bg-primary-600"
-                      : "border-gray-300"
-                  }`}>
-                    {selectedMethod === "stripe" && (
-                      <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                    )}
-                  </div>
-                  <CreditCard className="w-5 h-5 text-gray-600" />
-                  <span className="font-medium">Кредитна/дебитна карта (Stripe)</span>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handlePaymentMethodChange("paypal")}
-                className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
-                  selectedMethod === "paypal"
-                    ? "border-primary-600 bg-primary-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full border-2 ${
-                    selectedMethod === "paypal"
-                      ? "border-primary-600 bg-primary-600"
-                      : "border-gray-300"
-                  }`}>
-                    {selectedMethod === "paypal" && (
-                      <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                    )}
-                  </div>
-                  <span className="font-medium">PayPal (скоро)</span>
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                    Неактивно
-                  </span>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handlePaymentMethodChange("bank-transfer")}
-                className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
-                  selectedMethod === "bank-transfer"
-                    ? "border-primary-600 bg-primary-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full border-2 ${
-                    selectedMethod === "bank-transfer"
-                      ? "border-primary-600 bg-primary-600"
-                      : "border-gray-300"
-                  }`}>
-                    {selectedMethod === "bank-transfer" && (
-                      <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                    )}
-                  </div>
-                  <span className="font-medium">Банков превод (скоро)</span>
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                    Неактивно
-                  </span>
-                </div>
-              </button>
+            <div className="flex items-center gap-3 p-4 bg-primary-50 rounded-2xl border-2 border-primary-200">
+              <CreditCard className="w-5 h-5 text-primary-600" />
+              <span className="font-semibold text-primary-800">Кредитна/дебитна карта</span>
+              <span className="text-xs bg-primary-200 text-primary-700 px-2 py-1 rounded-full font-medium">
+                Powered by Stripe
+              </span>
             </div>
           </div>
 
-          {/* Payment Form */}
-          {selectedMethod === "stripe" && <StripeElementsPlaceholder />}
-
-          {selectedMethod === "paypal" && (
-            <div className="bg-gray-100 rounded-2xl p-6 text-center">
-              <p className="text-gray-600">PayPal интеграцията ще бъде добавена скоро</p>
-            </div>
-          )}
-
-          {selectedMethod === "bank-transfer" && (
-            <div className="bg-gray-100 rounded-2xl p-6 text-center">
-              <p className="text-gray-600">Банковият превод ще бъде добавен скоро</p>
-            </div>
-          )}
+          {/* Stripe Payment Form */}
+          <StripeElementsPlaceholder />
         </div>
       </div>
     </div>

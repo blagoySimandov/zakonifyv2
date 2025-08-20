@@ -22,7 +22,7 @@ export interface TimeSlot {
 }
 
 export interface PaymentData {
-  method: "stripe" | "paypal" | "bank-transfer";
+  method: "stripe";
   // Stripe integration will be added here
   stripePaymentIntentId?: string;
   // Placeholder for payment form data
@@ -94,7 +94,7 @@ export function useBookingModal(attorneyId: Id<"attorneys">) {
       return false;
     }
 
-    if (!paymentData) {
+    if (!paymentData || paymentData.method !== "stripe") {
       setError(ATTORNEY_PROFILE_MESSAGES.BOOKING.VALIDATION.PAYMENT_INFO_REQUIRED);
       return false;
     }
@@ -156,16 +156,21 @@ export function useBookingModal(attorneyId: Id<"attorneys">) {
 
   // Placeholder for Stripe payment processing
   const processPayment = async (paymentData: PaymentData): Promise<{ success: boolean; transactionId?: string }> => {
-    // TODO: Integrate with Stripe
+    // TODO: Integrate with Stripe Elements
     // This is where Stripe payment processing would happen
     
-    // Simulate payment processing
+    // Validate that we have Stripe payment data
+    if (paymentData.method !== "stripe") {
+      throw new Error("Only Stripe payments are supported");
+    }
+    
+    // Simulate Stripe payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // For now, always return success with a mock transaction ID
+    // For now, always return success with a mock Stripe transaction ID
     return {
       success: true,
-      transactionId: `mock_txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      transactionId: `stripe_txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
   };
 

@@ -396,11 +396,7 @@ export const createBooking = mutation({
       v.literal("in-person"),
     ),
     paymentData: v.object({
-      method: v.union(
-        v.literal("stripe"),
-        v.literal("paypal"),
-        v.literal("bank-transfer"),
-      ),
+      method: v.literal("stripe"),
       transactionId: v.string(),
       amount: v.number(),
       currency: v.string(),
