@@ -108,13 +108,15 @@ export default defineSchema({
     attorneyId: v.id("attorneys"),
     clientName: v.string(),
     clientEmail: v.string(),
+    userId: v.optional(v.string()),
     rating: v.number(),
     comment: v.string(),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_attorney", ["attorneyId"])
-    .index("by_client_email", ["clientEmail"]),
+    .index("by_client_email", ["clientEmail"])
+    .index("by_user", ["userId"]),
 
   attorneyAvailability: defineTable({
     attorneyId: v.id("attorneys"),

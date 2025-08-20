@@ -38,12 +38,14 @@ export const getAverageRating = query({
 export const create = mutation({
   args: {
     attorneyId: v.id("attorneys"),
-    clientName: v.string(),
-    clientEmail: v.string(),
     rating: v.number(),
     comment: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Must be logged in to create a review");
+    }
     if (args.rating < 1 || args.rating > 5) {
       throw new ConvexError("Rating must be between 1 and 5");
     }
@@ -65,8 +67,11 @@ export const create = mutation({
 
     const reviewId = await ctx.db.insert("reviews", {
       attorneyId: args.attorneyId,
-      clientName: args.clientName,
-      clientEmail: args.clientEmail,
+      clientName: identity.given_name && identity.family_name 
+        ? `${identity.given_name} ${identity.family_name}`
+        : identity.email || "Anonymous",
+      clientEmail: identity.email || "",
+      userId: identity.subject,
       rating: args.rating,
       comment: args.comment,
       createdAt: now,
