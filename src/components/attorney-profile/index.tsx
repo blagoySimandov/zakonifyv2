@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useAttorneyProfile } from "./hooks";
 import { ReviewForm } from "../review-form";
-import { ConsultationBooking } from "../consultation-booking";
+import { BookingModal } from "../booking-modal";
 import { PackageDetailsModal } from "./package-details-modal";
 import { PRACTICE_AREA_LABELS, PracticeArea } from "@/constants";
 import { ATTORNEY_PROFILE_MESSAGES } from "@/messages";
@@ -36,7 +36,7 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
   const { attorney, reviews, ratingStats, isLoading, error } =
     useAttorneyProfile(attorneyId);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<{name: string, description: string, price: number} | null>(null);
   
   const profileImageUrl = useQuery(
@@ -146,7 +146,7 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
 
             <div className="flex gap-4">
               <button
-                onClick={() => setIsBookingOpen(true)}
+                onClick={() => setIsBookingModalOpen(true)}
                 className="px-8 py-4 bg-primary-600 text-white rounded-2xl hover:bg-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-600/25 hover:shadow-xl hover:shadow-primary-700/30 transform hover:-translate-y-0.5"
               >
                 {ATTORNEY_PROFILE_MESSAGES.ACTIONS.BOOK_CONSULTATION}
@@ -489,13 +489,11 @@ export function AttorneyProfile({ attorneyId }: AttorneyProfileProps) {
         />
       )}
 
-      {isBookingOpen && (
-        <ConsultationBooking
-          attorney={attorney}
-          onClose={() => setIsBookingOpen(false)}
-          onBookingSuccess={() => {
-            setIsBookingOpen(false);
-          }}
+      {isBookingModalOpen && attorney && (
+        <BookingModal
+          attorneyId={attorney._id}
+          attorneyName={attorney.fullName}
+          onClose={() => setIsBookingModalOpen(false)}
         />
       )}
 

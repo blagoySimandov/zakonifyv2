@@ -119,4 +119,94 @@ export const ATTORNEY_PROFILE_MESSAGES = {
       COMMENT_MAX: 1000,
     },
   },
+
+  BOOKING: {
+    TITLE: "Запазване на консултация",
+    SUBTITLE: "Изберете удобно време за вашата консултация",
+    
+    STEPS: {
+      CONSULTATION_TYPE: "Тип консултация",
+      DATE_TIME: "Дата и час", 
+      PAYMENT: "Плащане",
+      CONFIRMATION: "Потвърждение",
+    },
+
+    CONSULTATION_TYPES: {
+      VIDEO: "Видео консултация",
+      IN_PERSON: "Лична консултация",
+    },
+
+    ACTIONS: {
+      CONTINUE: "Продължи",
+      BACK: "Назад",
+      BOOK_NOW: "Запази сега",
+      PROCESSING: "Обработва се...",
+      SELECT_SLOT: "Изберете час",
+      CONFIRM_BOOKING: "Потвърди запазването",
+    },
+
+    SLOT_SELECTION: {
+      AVAILABLE_TIMES: "Налични часове",
+      NO_SLOTS_AVAILABLE: "Няма налични часове за тази дата",
+      SELECT_DIFFERENT_DATE: "Моля, изберете друга дата",
+      SELECTED_TIME: "Избран час",
+      DURATION: "Продължителност",
+      PRICE: "Цена",
+    },
+
+    PAYMENT: {
+      TITLE: "Информация за плащане",
+      SECURE_PAYMENT: "Сигурно плащане",
+      TOTAL: "Общо",
+      PAYMENT_METHOD: "Начин на плащане",
+      CARD_NUMBER: "Номер на карта",
+      EXPIRY_DATE: "Валидна до",
+      SECURITY_CODE: "Код за сигурност",
+      CARDHOLDER_NAME: "Име на картодържателя",
+      BILLING_ADDRESS: "Адрес за фактуриране",
+      PROCESSING_PAYMENT: "Обработване на плащането...",
+    },
+
+    CONFIRMATION: {
+      TITLE: "Потвърждение на запазването",
+      BOOKING_DETAILS: "Детайли на запазването",
+      ATTORNEY: "Адвокат",
+      DATE_TIME: "Дата и час",
+      TYPE: "Тип",
+      DURATION: "Продължителност",
+      TOTAL_COST: "Обща цена",
+      CANCELLATION_POLICY: "Политика за отказ",
+      TERMS_AND_CONDITIONS: "Общи условия",
+    },
+
+    SUCCESS: {
+      TITLE: "Консултацията е запазена успешно!",
+      BOOKING_CONFIRMED: "Вашата консултация е потвърдена",
+      CONFIRMATION_EMAIL: "Ще получите имейл с потвърждение",
+      NEXT_STEPS: "Следващи стъпки",
+      CALENDAR_REMINDER: "Добавете в календар",
+      PREPARATION_TIPS: "Съвети за подготовка",
+    },
+
+    ERRORS: {
+      LOGIN_REQUIRED: "Трябва да влезете в профила си за да запазите консултация",
+      SLOT_UNAVAILABLE: "Избраният час вече не е наличен",
+      PAYMENT_FAILED: "Плащането неуспешно. Моля, опитайте отново.",
+      BOOKING_FAILED: "Грешка при запазването. Моля, опитайте отново.",
+      INVALID_SLOT: "Невалиден избран час",
+      NETWORK_ERROR: "Мрежова грешка. Проверете връзката си.",
+    },
+
+    VALIDATION: {
+      CONSULTATION_TYPE_REQUIRED: "Моля, изберете тип консултация",
+      SLOT_REQUIRED: "Моля, изберете час за консултация",
+      PAYMENT_INFO_REQUIRED: "Моля, въведете информация за плащане",
+    },
+
+    TIME_LABELS: {
+      MINUTES: "мин",
+      HOUR: "час",
+      HOURS: "часа",
+    },
+  },
 } as const;

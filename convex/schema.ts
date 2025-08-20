@@ -231,7 +231,6 @@ export default defineSchema({
       consultationTypes: v.array(
         v.object({
           type: v.union(
-            v.literal("phone"),
             v.literal("video"),
             v.literal("in-person"),
           ),
@@ -246,17 +245,17 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_attorney", ["attorneyId"]),
 
-  attorneyTimeOff: defineTable({
+  attorneyBlockedPeriods: defineTable({
     attorneyId: v.id("attorneys"),
     startTime: v.number(),
     endTime: v.number(),
     type: v.union(
       v.literal("vacation"),
       v.literal("holiday"),
-      v.literal("sick"),
+      v.literal("court-appearance"),
+      v.literal("personal"),
+      v.literal("conference"),
       v.literal("unavailable"),
-      v.literal("court"),
-      v.literal("continuing-education"),
     ),
     isRecurring: v.boolean(),
     recurringPattern: v.optional(
@@ -288,7 +287,6 @@ export default defineSchema({
         startTime: v.number(),
         endTime: v.number(),
         consultationType: v.union(
-          v.literal("phone"),
           v.literal("video"),
           v.literal("in-person"),
         ),
@@ -309,7 +307,6 @@ export default defineSchema({
     startTime: v.number(),
     endTime: v.number(),
     consultationType: v.union(
-      v.literal("phone"),
       v.literal("video"),
       v.literal("in-person"),
     ),
