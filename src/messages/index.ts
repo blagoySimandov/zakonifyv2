@@ -18,3 +18,4 @@ export {
 } from "./attorney-components";
 export { LOGIN_MESSAGES } from "./authentication";
 export { ATTORNEY_PROFILE_MESSAGES } from "./attorney-profile";
+export { ATTORNEY_DASHBOARD_MESSAGES } from "./attorney-dashboard";

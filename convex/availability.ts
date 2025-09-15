@@ -222,6 +222,22 @@ const calculateAvailabilityLogic = async (
   };
 };
 
+// Fix legacy data by removing consultationTypes
+const fixConsultationSettings = (settings: any) => {
+  if (settings && typeof settings === 'object') {
+    const fixed = {
+      defaultDuration: settings.defaultDuration,
+      bufferTime: settings.bufferTime,
+      maxConsultationsPerDay: settings.maxConsultationsPerDay,
+      allowBackToBack: settings.allowBackToBack,
+      minAdvanceBooking: settings.minAdvanceBooking,
+      maxAdvanceBooking: settings.maxAdvanceBooking,
+    };
+    return fixed;
+  }
+  return settings;
+};
+
 export const createOrUpdateAvailabilityProfile = mutation({
   args: {
     attorneyId: v.id("attorneys"),
@@ -333,18 +349,6 @@ export const createOrUpdateAvailabilityProfile = mutation({
       allowBackToBack: v.boolean(),
       minAdvanceBooking: v.number(),
       maxAdvanceBooking: v.number(),
-      consultationTypes: v.array(
-        v.object({
-          type: v.union(
-            v.literal("phone"),
-            v.literal("video"),
-            v.literal("in-person"),
-          ),
-          duration: v.number(),
-          price: v.number(),
-          isEnabled: v.boolean(),
-        }),
-      ),
     }),
     isActive: v.optional(v.boolean()),
   },
@@ -357,17 +361,20 @@ export const createOrUpdateAvailabilityProfile = mutation({
 
     const now = Date.now();
 
+    // Clean consultation settings to remove any legacy fields
+    const cleanedConsultationSettings = fixConsultationSettings(args.consultationSettings);
+
     const profileData = {
       attorneyId: args.attorneyId,
       timeZone: args.timeZone,
       workingHours: args.workingHours,
-      consultationSettings: args.consultationSettings,
+      consultationSettings: cleanedConsultationSettings,
       isActive: args.isActive ?? true,
       updatedAt: now,
     };
 
     if (existing) {
-      // Update existing profile
+      // Update existing profile and clean any legacy data
       return await ctx.db.patch(existing._id, profileData);
     } else {
       // Create new profile
@@ -708,11 +715,7 @@ export const getAvailabilityProfile = query({
           maxConsultationsPerDay: 8,
           allowBackToBack: false,
           minAdvanceBooking: 24,
-          maxAdvanceBooking: 30,
-          consultationTypes: [
-            { type: "video", duration: 60, price: 150, isEnabled: true },
-            { type: "in-person", duration: 60, price: 150, isEnabled: true },
-          ],
+          maxAdvanceBooking: 720, // 30 days in hours
         },
         isActive: true,
         createdAt: Date.now(),
@@ -761,11 +764,7 @@ export const updateAvailabilityStatus = mutation({
           maxConsultationsPerDay: 8,
           allowBackToBack: false,
           minAdvanceBooking: 24,
-          maxAdvanceBooking: 30,
-          consultationTypes: [
-            { type: "video", duration: 60, price: 150, isEnabled: true },
-            { type: "in-person", duration: 60, price: 150, isEnabled: true },
-          ],
+          maxAdvanceBooking: 720, // 30 days in hours
         },
         isActive: args.isActive,
         createdAt: Date.now(),

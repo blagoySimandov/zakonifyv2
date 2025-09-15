@@ -6,35 +6,12 @@ export default defineSchema({
     text: v.string(),
   }),
 
-  matters: defineTable({
-    attorneyId: v.id("attorneys"),
-    clientId: v.id("clients"),
-    title: v.optional(v.string()),
-    lastMessageAt: v.optional(v.number()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
-    .index("by_attorney", ["attorneyId"])
-    .index("by_client", ["clientId"])
-    .index("by_attorney_client", ["attorneyId", "clientId"]),
-
   messages: defineTable({
     matterId: v.id("matters"),
     senderRole: v.union(v.literal("attorney"), v.literal("client")),
     senderId: v.union(v.id("attorneys"), v.id("clients")),
     content: v.string(),
     attachmentIds: v.optional(v.array(v.id("files"))),
-    createdAt: v.number(),
-  }).index("by_matter", ["matterId"]),
-
-  files: defineTable({
-    matterId: v.id("matters"),
-    uploadedByRole: v.union(v.literal("attorney"), v.literal("client")),
-    uploadedById: v.union(v.id("attorneys"), v.id("clients")),
-    fileUrl: v.string(),
-    fileName: v.string(),
-    fileSize: v.number(),
-    mimeType: v.string(),
     createdAt: v.number(),
   }).index("by_matter", ["matterId"]),
 
@@ -75,18 +52,11 @@ export default defineSchema({
     .index("by_location", ["location.city", "location.state"])
     .index("by_verified", ["isVerified"]),
 
-  clients: defineTable({
-    fullName: v.string(),
-    email: v.string(),
-    phone: v.optional(v.string()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }).index("by_email", ["email"]),
-
   consultations: defineTable({
     attorneyId: v.id("attorneys"),
-    clientId: v.id("clients"),
-    matterId: v.optional(v.id("matters")),
+    clientId: v.string(),
+    clientEmail: v.string(),
+    clientName: v.optional(v.string()),
     scheduledAt: v.number(),
     duration: v.number(),
     price: v.number(),
@@ -96,12 +66,16 @@ export default defineSchema({
       v.literal("completed"),
       v.literal("cancelled"),
     ),
+    consultationType: v.optional(
+      v.union(v.literal("video"), v.literal("in-person")),
+    ),
     notes: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_attorney", ["attorneyId"])
-    .index("by_client", ["clientId"])
+    .index("by_client_id", ["clientId"])
+    .index("by_client_email", ["clientEmail"])
     .index("by_scheduled_date", ["scheduledAt"]),
 
   reviews: defineTable({
@@ -228,17 +202,6 @@ export default defineSchema({
       allowBackToBack: v.boolean(),
       minAdvanceBooking: v.number(),
       maxAdvanceBooking: v.number(),
-      consultationTypes: v.array(
-        v.object({
-          type: v.union(
-            v.literal("video"),
-            v.literal("in-person"),
-          ),
-          duration: v.number(),
-          price: v.number(),
-          isEnabled: v.boolean(),
-        }),
-      ),
     }),
     isActive: v.boolean(),
     createdAt: v.number(),
@@ -286,10 +249,7 @@ export default defineSchema({
       v.object({
         startTime: v.number(),
         endTime: v.number(),
-        consultationType: v.union(
-          v.literal("video"),
-          v.literal("in-person"),
-        ),
+        consultationType: v.union(v.literal("video"), v.literal("in-person")),
         price: v.number(),
         isEmergencySlot: v.boolean(),
       }),
@@ -306,10 +266,7 @@ export default defineSchema({
     clientId: v.optional(v.id("clients")),
     startTime: v.number(),
     endTime: v.number(),
-    consultationType: v.union(
-      v.literal("video"),
-      v.literal("in-person"),
-    ),
+    consultationType: v.union(v.literal("video"), v.literal("in-person")),
     reservedBy: v.string(),
     expiresAt: v.number(),
     createdAt: v.number(),
