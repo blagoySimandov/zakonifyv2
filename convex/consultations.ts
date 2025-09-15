@@ -23,14 +23,7 @@ export const getByAttorneyId = query({
       query = query.filter((q) => q.eq(q.field("status"), args.status));
     }
 
-    const list = await query.order("desc").collect();
-    // Enrich with matter if exists
-    return Promise.all(
-      list.map(async (c) => ({
-        ...c,
-        matter: c.matterId ? await ctx.db.get(c.matterId) : null,
-      })),
-    );
+    return await query.order("desc").collect();
   },
 });
 
@@ -44,7 +37,7 @@ export const getUpcomingConsultations = query({
     const now = Date.now();
     const days = args.days || 30;
     const limit = args.limit || 10;
-    const endTime = now + days * 24 * 60 * 60 * 1000; // days in milliseconds
+    const endTime = now + days * 24 * 60 * 60 * 1000;
 
     const consultations = await ctx.db
       .query("consultations")
@@ -61,51 +54,7 @@ export const getUpcomingConsultations = query({
       )
       .order("asc")
       .take(limit);
-
-    // Enrich with client information
-    return Promise.all(
-      consultations.map(async (consultation) => {
-        const client = consultation.clientId
-          ? await ctx.db.get(consultation.clientId)
-          : null;
-        return {
-          id: consultation._id,
-          startTime: consultation.scheduledAt,
-          endTime: consultation.scheduledAt + consultation.duration * 60 * 1000,
-          type: consultation.status === "confirmed" ? "video" : "pending", // Default type
-          clientName: client ? client.fullName : "Unknown Client",
-          topic: consultation.notes || "General Consultation",
-          status: consultation.status,
-          price: consultation.price,
-          duration: consultation.duration,
-        };
-      }),
-    );
-  },
-});
-
-export const getByClientId = query({
-  args: {
-    clientId: v.id("clients"),
-    status: v.optional(
-      v.union(
-        v.literal("pending"),
-        v.literal("confirmed"),
-        v.literal("completed"),
-        v.literal("cancelled"),
-      ),
-    ),
-  },
-  handler: async (ctx, args) => {
-    let query = ctx.db
-      .query("consultations")
-      .withIndex("by_client", (q) => q.eq("clientId", args.clientId));
-
-    if (args.status) {
-      query = query.filter((q) => q.eq(q.field("status"), args.status));
-    }
-
-    return await query.order("desc").collect();
+    return consultations;
   },
 });
 
@@ -255,31 +204,9 @@ export const create = mutation({
       }
     }
 
-    // Ensure a single matter (workspace) per attorney-client pair
-    let matter = await ctx.db
-      .query("matters")
-      .withIndex("by_attorney_client", (q) =>
-        q.eq("attorneyId", args.attorneyId).eq("clientId", clientId!),
-      )
-      .first();
-
-    if (!matter) {
-      const nowTs = Date.now();
-      const matterId = await ctx.db.insert("matters", {
-        attorneyId: args.attorneyId,
-        clientId: clientId!,
-        title: undefined,
-        lastMessageAt: undefined,
-        createdAt: nowTs,
-        updatedAt: nowTs,
-      });
-      matter = await ctx.db.get(matterId);
-    }
-
     const consultationId = await ctx.db.insert("consultations", {
       attorneyId: args.attorneyId,
       clientId,
-      matterId: matter!._id,
       scheduledAt: args.scheduledAt,
       duration: args.duration,
       price,
@@ -381,5 +308,126 @@ export const updateNotes = mutation({
       updatedAt: Date.now(),
     });
     return { success: true };
+  },
+});
+
+// New booking flow mutation with authentication
+export const createBooking = mutation({
+  args: {
+    attorneyId: v.id("attorneys"),
+    scheduledAt: v.number(),
+    duration: v.number(),
+    price: v.number(),
+    consultationType: v.union(v.literal("video"), v.literal("in-person")),
+    paymentData: v.object({
+      method: v.literal("stripe"),
+      transactionId: v.string(),
+      amount: v.number(),
+      currency: v.string(),
+    }),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Get authenticated user
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Must be logged in to book a consultation");
+    }
+
+    // Verify attorney exists
+    const attorney = await ctx.db.get(args.attorneyId);
+    if (!attorney) {
+      throw new ConvexError("Attorney not found");
+    }
+
+    // Validate that the requested time slot is in the future
+    const now = Date.now();
+    if (args.scheduledAt < now) {
+      throw new ConvexError("Cannot book consultation in the past");
+    }
+
+    // Check if slot is still available
+    const endTime = args.scheduledAt + args.duration * 60 * 1000;
+
+    // Check for conflicting consultations
+    const conflictingConsultations = await ctx.db
+      .query("consultations")
+      .withIndex("by_attorney", (q) => q.eq("attorneyId", args.attorneyId))
+      .filter((q) =>
+        q.and(
+          q.neq(q.field("status"), "cancelled"),
+          q.lt(q.field("scheduledAt"), endTime),
+          q.gt(
+            q.add(q.field("scheduledAt"), q.mul(q.field("duration"), 60000)),
+            args.scheduledAt,
+          ),
+        ),
+      )
+      .collect();
+
+    if (conflictingConsultations.length > 0) {
+      throw new ConvexError("This time slot is no longer available");
+    }
+
+    // Check for active slot reservations
+    const conflictingReservations = await ctx.db
+      .query("slotReservations")
+      .withIndex("by_attorney_time", (q) => q.eq("attorneyId", args.attorneyId))
+      .filter((q) =>
+        q.and(
+          q.lt(q.field("startTime"), endTime),
+          q.gt(q.field("endTime"), args.scheduledAt),
+          q.gt(q.field("expiresAt"), now),
+          q.neq(q.field("reservedBy"), identity.subject),
+        ),
+      )
+      .collect();
+
+    if (conflictingReservations.length > 0) {
+      throw new ConvexError("This time slot is reserved by another user");
+    }
+
+    // Get client data directly from Clerk identity
+    const clientEmail = identity.email || "";
+    const clientName =
+      identity.given_name && identity.family_name
+        ? `${identity.given_name} ${identity.family_name}`
+        : identity.name || identity.email || "Unknown User";
+    const clientUserId = identity.subject;
+
+    // Create the consultation
+    const consultationId = await ctx.db.insert("consultations", {
+      attorneyId: args.attorneyId,
+      clientId: clientUserId,
+      clientEmail: clientEmail,
+      clientName: clientName,
+      scheduledAt: args.scheduledAt,
+      duration: args.duration,
+      price: args.price,
+      status: "confirmed", // Since payment was processed
+      consultationType: args.consultationType,
+      notes:
+        args.notes ||
+        `${args.consultationType === "video" ? "Видео" : "Лична"} консултация`,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Clean up any reservations for this slot and user
+    const userReservations = await ctx.db
+      .query("slotReservations")
+      .withIndex("by_reserved_by", (q) => q.eq("reservedBy", identity.subject))
+      .filter((q) => q.eq("attorneyId", args.attorneyId))
+      .collect();
+
+    for (const reservation of userReservations) {
+      await ctx.db.delete(reservation._id);
+    }
+
+    return {
+      success: true,
+      id: consultationId,
+      message: "Consultation booked successfully",
+    };
   },
 });

@@ -1,0 +1,212 @@
+export const ATTORNEY_PROFILE_MESSAGES = {
+  LOADING: {
+    PROFILE: "Зареждане на профил...",
+    REVIEWS: "Зареждане на отзиви...",
+  },
+
+  ERROR: {
+    NOT_FOUND: "Адвокатът не е намерен",
+    NOT_FOUND_DESCRIPTION: "Профилът на адвоката, който търсите, не съществува или може да е премахнат.",
+    LOAD_FAILED: "Неуспешно зареждане на профила на адвоката",
+    INVALID_ID: "Невалиден идентификатор на адвоката",
+    NETWORK_ERROR: "Мрежова грешка. Моля, опитайте отново.",
+  },
+
+  SUCCESS: {
+    PROFILE_LOADED: "Профилът на адвоката е зареден успешно",
+    MESSAGE_SENT: "Съобщението е изпратено успешно",
+    CONSULTATION_BOOKED: "Консултацията е запазена успешно",
+  },
+
+  INFO: {
+    NO_BIOGRAPHY: "Няма предоставена биография.",
+    NO_EDUCATION: "Информацията за образованието не е налична.",
+    NO_REVIEWS: "Все още няма отзиви",
+    NO_REVIEWS_DESCRIPTION: "Бъдете първият, който ще остави отзив за този адвокат",
+    CONTACT_FOR_PRICING: "Свържете се за информация за цените.",
+    CONSULTATION_DISCLAIMER: "Първоначалната консултация не представлява правен съвет.",
+    YEARS_SUFFIX: "години",
+    VERIFIED_ATTORNEY: "Верифициран адвокат",
+    PER_HOUR: "на час",
+    FIXED_FEE: "фиксирана цена",
+    AVAILABLE_FOR_CONSULTATIONS: "Достъпен за консултации",
+    REVIEW_COUNT_SINGULAR: "отзив",
+    REVIEW_COUNT_PLURAL: "отзива",
+    OUT_OF_FIVE: "от 5",
+  },
+
+  ACTIONS: {
+    BOOK_CONSULTATION: "Запази консултация",
+    SEND_MESSAGE: "Изпрати съобщение",
+    VIEW_REVIEWS: "Вижте всички отзиви",
+    CONTACT_ATTORNEY: "Свържи се с адвоката",
+    GET_QUOTE: "Получи оферта",
+    WRITE_REVIEW: "Напиши отзив",
+    WRITE_FIRST_REVIEW: "Напишете първия отзив",
+    SHOW_MORE: "Покажи повече",
+    SHOW_LESS: "Покажи по-малко",
+  },
+
+  SECTIONS: {
+    ABOUT: "За мен",
+    PRACTICE_AREAS: "Области на практика", 
+    PRICING: "Цени",
+    CONTACT_INFORMATION: "Контактна информация",
+    REVIEWS_RATINGS: "Отзиви и оценки",
+    EDUCATION: "Образование",
+    BAR_ASSOCIATION: "Адвокатска колегия",
+    HOURLY_CONSULTATION: "Часова консултация",
+    HOURLY_CONSULTATION_DESCRIPTION: "Стандартна правна консултация",
+    FIXED_FEE_PACKAGES: "Пакети с фиксирана цена",
+  },
+
+  PLACEHOLDER: {
+    NO_DESCRIPTION: "Няма налично описание",
+    CONTACT_FOR_INFO: "Свържете се с адвоката за повече информация",
+  },
+
+  CONFIRMATION: {
+    BOOK_CONSULTATION: "Сигурни ли сте, че искате да запазите консултация?",
+    SEND_MESSAGE: "Вашето съобщение ще бъде изпратено до адвоката.",
+  },
+
+  REVIEW_FORM: {
+    TITLE: "Напишете отзив",
+    REVIEWING_FOR: "Отзив за",
+    
+    LABELS: {
+      RATING: "Обща оценка",
+      COMMENT: "Вашият отзив",
+    },
+
+    PLACEHOLDERS: {
+      COMMENT: "Споделете вашето мнение за работата с този адвокат...",
+    },
+
+    BUTTONS: {
+      SUBMIT: "Изпрати отзив",
+      SUBMITTING: "Изпращане...",
+      CANCEL: "Отказ",
+      CLOSE: "Затвори",
+    },
+
+    RATING_LABELS: {
+      0: "Няма избрана оценка",
+      1: "Слабо",
+      2: "Задоволително", 
+      3: "Добро",
+      4: "Много добро",
+      5: "Отлично",
+    },
+
+    SUCCESS: {
+      SUBMITTED: "Отзивът е изпратен успешно!",
+      THANK_YOU: "Благодарим ви за отзива. Той ще помогне на други потребители.",
+    },
+
+    ERRORS: {
+      RATING_REQUIRED: "Моля, изберете оценка",
+      RATING_INVALID: "Оценката трябва да бъде между 1 и 5 звезди",
+      COMMENT_REQUIRED: "Коментарът е задължителен",
+      COMMENT_TOO_SHORT: "Коментарът трябва да бъде поне 10 символа",
+      COMMENT_TOO_LONG: "Коментарът трябва да бъде по-малко от 1000 символа",
+      SUBMIT_FAILED: "Неуспешно изпращане на отзива. Моля, опитайте отново.",
+      LOGIN_REQUIRED: "Трябва да влезете в профила си, за да оставите отзив.",
+    },
+
+    VALIDATION: {
+      COMMENT_MIN: 10,
+      COMMENT_MAX: 1000,
+    },
+  },
+
+  BOOKING: {
+    TITLE: "Запазване на консултация",
+    SUBTITLE: "Изберете удобно време за вашата консултация",
+    
+    STEPS: {
+      CONSULTATION_TYPE: "Тип консултация",
+      DATE_TIME: "Дата и час", 
+      PAYMENT: "Плащане",
+      CONFIRMATION: "Потвърждение",
+    },
+
+    CONSULTATION_TYPES: {
+      VIDEO: "Видео консултация",
+      IN_PERSON: "Лична консултация",
+    },
+
+    ACTIONS: {
+      CONTINUE: "Продължи",
+      BACK: "Назад",
+      BOOK_NOW: "Запази сега",
+      PROCESSING: "Обработва се...",
+      SELECT_SLOT: "Изберете час",
+      CONFIRM_BOOKING: "Потвърди запазването",
+    },
+
+    SLOT_SELECTION: {
+      AVAILABLE_TIMES: "Налични часове",
+      NO_SLOTS_AVAILABLE: "Няма налични часове за тази дата",
+      SELECT_DIFFERENT_DATE: "Моля, изберете друга дата",
+      SELECTED_TIME: "Избран час",
+      DURATION: "Продължителност",
+      PRICE: "Цена",
+    },
+
+    PAYMENT: {
+      TITLE: "Информация за плащане",
+      SECURE_PAYMENT: "Сигурно плащане",
+      TOTAL: "Общо",
+      PAYMENT_METHOD: "Начин на плащане",
+      CARD_NUMBER: "Номер на карта",
+      EXPIRY_DATE: "Валидна до",
+      SECURITY_CODE: "Код за сигурност",
+      CARDHOLDER_NAME: "Име на картодържателя",
+      BILLING_ADDRESS: "Адрес за фактуриране",
+      PROCESSING_PAYMENT: "Обработване на плащането...",
+    },
+
+    CONFIRMATION: {
+      TITLE: "Потвърждение на запазването",
+      BOOKING_DETAILS: "Детайли на запазването",
+      ATTORNEY: "Адвокат",
+      DATE_TIME: "Дата и час",
+      TYPE: "Тип",
+      DURATION: "Продължителност",
+      TOTAL_COST: "Обща цена",
+      CANCELLATION_POLICY: "Политика за отказ",
+      TERMS_AND_CONDITIONS: "Общи условия",
+    },
+
+    SUCCESS: {
+      TITLE: "Консултацията е запазена успешно!",
+      BOOKING_CONFIRMED: "Вашата консултация е потвърдена",
+      CONFIRMATION_EMAIL: "Ще получите имейл с потвърждение",
+      NEXT_STEPS: "Следващи стъпки",
+      CALENDAR_REMINDER: "Добавете в календар",
+      PREPARATION_TIPS: "Съвети за подготовка",
+    },
+
+    ERRORS: {
+      LOGIN_REQUIRED: "Трябва да влезете в профила си за да запазите консултация",
+      SLOT_UNAVAILABLE: "Избраният час вече не е наличен",
+      PAYMENT_FAILED: "Плащането неуспешно. Моля, опитайте отново.",
+      BOOKING_FAILED: "Грешка при запазването. Моля, опитайте отново.",
+      INVALID_SLOT: "Невалиден избран час",
+      NETWORK_ERROR: "Мрежова грешка. Проверете връзката си.",
+    },
+
+    VALIDATION: {
+      CONSULTATION_TYPE_REQUIRED: "Моля, изберете тип консултация",
+      SLOT_REQUIRED: "Моля, изберете час за консултация",
+      PAYMENT_INFO_REQUIRED: "Моля, въведете информация за плащане",
+    },
+
+    TIME_LABELS: {
+      MINUTES: "мин",
+      HOUR: "час",
+      HOURS: "часа",
+    },
+  },
+} as const;

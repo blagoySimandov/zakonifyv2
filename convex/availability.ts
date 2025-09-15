@@ -49,9 +49,9 @@ const calculateAvailabilityLogic = async (
     )
     .collect();
 
-  // Get time off periods in the date range
-  const timeOffPeriods = await ctx.db
-    .query("attorneyTimeOff")
+  // Get blocked periods in the date range
+  const blockedPeriods = await ctx.db
+    .query("attorneyBlockedPeriods")
     .withIndex("by_attorney_date_range", (q: any) =>
       q.eq("attorneyId", args.attorneyId),
     )
@@ -113,14 +113,14 @@ const calculateAvailabilityLogic = async (
 
     if (!daySchedule) continue; // No working hours for this day
 
-    // Check if this day has any time off
-    const hasTimeOff = timeOffPeriods.some((timeOff: any) => {
-      const timeOffStart = new Date(timeOff.startTime);
-      const timeOffEnd = new Date(timeOff.endTime);
-      return date >= timeOffStart && date <= timeOffEnd;
+    // Check if this day has any blocked periods
+    const hasBlockedPeriod = blockedPeriods.some((period: any) => {
+      const periodStart = new Date(period.startTime);
+      const periodEnd = new Date(period.endTime);
+      return date >= periodStart && date <= periodEnd;
     });
 
-    if (hasTimeOff) continue; // Skip this day if attorney has time off
+    if (hasBlockedPeriod) continue; // Skip this day if attorney has blocked periods
 
     // Generate time slots for this day
     const dayStart = new Date(date);
@@ -187,21 +187,27 @@ const calculateAvailabilityLogic = async (
 
       if (conflictsWithReservation) continue;
 
+      // Get attorney for pricing
+      const attorney = await ctx.db.get(args.attorneyId);
+      if (!attorney) continue;
+
       // Find appropriate consultation type and price
       const consultationType = args.consultationType || "video";
-      const consultationTypeConfig =
-        profile.consultationSettings.consultationTypes.find(
-          (ct: any) => ct.type === consultationType && ct.isEnabled,
-        );
+      
+      // Only allow video and in-person consultations
+      if (consultationType !== "video" && consultationType !== "in-person") continue;
 
-      if (!consultationTypeConfig) continue;
+      // Use attorney's hourly rate for pricing
+      const hourlyRate = attorney.hourlyRate;
+      const slotDurationHours = slotDuration / 60; // Convert minutes to hours
+      const price = Math.round(hourlyRate * slotDurationHours);
 
       // Add the available slot
       availableSlots.push({
         startTime: slotStart,
         endTime: slotEnd,
         consultationType: consultationType,
-        price: consultationTypeConfig.price,
+        price: price,
         isEmergencySlot: false,
       });
     }
@@ -214,6 +220,22 @@ const calculateAvailabilityLogic = async (
     calculatedAt: Date.now(),
     expiresAt: Date.now() + 60 * 60 * 1000, // Expires in 1 hour
   };
+};
+
+// Fix legacy data by removing consultationTypes
+const fixConsultationSettings = (settings: any) => {
+  if (settings && typeof settings === 'object') {
+    const fixed = {
+      defaultDuration: settings.defaultDuration,
+      bufferTime: settings.bufferTime,
+      maxConsultationsPerDay: settings.maxConsultationsPerDay,
+      allowBackToBack: settings.allowBackToBack,
+      minAdvanceBooking: settings.minAdvanceBooking,
+      maxAdvanceBooking: settings.maxAdvanceBooking,
+    };
+    return fixed;
+  }
+  return settings;
 };
 
 export const createOrUpdateAvailabilityProfile = mutation({
@@ -327,18 +349,6 @@ export const createOrUpdateAvailabilityProfile = mutation({
       allowBackToBack: v.boolean(),
       minAdvanceBooking: v.number(),
       maxAdvanceBooking: v.number(),
-      consultationTypes: v.array(
-        v.object({
-          type: v.union(
-            v.literal("phone"),
-            v.literal("video"),
-            v.literal("in-person"),
-          ),
-          duration: v.number(),
-          price: v.number(),
-          isEnabled: v.boolean(),
-        }),
-      ),
     }),
     isActive: v.optional(v.boolean()),
   },
@@ -351,17 +361,20 @@ export const createOrUpdateAvailabilityProfile = mutation({
 
     const now = Date.now();
 
+    // Clean consultation settings to remove any legacy fields
+    const cleanedConsultationSettings = fixConsultationSettings(args.consultationSettings);
+
     const profileData = {
       attorneyId: args.attorneyId,
       timeZone: args.timeZone,
       workingHours: args.workingHours,
-      consultationSettings: args.consultationSettings,
+      consultationSettings: cleanedConsultationSettings,
       isActive: args.isActive ?? true,
       updatedAt: now,
     };
 
     if (existing) {
-      // Update existing profile
+      // Update existing profile and clean any legacy data
       return await ctx.db.patch(existing._id, profileData);
     } else {
       // Create new profile
@@ -384,8 +397,8 @@ export const getBasicAvailabilityProfile = query({
   },
 });
 
-// Add time off period
-export const addTimeOff = mutation({
+// Add blocked period  
+export const addBlockedPeriod = mutation({
   args: {
     attorneyId: v.id("attorneys"),
     startTime: v.number(),
@@ -393,10 +406,10 @@ export const addTimeOff = mutation({
     type: v.union(
       v.literal("vacation"),
       v.literal("holiday"),
-      v.literal("sick"),
+      v.literal("court-appearance"),
+      v.literal("personal"),
+      v.literal("conference"),
       v.literal("unavailable"),
-      v.literal("court"),
-      v.literal("continuing-education"),
     ),
     isRecurring: v.optional(v.boolean()),
     recurringPattern: v.optional(
@@ -416,7 +429,7 @@ export const addTimeOff = mutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    return await ctx.db.insert("attorneyTimeOff", {
+    return await ctx.db.insert("attorneyBlockedPeriods", {
       ...args,
       isRecurring: args.isRecurring ?? false,
       createdAt: now,
@@ -425,8 +438,8 @@ export const addTimeOff = mutation({
   },
 });
 
-// Get attorney time off periods
-export const getTimeOff = query({
+// Get attorney blocked periods
+export const getBlockedPeriods = query({
   args: {
     attorneyId: v.id("attorneys"),
     startDate: v.optional(v.number()),
@@ -434,12 +447,12 @@ export const getTimeOff = query({
   },
   handler: async (ctx, args) => {
     let query = ctx.db
-      .query("attorneyTimeOff")
+      .query("attorneyBlockedPeriods")
       .withIndex("by_attorney", (q) => q.eq("attorneyId", args.attorneyId));
 
     if (args.startDate && args.endDate) {
       query = ctx.db
-        .query("attorneyTimeOff")
+        .query("attorneyBlockedPeriods")
         .withIndex("by_attorney_date_range", (q) =>
           q
             .eq("attorneyId", args.attorneyId)
@@ -458,7 +471,7 @@ export const calculateAvailability = query({
     startDate: v.number(),
     endDate: v.number(),
     consultationType: v.optional(
-      v.union(v.literal("phone"), v.literal("video"), v.literal("in-person")),
+      v.union(v.literal("video"), v.literal("in-person")),
     ),
     duration: v.optional(v.number()),
   },
@@ -475,7 +488,6 @@ export const reserveSlot = mutation({
     startTime: v.number(),
     endTime: v.number(),
     consultationType: v.union(
-      v.literal("phone"),
       v.literal("video"),
       v.literal("in-person"),
     ),
@@ -580,7 +592,7 @@ export const getNextAvailableSlot = query({
   args: {
     attorneyId: v.id("attorneys"),
     consultationType: v.optional(
-      v.union(v.literal("phone"), v.literal("video"), v.literal("in-person")),
+      v.union(v.literal("video"), v.literal("in-person")),
     ),
     duration: v.optional(v.number()),
   },
@@ -611,7 +623,6 @@ export const cacheAvailabilityForDate = mutation({
         startTime: v.number(),
         endTime: v.number(),
         consultationType: v.union(
-          v.literal("phone"),
           v.literal("video"),
           v.literal("in-person"),
         ),
@@ -704,12 +715,7 @@ export const getAvailabilityProfile = query({
           maxConsultationsPerDay: 8,
           allowBackToBack: false,
           minAdvanceBooking: 24,
-          maxAdvanceBooking: 30,
-          consultationTypes: [
-            { type: "video", duration: 60, price: 200, isEnabled: true },
-            { type: "phone", duration: 30, price: 150, isEnabled: true },
-            { type: "in-person", duration: 90, price: 300, isEnabled: true },
-          ],
+          maxAdvanceBooking: 720, // 30 days in hours
         },
         isActive: true,
         createdAt: Date.now(),
@@ -758,12 +764,7 @@ export const updateAvailabilityStatus = mutation({
           maxConsultationsPerDay: 8,
           allowBackToBack: false,
           minAdvanceBooking: 24,
-          maxAdvanceBooking: 30,
-          consultationTypes: [
-            { type: "video", duration: 60, price: 200, isEnabled: true },
-            { type: "phone", duration: 30, price: 150, isEnabled: true },
-            { type: "in-person", duration: 90, price: 300, isEnabled: true },
-          ],
+          maxAdvanceBooking: 720, // 30 days in hours
         },
         isActive: args.isActive,
         createdAt: Date.now(),

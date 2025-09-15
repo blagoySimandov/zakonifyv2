@@ -106,12 +106,6 @@
   background: linear-gradient(135deg, #dc2626, #b91c1c);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);

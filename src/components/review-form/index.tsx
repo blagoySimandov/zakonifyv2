@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useReviewForm } from "./hooks";
-import { REVIEW_FORM_CONSTANTS } from "./constants";
-import { REVIEW_FORM_MESSAGES } from "./messages";
-import { Star, Send, X, CheckCircle } from "lucide-react";
+import { ATTORNEY_PROFILE_MESSAGES } from "@/messages";
+import { Star, Send, X, CheckCircle, LogIn } from "lucide-react";
+import { useSignIn } from "@clerk/nextjs";
 
 interface ReviewFormProps {
   attorneyId: string;
@@ -19,11 +19,14 @@ export function ReviewForm({
   onClose,
   onSubmitSuccess,
 }: ReviewFormProps) {
+  const { signIn } = useSignIn();
   const {
     formData,
     errors,
     isSubmitting,
     isSubmitted,
+    isSignedIn,
+    user,
     updateFormData,
     submitReview,
   } = useReviewForm(attorneyId);
@@ -39,11 +42,11 @@ export function ReviewForm({
   };
 
   const renderRatingSelector = () => (
-    <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {REVIEW_FORM_CONSTANTS.LABELS.RATING} *
+    <div className="mb-8">
+      <label className="block text-lg font-semibold text-gray-900 mb-4">
+        {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.LABELS.RATING} *
       </label>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -51,179 +54,200 @@ export function ReviewForm({
             onClick={() => updateFormData("rating", star)}
             onMouseEnter={() => setHoveredRating(star)}
             onMouseLeave={() => setHoveredRating(0)}
-            className="p-1 transition-colors"
+            className="p-2 transition-all duration-200 hover:scale-110"
           >
             <Star
-              className={`w-8 h-8 transition-colors ${
+              className={`w-10 h-10 transition-all duration-200 ${
                 star <= (hoveredRating || formData.rating)
-                  ? "fill-yellow-400 text-yellow-400"
+                  ? "fill-yellow-400 text-yellow-400 drop-shadow-sm"
                   : "text-gray-300 hover:text-yellow-300"
               }`}
             />
           </button>
         ))}
-        <span className="ml-3 text-sm text-gray-600">
+        <span className="ml-4 text-base text-gray-700 font-medium">
           {
-            REVIEW_FORM_CONSTANTS.RATING_LABELS[
+            ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.RATING_LABELS[
               (formData.rating as 0 | 1 | 2 | 3 | 4 | 5) ?? 0
             ]
           }
         </span>
       </div>
       {errors.rating && (
-        <p className="text-red-600 text-sm mt-1">{errors.rating[0]}</p>
+        <p className="text-red-500 text-sm mt-3 font-medium">{errors.rating[0]}</p>
       )}
     </div>
   );
 
-  const renderSuccessState = () => (
-    <div className="text-center py-8">
-      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <CheckCircle className="w-8 h-8 text-green-600" />
+  const renderLoginPrompt = () => (
+    <div className="text-center py-12">
+      <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-6">
+        <LogIn className="w-10 h-10 text-primary-600" />
       </div>
-      <h3 className="text-xl font-bold text-green-800 mb-2">
-        {REVIEW_FORM_MESSAGES.SUCCESS.SUBMITTED}
+      <h3 className="text-2xl font-bold text-gray-900 mb-3">
+        Влезте в профила си
       </h3>
-      <p className="text-green-700 mb-6">
-        {REVIEW_FORM_MESSAGES.SUCCESS.THANK_YOU}
+      <p className="text-gray-600 mb-8 text-lg">
+        Трябва да влезете в профила си, за да можете да оставите отзив за този адвокат.
+      </p>
+      <div className="flex gap-4">
+        <button
+          onClick={onClose}
+          className="px-8 py-4 bg-gray-100 text-gray-700 rounded-2xl hover:bg-gray-200 transition-all duration-200 font-semibold flex-1"
+        >
+          {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.BUTTONS.CANCEL}
+        </button>
+        <button
+          onClick={() => signIn?.({ redirectUrl: window.location.href })}
+          className="px-8 py-4 bg-primary-600 text-white rounded-2xl hover:bg-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-600/25 hover:shadow-xl hover:shadow-primary-700/30 transform hover:-translate-y-0.5 flex items-center gap-3 flex-1 justify-center"
+        >
+          <LogIn className="w-5 h-5" />
+          Вход
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderSuccessState = () => (
+    <div className="text-center py-12">
+      <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-6">
+        <CheckCircle className="w-10 h-10 text-primary-600" />
+      </div>
+      <h3 className="text-2xl font-bold text-gray-900 mb-3">
+        {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.SUCCESS.SUBMITTED}
+      </h3>
+      <p className="text-gray-600 mb-8 text-lg">
+        {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.SUCCESS.THANK_YOU}
       </p>
       <button
         onClick={onClose}
-        className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+        className="px-8 py-4 bg-primary-600 text-white rounded-2xl hover:bg-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-600/25 hover:shadow-xl hover:shadow-primary-700/30 transform hover:-translate-y-0.5"
       >
-        {REVIEW_FORM_CONSTANTS.BUTTONS.CLOSE}
+        {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.BUTTONS.CLOSE}
       </button>
     </div>
   );
 
+  if (!isSignedIn) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
+        <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full">
+          <div className="p-8">{renderLoginPrompt()}</div>
+        </div>
+      </div>
+    );
+  }
+
   if (isSubmitted) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg max-w-md w-full mx-4">
-          <div className="p-6">{renderSuccessState()}</div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
+        <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full">
+          <div className="p-8">{renderSuccessState()}</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">
-              {REVIEW_FORM_CONSTANTS.TITLE}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto">
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.TITLE}
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             </button>
           </div>
 
-          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-700">
-              {REVIEW_FORM_MESSAGES.INFO.REVIEWING_FOR}{" "}
-              <span className="font-medium">{attorneyName}</span>
+          <div className="mb-8 p-6 bg-gray-50 rounded-2xl">
+            <p className="text-base text-gray-700 mb-3">
+              {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.REVIEWING_FOR}{" "}
+              <span className="font-semibold text-gray-900">{attorneyName}</span>
             </p>
+            <div className="flex items-center gap-3 pt-3 border-t border-gray-200">
+              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                <span className="text-primary-600 font-semibold text-sm">
+                  {user?.firstName?.charAt(0)?.toUpperCase() || user?.emailAddresses[0]?.emailAddress?.charAt(0)?.toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  {user?.firstName && user?.lastName 
+                    ? `${user.firstName} ${user.lastName}`
+                    : user?.emailAddresses[0]?.emailAddress
+                  }
+                </p>
+                <p className="text-xs text-gray-500">Вашият отзив ще бъде публичен</p>
+              </div>
+            </div>
           </div>
 
           {errors._general && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700 text-sm">{errors._general[0]}</p>
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <p className="text-red-700 text-sm font-medium">{errors._general[0]}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {REVIEW_FORM_CONSTANTS.LABELS.CLIENT_NAME} *
-              </label>
-              <input
-                type="text"
-                value={formData.clientName}
-                onChange={(e) => updateFormData("clientName", e.target.value)}
-                placeholder={REVIEW_FORM_CONSTANTS.PLACEHOLDERS.CLIENT_NAME}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled={isSubmitting}
-              />
-              {errors.clientName && (
-                <p className="text-red-600 text-sm mt-1">
-                  {errors.clientName[0]}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {REVIEW_FORM_CONSTANTS.LABELS.CLIENT_EMAIL} *
-              </label>
-              <input
-                type="email"
-                value={formData.clientEmail}
-                onChange={(e) => updateFormData("clientEmail", e.target.value)}
-                placeholder={REVIEW_FORM_CONSTANTS.PLACEHOLDERS.CLIENT_EMAIL}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled={isSubmitting}
-              />
-              {errors.clientEmail && (
-                <p className="text-red-600 text-sm mt-1">
-                  {errors.clientEmail[0]}
-                </p>
-              )}
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
 
             {renderRatingSelector()}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {REVIEW_FORM_CONSTANTS.LABELS.COMMENT} *
+              <label className="block text-lg font-semibold text-gray-900 mb-4">
+                {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.LABELS.COMMENT} *
               </label>
               <textarea
                 value={formData.comment}
                 onChange={(e) => updateFormData("comment", e.target.value)}
-                placeholder={REVIEW_FORM_CONSTANTS.PLACEHOLDERS.COMMENT}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                placeholder={ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.PLACEHOLDERS.COMMENT}
+                rows={5}
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none text-base transition-all duration-200"
                 disabled={isSubmitting}
               />
-              <div className="flex justify-between mt-1">
+              <div className="flex justify-between mt-3">
                 {errors.comment ? (
-                  <p className="text-red-600 text-sm">{errors.comment[0]}</p>
+                  <p className="text-red-500 text-sm font-medium">{errors.comment[0]}</p>
                 ) : (
                   <div />
                 )}
-                <p className="text-gray-500 text-sm">
+                <p className="text-gray-500 text-sm font-medium">
                   {formData.comment.length}/
-                  {REVIEW_FORM_CONSTANTS.LIMITS.COMMENT_MAX}
+                  {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.VALIDATION.COMMENT_MAX}
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex gap-4 pt-8">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50"
+                className="px-8 py-4 bg-gray-100 text-gray-700 rounded-2xl hover:bg-gray-200 transition-all duration-200 font-semibold disabled:opacity-50 flex-1"
               >
-                {REVIEW_FORM_CONSTANTS.BUTTONS.CANCEL}
+                {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.BUTTONS.CANCEL}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-400 flex items-center gap-2"
+                className="px-8 py-4 bg-primary-600 text-white rounded-2xl hover:bg-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-600/25 hover:shadow-xl hover:shadow-primary-700/30 transform hover:-translate-y-0.5 disabled:bg-primary-400 disabled:shadow-none disabled:transform-none flex items-center gap-3 flex-1 justify-center"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    {REVIEW_FORM_CONSTANTS.BUTTONS.SUBMITTING}
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.BUTTONS.SUBMITTING}
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
-                    {REVIEW_FORM_CONSTANTS.BUTTONS.SUBMIT}
+                    <Send className="w-5 h-5" />
+                    {ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.BUTTONS.SUBMIT}
                   </>
                 )}
               </button>

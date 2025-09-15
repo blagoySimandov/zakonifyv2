@@ -12,5 +12,6 @@ export const NAVBAR_MESSAGES = {
     SIGN_UP: "Регистрация",
     PROFILE: "Профил",
     NOTIFICATIONS: "Известия",
+    DASHBOARD: "Табло",
   },
 } as const;

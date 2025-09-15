@@ -27,7 +27,7 @@ export function Navbar({
   showUserSection = true,
   className = ""
 }: NavbarProps) {
-  const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } =
+  const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu, isAttorney } =
     useNavbarState();
 
   // Variant-specific styling
@@ -157,6 +157,14 @@ export function Navbar({
           </SignInButton>
         </SignedOut>
         <SignedIn>
+          {isAttorney && (
+            <Link
+              href="/attorneys/dashboard"
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              {NAVBAR_MESSAGES.ACTIONS.DASHBOARD}
+            </Link>
+          )}
           <button 
             className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
             aria-label={NAVBAR_MESSAGES.ACTIONS.NOTIFICATIONS}
@@ -207,6 +215,15 @@ export function Navbar({
                 </div>
               </SignedOut>
               <SignedIn>
+                {isAttorney && (
+                  <Link
+                    href="/attorneys/dashboard"
+                    className="block text-gray-600 hover:text-gray-900 transition-colors"
+                    onClick={closeMobileMenu}
+                  >
+                    {NAVBAR_MESSAGES.ACTIONS.DASHBOARD}
+                  </Link>
+                )}
                 <div className="flex items-center space-x-3">
                   <UserButton />
                   <span className="text-gray-900 font-medium">{NAVBAR_MESSAGES.ACTIONS.PROFILE}</span>
@@ -225,6 +242,15 @@ export function Navbar({
                 </SignUpButton>
               </SignedOut>
               <SignedIn>
+                {isAttorney && (
+                  <Link
+                    href="/attorneys/dashboard"
+                    className="block text-gray-600 hover:text-gray-900 transition-colors"
+                    onClick={closeMobileMenu}
+                  >
+                    {NAVBAR_MESSAGES.ACTIONS.DASHBOARD}
+                  </Link>
+                )}
                 <div className="flex items-center space-x-3">
                   <UserButton />
                 </div>

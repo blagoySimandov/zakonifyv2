@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { useMutation } from "convex/react";
+import { useUser } from "@clerk/nextjs";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
-import { REVIEW_FORM_CONSTANTS } from "./constants";
+import { ATTORNEY_PROFILE_MESSAGES } from "@/messages";
 
 interface ReviewFormData {
-  clientName: string;
-  clientEmail: string;
   rating: number;
   comment: string;
 }
@@ -19,9 +18,9 @@ interface ValidationErrors {
 }
 
 export function useReviewForm(attorneyId: string) {
+  const { user, isSignedIn } = useUser();
+  
   const [formData, setFormData] = useState<ReviewFormData>({
-    clientName: "",
-    clientEmail: "",
     rating: 0,
     comment: "",
   });
@@ -35,40 +34,27 @@ export function useReviewForm(attorneyId: string) {
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
 
-    if (!formData.clientName.trim()) {
-      newErrors.clientName = ["Client name is required"];
-    } else if (formData.clientName.trim().length < 2) {
-      newErrors.clientName = ["Client name must be at least 2 characters"];
-    } else if (formData.clientName.trim().length > 100) {
-      newErrors.clientName = ["Client name must be less than 100 characters"];
-    }
-
-    if (!formData.clientEmail.trim()) {
-      newErrors.clientEmail = ["Email is required"];
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.clientEmail)) {
-      newErrors.clientEmail = ["Please enter a valid email address"];
+    if (!isSignedIn) {
+      newErrors._general = [ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.LOGIN_REQUIRED];
+      return false;
     }
 
     if (formData.rating === 0) {
-      newErrors.rating = ["Please select a rating"];
+      newErrors.rating = [ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.RATING_REQUIRED];
     } else if (formData.rating < 1 || formData.rating > 5) {
-      newErrors.rating = ["Rating must be between 1 and 5 stars"];
+      newErrors.rating = [ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.RATING_INVALID];
     }
 
     if (!formData.comment.trim()) {
-      newErrors.comment = ["Review comment is required"];
+      newErrors.comment = [ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.COMMENT_REQUIRED];
     } else if (
-      formData.comment.trim().length < REVIEW_FORM_CONSTANTS.LIMITS.COMMENT_MIN
+      formData.comment.trim().length < ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.VALIDATION.COMMENT_MIN
     ) {
-      newErrors.comment = [
-        `Comment must be at least ${REVIEW_FORM_CONSTANTS.LIMITS.COMMENT_MIN} characters`,
-      ];
+      newErrors.comment = [ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.COMMENT_TOO_SHORT];
     } else if (
-      formData.comment.trim().length > REVIEW_FORM_CONSTANTS.LIMITS.COMMENT_MAX
+      formData.comment.trim().length > ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.VALIDATION.COMMENT_MAX
     ) {
-      newErrors.comment = [
-        `Comment must be less than ${REVIEW_FORM_CONSTANTS.LIMITS.COMMENT_MAX} characters`,
-      ];
+      newErrors.comment = [ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.COMMENT_TOO_LONG];
     }
 
     setErrors(newErrors);
@@ -97,10 +83,12 @@ export function useReviewForm(attorneyId: string) {
     setErrors({});
 
     try {
+      if (!user) {
+        throw new Error(ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.LOGIN_REQUIRED);
+      }
+      
       await createReviewMutation({
         attorneyId: attorneyId as Id<"attorneys">,
-        clientName: formData.clientName.trim(),
-        clientEmail: formData.clientEmail.trim(),
         rating: formData.rating,
         comment: formData.comment.trim(),
       });
@@ -113,7 +101,7 @@ export function useReviewForm(attorneyId: string) {
         _general: [
           error instanceof Error
             ? error.message
-            : "Failed to submit review. Please try again.",
+            : ATTORNEY_PROFILE_MESSAGES.REVIEW_FORM.ERRORS.SUBMIT_FAILED,
         ],
       });
       return false;
@@ -124,8 +112,6 @@ export function useReviewForm(attorneyId: string) {
 
   const resetForm = () => {
     setFormData({
-      clientName: "",
-      clientEmail: "",
       rating: 0,
       comment: "",
     });
@@ -139,6 +125,8 @@ export function useReviewForm(attorneyId: string) {
     errors,
     isSubmitting,
     isSubmitted,
+    isSignedIn,
+    user,
     updateFormData,
     submitReview,
     resetForm,

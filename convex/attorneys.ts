@@ -292,6 +292,30 @@ export const register = mutation({
       updatedAt: now,
     });
 
+    // Create default availability profile for new attorney
+    await ctx.db.insert("attorneyAvailability", {
+      attorneyId,
+      timeZone: "Europe/Sofia",
+      workingHours: {
+        monday: { start: "09:00", end: "17:00" },
+        tuesday: { start: "09:00", end: "17:00" },
+        wednesday: { start: "09:00", end: "17:00" },
+        thursday: { start: "09:00", end: "17:00" },
+        friday: { start: "09:00", end: "17:00" },
+      },
+      consultationSettings: {
+        defaultDuration: 60,
+        bufferTime: 15,
+        maxConsultationsPerDay: 8,
+        allowBackToBack: false,
+        minAdvanceBooking: 24,
+        maxAdvanceBooking: 720,
+      },
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+
     return {
       success: true,
       id: attorneyId,
@@ -333,12 +357,38 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    return await ctx.db.insert("attorneys", {
+    const attorneyId = await ctx.db.insert("attorneys", {
       ...args,
       isVerified: false,
       createdAt: now,
       updatedAt: now,
     });
+
+    // Create default availability profile for new attorney
+    await ctx.db.insert("attorneyAvailability", {
+      attorneyId,
+      timeZone: "Europe/Sofia",
+      workingHours: {
+        monday: { start: "09:00", end: "17:00" },
+        tuesday: { start: "09:00", end: "17:00" },
+        wednesday: { start: "09:00", end: "17:00" },
+        thursday: { start: "09:00", end: "17:00" },
+        friday: { start: "09:00", end: "17:00" },
+      },
+      consultationSettings: {
+        defaultDuration: 60,
+        bufferTime: 15,
+        maxConsultationsPerDay: 8,
+        allowBackToBack: false,
+        minAdvanceBooking: 24,
+        maxAdvanceBooking: 720,
+      },
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return attorneyId;
   },
 });
 
@@ -426,5 +476,144 @@ export const update = mutation({
     }
 
     return await ctx.db.patch(id, updateData);
+  },
+});
+
+// Get attorney profile by Clerk user email (for dashboard authentication)
+export const getByClerkEmail = query({
+  args: {},
+  handler: async (ctx) => {
+    // Get the authenticated user's identity from Clerk
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const email = identity.email;
+    if (!email) {
+      return null;
+    }
+
+    // Find attorney by email
+    const attorney = await ctx.db
+      .query("attorneys")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+
+    return attorney;
+  },
+});
+
+// Check if current user is an attorney
+export const isCurrentUserAttorney = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity?.email) {
+      return false;
+    }
+
+    const attorney = await ctx.db
+      .query("attorneys")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    return attorney !== null;
+  },
+});
+
+// Update attorney hourly rate
+export const updateHourlyRate = mutation({
+  args: {
+    hourlyRate: v.number(),
+  },
+  handler: async (ctx, args) => {
+    // Get the authenticated user's identity from Clerk
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity?.email) {
+      throw new ConvexError("Must be logged in");
+    }
+
+    // Find attorney by email
+    const attorney = await ctx.db
+      .query("attorneys")
+      .withIndex("by_email", (q) => q.eq("email", identity.email!))
+      .first();
+
+    if (!attorney) {
+      throw new ConvexError("Attorney profile not found");
+    }
+
+    // Validate hourly rate
+    if (args.hourlyRate < 10) {
+      throw new ConvexError("Hourly rate must be at least €10");
+    }
+    if (args.hourlyRate > 1000) {
+      throw new ConvexError("Hourly rate must be less than €1000");
+    }
+
+    // Update the attorney's hourly rate
+    await ctx.db.patch(attorney._id, {
+      hourlyRate: args.hourlyRate,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+// Fix existing attorneys by creating availability profiles for those who don't have them
+export const createMissingAvailabilityProfiles = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // Get all attorneys
+    const attorneys = await ctx.db.query("attorneys").collect();
+    
+    let createdCount = 0;
+    
+    for (const attorney of attorneys) {
+      // Check if they already have an availability profile
+      const existingProfile = await ctx.db
+        .query("attorneyAvailability")
+        .withIndex("by_attorney", (q) => q.eq("attorneyId", attorney._id))
+        .first();
+      
+      if (!existingProfile) {
+        const now = Date.now();
+        
+        // Create default availability profile
+        await ctx.db.insert("attorneyAvailability", {
+          attorneyId: attorney._id,
+          timeZone: "Europe/Sofia",
+          workingHours: {
+            monday: { start: "09:00", end: "17:00" },
+            tuesday: { start: "09:00", end: "17:00" },
+            wednesday: { start: "09:00", end: "17:00" },
+            thursday: { start: "09:00", end: "17:00" },
+            friday: { start: "09:00", end: "17:00" },
+          },
+          consultationSettings: {
+            defaultDuration: 60,
+            bufferTime: 15,
+            maxConsultationsPerDay: 8,
+            allowBackToBack: false,
+            minAdvanceBooking: 24,
+            maxAdvanceBooking: 720,
+          },
+          isActive: true,
+          createdAt: now,
+          updatedAt: now,
+        });
+        
+        createdCount++;
+      }
+    }
+    
+    return { 
+      success: true, 
+      totalAttorneys: attorneys.length,
+      createdProfiles: createdCount,
+      message: `Created ${createdCount} availability profiles for existing attorneys`
+    };
   },
 });
